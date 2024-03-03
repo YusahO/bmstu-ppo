@@ -113,4 +113,4 @@ Web MPA
 
 # 14\. Диаграмма классов
 
-![alt text](images/uml.svg "")
+![alt text](images/uml.png "")
