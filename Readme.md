@@ -109,9 +109,8 @@ Web MPA
 
 # 13\. Верхнеуровневое разбиение на компоненты
 
-![alt text](images/high_level.svg "")
+![alt text](images/high_level.png "")
 
 # 14\. Диаграмма классов
 
-## Компонент доступа к данным
-## Компонент с бизнес-логикой
+![alt text](images/uml.svg "")
