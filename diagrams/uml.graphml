@@ -17,10 +17,10 @@
     <node id="n0">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="1097.3170490716177" width="2187.1266954022985" x="-132.74127873563202" y="-290.31704907161776"/>
+          <y:Geometry height="1117.0147095721616" width="2187.1266954022985" x="-132.74127873563202" y="-310.0147095721617"/>
           <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="false" width="4.0" x="1091.5633477011493" y="546.6585245358089">
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="false" width="4.0" x="1091.5633477011493" y="556.5073547860808">
             <y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
@@ -146,12 +146,11 @@
           <y:Geometry height="200.0" width="196.0" x="1832.0" y="23.47737563722535"/>
           <y:Fill color="#FFFFFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.706016540527344" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="122.82008361816406" x="36.58995819091797" xml:space="preserve" y="3.0">IComplaintService<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.706016540527344" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="99.61509704589844" x="48.19245147705078" xml:space="preserve" y="3.0">IReportService<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
           <y:UML clipContent="true" constraint="" hasDetailsColor="false" omitDetails="false" stereotype="" use3DEffect="false">
             <y:AttributeLabel xml:space="preserve"/>
-            <y:MethodLabel xml:space="preserve">+ CreateComplaint()
-+ MarkApplied()
-+ MarkResolved()</y:MethodLabel>
+            <y:MethodLabel xml:space="preserve">+ CreateReport()
++ UpdateReportStatus()</y:MethodLabel>
           </y:UML>
         </y:UMLClassNode>
       </data>
@@ -269,12 +268,11 @@
           <y:Geometry height="200.0" width="196.0" x="1832.0" y="263.38453744093886"/>
           <y:Fill color="#FFFFFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.706016540527344" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="117.76307678222656" x="39.11846160888672" xml:space="preserve" y="3.0">ComplaintService<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.706016540527344" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="94.55809020996094" x="50.72095489501953" xml:space="preserve" y="3.0">ReportService<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
           <y:UML clipContent="true" constraint="" hasDetailsColor="false" omitDetails="false" stereotype="" use3DEffect="false">
             <y:AttributeLabel xml:space="preserve"/>
-            <y:MethodLabel xml:space="preserve">+ CreateComplaint()
-+ MarkApplied()
-+ MarkResolved()</y:MethodLabel>
+            <y:MethodLabel xml:space="preserve">+ CreateReport()
++ UpdateReportStatus()</y:MethodLabel>
           </y:UML>
         </y:UMLClassNode>
       </data>
@@ -395,12 +393,12 @@
           <y:Geometry height="200.0" width="196.0" x="1832.0" y="546.3545709030975"/>
           <y:Fill color="#FFFFFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.706016540527344" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="146.29808044433594" x="24.85095977783203" xml:space="preserve" y="3.0">IComplaintRepository<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.706016540527344" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="123.09309387207031" x="36.453453063964844" xml:space="preserve" y="3.0">IReportRepository<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
           <y:UML clipContent="true" constraint="" hasDetailsColor="false" omitDetails="false" stereotype="" use3DEffect="false">
             <y:AttributeLabel xml:space="preserve"/>
-            <y:MethodLabel xml:space="preserve">+ AddComplaint()
-+ UpdateComplaint()
-+ GetComplaintByID()</y:MethodLabel>
+            <y:MethodLabel xml:space="preserve">+ AddRepor()
++ UpdateReport()
++ GetReportByID()</y:MethodLabel>
           </y:UML>
         </y:UMLClassNode>
       </data>
@@ -540,12 +538,12 @@
           <y:Geometry height="200.0" width="196.0" x="1832.0" y="868.7473276380165"/>
           <y:Fill color="#FFFFFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.706016540527344" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="141.24107360839844" x="27.37946319580078" xml:space="preserve" y="3.0">ComplaintRepository<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.706016540527344" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="118.03608703613281" x="38.981956481933594" xml:space="preserve" y="3.0">ReportRepository<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
           <y:UML clipContent="true" constraint="" hasDetailsColor="false" omitDetails="false" stereotype="" use3DEffect="false">
             <y:AttributeLabel xml:space="preserve"/>
-            <y:MethodLabel xml:space="preserve">+ AddComplaint()
-+ UpdateComplaint()
-+ GetComplaintByID()</y:MethodLabel>
+            <y:MethodLabel xml:space="preserve">+ AddRepor()
++ UpdateReport()
++ GetReportByID()</y:MethodLabel>
           </y:UML>
         </y:UMLClassNode>
       </data>
@@ -574,7 +572,7 @@
           <y:Geometry height="200.0" width="196.0" x="194.0" y="263.38453744093886"/>
           <y:Fill color="#FFFFFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.706016540527344" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="97.57406616210938" x="49.21296691894531" xml:space="preserve" y="3.0">IOAuthService<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.706016540527344" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="92.51705932617188" x="51.74147033691406" xml:space="preserve" y="3.0">OAuthService<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
           <y:UML clipContent="true" constraint="" hasDetailsColor="false" omitDetails="false" stereotype="" use3DEffect="false">
             <y:AttributeLabel xml:space="preserve"/>
             <y:MethodLabel xml:space="preserve">+ RegisterUser()
@@ -588,13 +586,140 @@
       <data key="d4" xml:space="preserve"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="200.0" width="196.0" x="821.4429708222812" y="-272.51864058355414"/>
+          <y:Geometry height="200.0" width="196.0" x="862.8220689655172" y="-540.0147095721617"/>
           <y:Fill color="#FFFFFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.706016540527344" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="78.08702087402344" x="58.95648956298828" xml:space="preserve" y="3.0">Application<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
           <y:UML clipContent="true" constraint="" hasDetailsColor="false" omitDetails="false" stereotype="" use3DEffect="false">
             <y:AttributeLabel xml:space="preserve"/>
             <y:MethodLabel xml:space="preserve">+ Run()</y:MethodLabel>
+          </y:UML>
+        </y:UMLClassNode>
+      </data>
+    </node>
+    <node id="n33">
+      <data key="d4" xml:space="preserve"/>
+      <data key="d6">
+        <y:UMLClassNode>
+          <y:Geometry height="142.69771490750816" width="196.0" x="-79.0" y="-250.01369268637626"/>
+          <y:Fill color="#FFFFFF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.706016540527344" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="33.8740234375" x="81.06298828125" xml:space="preserve" y="3.0">User<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+          <y:UML clipContent="true" constraint="" hasDetailsColor="false" omitDetails="false" stereotype="" use3DEffect="false">
+            <y:AttributeLabel xml:space="preserve">+ Id
++ Username
++ PasswordHashed
++ Email
++ IsAdmin
++ IsAuthorized</y:AttributeLabel>
+            <y:MethodLabel xml:space="preserve"/>
+          </y:UML>
+        </y:UMLClassNode>
+      </data>
+    </node>
+    <node id="n34">
+      <data key="d4" xml:space="preserve"/>
+      <data key="d6">
+        <y:UMLClassNode>
+          <y:Geometry height="142.69771490750816" width="196.0" x="1013.0000000000001" y="-250.01369268637626"/>
+          <y:Fill color="#FFFFFF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.706016540527344" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="27.608016967773438" x="84.19599151611328" xml:space="preserve" y="3.0">Tag<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+          <y:UML clipContent="true" constraint="" hasDetailsColor="false" omitDetails="false" stereotype="" use3DEffect="false">
+            <y:AttributeLabel xml:space="preserve">+ Id
++ AuthorId
++ Name</y:AttributeLabel>
+            <y:MethodLabel xml:space="preserve"/>
+          </y:UML>
+        </y:UMLClassNode>
+      </data>
+    </node>
+    <node id="n35">
+      <data key="d4" xml:space="preserve"/>
+      <data key="d6">
+        <y:UMLClassNode>
+          <y:Geometry height="142.69771490750816" width="196.0" x="1559.0000000000002" y="-250.01369268637632"/>
+          <y:Fill color="#FFFFFF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.706016540527344" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="39.47705078125" x="78.261474609375" xml:space="preserve" y="3.0">Score<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+          <y:UML clipContent="true" constraint="" hasDetailsColor="false" omitDetails="false" stereotype="" use3DEffect="false">
+            <y:AttributeLabel xml:space="preserve">+ AudiofileId
++ AuthorId
++ Value</y:AttributeLabel>
+            <y:MethodLabel xml:space="preserve"/>
+          </y:UML>
+        </y:UMLClassNode>
+      </data>
+    </node>
+    <node id="n36">
+      <data key="d4" xml:space="preserve"/>
+      <data key="d6">
+        <y:UMLClassNode>
+          <y:Geometry height="142.69771490750816" width="196.0" x="1831.9999999999998" y="-250.01369268637632"/>
+          <y:Fill color="#FFFFFF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.706016540527344" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="48.083038330078125" x="73.95848083496094" xml:space="preserve" y="3.0">Report<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+          <y:UML clipContent="true" constraint="" hasDetailsColor="false" omitDetails="false" stereotype="" use3DEffect="false">
+            <y:AttributeLabel xml:space="preserve">+ Id
++ AuthorId
++ AudiofileId
++ Text
++ Status</y:AttributeLabel>
+            <y:MethodLabel xml:space="preserve"/>
+          </y:UML>
+        </y:UMLClassNode>
+      </data>
+    </node>
+    <node id="n37">
+      <data key="d4" xml:space="preserve"/>
+      <data key="d6">
+        <y:UMLClassNode>
+          <y:Geometry height="142.69771490750816" width="196.0" x="740.0" y="-250.01369268637626"/>
+          <y:Fill color="#FFFFFF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.706016540527344" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="51.41099548339844" x="72.29450225830078" xml:space="preserve" y="3.0">Playlist<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+          <y:UML clipContent="true" constraint="" hasDetailsColor="false" omitDetails="false" stereotype="" use3DEffect="false">
+            <y:AttributeLabel xml:space="preserve">+ Id
++ Title
++ UserId</y:AttributeLabel>
+            <y:MethodLabel xml:space="preserve"/>
+          </y:UML>
+        </y:UMLClassNode>
+      </data>
+    </node>
+    <node id="n38">
+      <data key="d4" xml:space="preserve"/>
+      <data key="d6">
+        <y:UMLClassNode>
+          <y:Geometry height="142.69771490750816" width="196.0" x="1286.0" y="-250.01369268637626"/>
+          <y:Fill color="#FFFFFF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.706016540527344" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="88.87705993652344" x="53.56147003173828" xml:space="preserve" y="3.0">Commentary<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+          <y:UML clipContent="true" constraint="" hasDetailsColor="false" omitDetails="false" stereotype="" use3DEffect="false">
+            <y:AttributeLabel xml:space="preserve">+ Id
++ AuthorId
++ AudiofileId
++ Text</y:AttributeLabel>
+            <y:MethodLabel xml:space="preserve"/>
+          </y:UML>
+        </y:UMLClassNode>
+      </data>
+    </node>
+    <node id="n39">
+      <data key="d4" xml:space="preserve"/>
+      <data key="d6">
+        <y:UMLClassNode>
+          <y:Geometry height="142.69771490750816" width="196.0" x="467.0" y="-250.01369268637626"/>
+          <y:Fill color="#FFFFFF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.706016540527344" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="62.396026611328125" x="66.80198669433594" xml:space="preserve" y="3.0">Audiofile<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+          <y:UML clipContent="true" constraint="" hasDetailsColor="false" omitDetails="false" stereotype="" use3DEffect="false">
+            <y:AttributeLabel xml:space="preserve">+ Id
++ Title
++ Duration
++ AuthorId
++ Filepath</y:AttributeLabel>
+            <y:MethodLabel xml:space="preserve"/>
           </y:UML>
         </y:UMLClassNode>
       </data>
@@ -836,7 +961,7 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="919.4429708222812" y="-30.416894919804008"/>
+            <y:Point x="960.3175627700504" y="-30.416894919804008"/>
             <y:Point x="19.0" y="-30.416894919804008"/>
           </y:Path>
           <y:LineStyle color="#000000" type="dashed" width="1.0"/>
@@ -849,7 +974,7 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="919.4429708222812" y="-30.416894919804008"/>
+            <y:Point x="960.3175627700504" y="-30.416894919804008"/>
             <y:Point x="292.0" y="-30.416894919804008"/>
           </y:Path>
           <y:LineStyle color="#000000" type="dashed" width="1.0"/>
@@ -862,7 +987,7 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="919.4429708222812" y="-30.416894919804008"/>
+            <y:Point x="960.3175627700504" y="-30.416894919804008"/>
             <y:Point x="565.0" y="-30.416894919804008"/>
           </y:Path>
           <y:LineStyle color="#000000" type="dashed" width="1.0"/>
@@ -875,7 +1000,7 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="919.4429708222812" y="-30.416894919804008"/>
+            <y:Point x="960.3175627700504" y="-30.416894919804008"/>
             <y:Point x="838.0" y="-30.416894919804008"/>
           </y:Path>
           <y:LineStyle color="#000000" type="dashed" width="1.0"/>
@@ -888,7 +1013,7 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="919.4429708222812" y="-30.416894919804008"/>
+            <y:Point x="960.3175627700504" y="-30.416894919804008"/>
             <y:Point x="1111.0" y="-30.416894919804008"/>
           </y:Path>
           <y:LineStyle color="#000000" type="dashed" width="1.0"/>
@@ -901,7 +1026,7 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="919.4429708222812" y="-30.416894919804008"/>
+            <y:Point x="960.3175627700504" y="-30.416894919804008"/>
             <y:Point x="1384.0" y="-30.416894919804008"/>
           </y:Path>
           <y:LineStyle color="#000000" type="dashed" width="1.0"/>
@@ -914,7 +1039,7 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="919.4429708222812" y="-30.416894919804008"/>
+            <y:Point x="960.3175627700504" y="-30.416894919804008"/>
             <y:Point x="1657.0" y="-30.416894919804008"/>
           </y:Path>
           <y:LineStyle color="#000000" type="dashed" width="1.0"/>
@@ -927,7 +1052,7 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="919.4429708222812" y="-30.416894919804008"/>
+            <y:Point x="960.3175627700504" y="-30.416894919804008"/>
             <y:Point x="1930.0" y="-30.416894919804008"/>
           </y:Path>
           <y:LineStyle color="#000000" type="dashed" width="1.0"/>
@@ -936,15 +1061,124 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e31" source="n11" target="n15">
+    <edge id="e31" source="n10" target="n16">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="-67.08710111405685" sy="100.00597693572013" tx="55.28785145888597" ty="-100.0046135556164">
-            <y:Point x="1043.9128988859432" y="520.7410448806377"/>
-            <y:Point x="74.28785145888597" y="520.7410448806377"/>
+          <y:Path sx="-58.32901320986184" sy="99.98802104654737" tx="61.964968723084326" ty="-100.02003403990943">
+            <y:Point x="779.6709867901382" y="523.9934711643089"/>
+            <y:Point x="626.9649687230843" y="523.9934711643089"/>
           </y:Path>
           <y:LineStyle color="#000000" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="plain"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e32" source="n33" target="n1">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="-43.73170792081977" sy="71.38313713022637" tx="-43.73170792081977" ty="-99.99143303657227"/>
+          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
+          <y:Arrows source="plain" target="none"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e33" source="n33" target="n30">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="-33.89360857257873" ty="-99.96638650276189">
+            <y:Point x="19.0" y="-68.80304678998897"/>
+            <y:Point x="258.1063914274213" y="-68.80304678998897"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
+          <y:Arrows source="plain" target="none"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e34" source="n39" target="n2">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="-45.342324412932726" sy="71.37972585653648" tx="-45.342324412932726" ty="-99.95250485376495"/>
+          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
+          <y:Arrows source="plain" target="none"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e35" source="n37" target="n3">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="-55.72043339889569" sy="71.3703962787443" tx="-55.72043339889569" ty="-100.03036121937976"/>
+          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
+          <y:Arrows source="plain" target="none"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e36" source="n34" target="n4">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="-42.269532588277116" sy="71.38402244135948" tx="-42.269532588277116" ty="-100.00572697869693"/>
+          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
+          <y:Arrows source="plain" target="none"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e37" source="n38" target="n5">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="-32.48972948932419" sy="71.34168408283172" tx="-32.48972948932419" ty="-100.00572697869697"/>
+          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
+          <y:Arrows source="plain" target="none"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e38" source="n35" target="n6">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="-41.283217871284705" sy="71.31211230122545" tx="-41.28321787128448" ty="-100.03613962151526"/>
+          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
+          <y:Arrows source="plain" target="none"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e39" source="n36" target="n7">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="-38.55107352699861" sy="71.328179855708" tx="-38.551073526998834" ty="-100.02093330010605"/>
+          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
+          <y:Arrows source="plain" target="none"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e40" source="n39" target="n6">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="26.684711643090168" sy="71.31650080831605" tx="-80.43226332970653" ty="-99.99052065728775">
+            <y:Point x="591.6847116430902" y="-59.92742110990196"/>
+            <y:Point x="1576.5677366702935" y="-59.92742110990196"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
+          <y:Arrows source="plain" target="none"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e41" source="n39" target="n3">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="-97.9700198500409" ty="-88.0307488689989">
+            <y:Point x="690.9515778019586" y="-178.66483523262218"/>
+            <y:Point x="690.9515778019586" y="35.44662676822645"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
+          <y:Arrows source="plain" target="none"/>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>
