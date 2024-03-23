@@ -16,29 +16,28 @@ public class TagServiceUnitTest
     [Fact]
     public async Task TestCreateTag()
     {
-        var tags = CreateMockTags();
-        var expectedTag = new Tag(Guid.NewGuid(), Guid.NewGuid(), "tag name");
+        List<Tag> tags = [];
+        var expectedTag = CreateMockTag();
 
         _mockTagRepository.Setup(s => s.GetTagById(expectedTag.Id))
-                          .ReturnsAsync(tags.Find(t => t.Id == expectedTag.Id)!);
+                          .ReturnsAsync(default(Tag)!);
 
         _mockTagRepository.Setup(s => s.AddTag(It.IsAny<Tag>()))
                           .Callback((Tag t) => tags.Add(t));
 
         await _tagService.CreateTag(expectedTag);
-        var actualComm = tags.Last();
+        var actualTag = tags.Last();
 
-        Assert.Equal(expectedTag, actualComm);
+        Assert.Equal(expectedTag, actualTag);
     }
 
     [Fact]
     public async Task TestCreateExistentTag()
     {
-        var tags = CreateMockTags();
-        var expectedTag = tags[1];
+        var expectedTag = CreateMockTag();
 
         _mockTagRepository.Setup(s => s.GetTagById(expectedTag.Id))
-                          .ReturnsAsync(tags.Find(t => t.Id == expectedTag.Id)!);
+                          .ReturnsAsync(expectedTag);
 
         async Task Action() => await _tagService.CreateTag(expectedTag);
 
@@ -48,32 +47,27 @@ public class TagServiceUnitTest
     [Fact]
     public async Task TestUpdateTag()
     {
-        var tags = CreateMockTags();
-        var expectedTag = new Tag(tags[1]);
-        var expectedTagName = "new tag name";
+        var expectedTag = CreateMockTag();
+        expectedTag.Name = "new tag name";
 
         _mockTagRepository.Setup(s => s.GetTagById(expectedTag.Id))
-                                 .ReturnsAsync(expectedTag);
+                          .ReturnsAsync(expectedTag);
 
         _mockTagRepository.Setup(s => s.UpdateTag(It.IsAny<Tag>()))
                           .ReturnsAsync(expectedTag);
 
-        var actual = await _tagService.UpdateTagName(expectedTag.Id, expectedTagName);
+        var actualTag = await _tagService.UpdateTagName(expectedTag.Id, expectedTag.Name);
 
-        Assert.Equal(expectedTagName, actual.Name);
+        Assert.Equal(expectedTag.Name, actualTag.Name);
     }
 
     [Fact]
     public async Task TestUpdateTagNonexistent()
     {
-        var tags = CreateMockTags();
-        var expectedTag = new Tag(Guid.NewGuid(), Guid.NewGuid(), "tag name");
-        var expectedTagName = "new tag name";
+        _mockTagRepository.Setup(s => s.GetTagById(It.IsAny<Guid>()))
+                          .ReturnsAsync(default(Tag)!);
 
-        _mockTagRepository.Setup(s => s.GetTagById(expectedTag.Id))
-                          .ReturnsAsync(tags.Find(t => t.Id == expectedTag.Id)!);
-
-        async Task Action() => await _tagService.UpdateTagName(expectedTag.Id, expectedTagName);
+        async Task Action() => await _tagService.UpdateTagName(Guid.Empty, "");
 
         await Assert.ThrowsAsync<TagNotFoundException>(Action);
     }
@@ -81,34 +75,30 @@ public class TagServiceUnitTest
     [Fact]
     public async Task TestDeleteTag()
     {
-        var tags = CreateMockTags();
-        var expectedTag = tags[1];
+        List<Tag> tags = [CreateMockTag()];
+        var expectedTag = new Tag(tags.First());
 
         _mockTagRepository.Setup(s => s.GetTagById(expectedTag.Id))
-                          .ReturnsAsync(tags.Find(t => t.Id == expectedTag.Id)!);
+                          .ReturnsAsync(expectedTag);
 
-        _mockTagRepository.Setup(s => s.DeleteTag(It.IsAny<Guid>()))
+        _mockTagRepository.Setup(s => s.DeleteTag(expectedTag.Id))
                           .Callback((Guid id) =>
                           {
-                              tags.Remove(tags.Find(t => t.Id == expectedTag.Id)!);
+                              tags.Remove(expectedTag);
                           });
 
         await _tagService.DeleteTag(expectedTag.Id);
-        var actualTag = tags[1];
 
-        Assert.Equal(2, tags.Count);
+        Assert.Empty(tags);
     }
 
     [Fact]
     public async Task TestDeleteTagNonexistent()
     {
-        var tags = CreateMockTags();
-        var expectedTag = new Tag(Guid.NewGuid(), Guid.NewGuid(), "tag name");
+        _mockTagRepository.Setup(s => s.GetTagById(It.IsAny<Guid>()))
+                          .ReturnsAsync(default(Tag)!);
 
-        _mockTagRepository.Setup(s => s.GetTagById(expectedTag.Id))
-                          .ReturnsAsync(tags.Find(t => t.Id == expectedTag.Id)!);
-
-        async Task Action() => await _tagService.DeleteTag(expectedTag.Id);
+        async Task Action() => await _tagService.DeleteTag(Guid.Empty);
 
         await Assert.ThrowsAsync<TagNotFoundException>(Action);
     }
@@ -116,38 +106,29 @@ public class TagServiceUnitTest
     [Fact]
     public async Task TestGetTagById()
     {
-        var tags = CreateMockTags();
-        var expectedTag = tags[0];
+        var expectedTag = CreateMockTag();
 
         _mockTagRepository.Setup(s => s.GetTagById(expectedTag.Id))
-                          .ReturnsAsync(tags.Find(t => t.Id == expectedTag.Id)!);
+                          .ReturnsAsync(expectedTag);
 
-        var tag = await _tagService.GetTagById(expectedTag.Id);
+        var actualTag = await _tagService.GetTagById(expectedTag.Id);
 
-        Assert.Equal(expectedTag, tag);
+        Assert.Equal(expectedTag, actualTag);
     }
 
     [Fact]
     public async Task TestGetTagNonexistentById()
     {
-        var tags = CreateMockTags();
-        var expectedTag = new Tag(Guid.NewGuid(), Guid.NewGuid(), "new tag");
+        _mockTagRepository.Setup(s => s.GetTagById(It.IsAny<Guid>()))
+                          .ReturnsAsync(default(Tag)!);
 
-        _mockTagRepository.Setup(s => s.GetTagById(expectedTag.Id))
-                          .ReturnsAsync(tags.Find(f => f.Id == expectedTag.Id)!);
-
-        async Task Action() => await _tagService.GetTagById(expectedTag.Id);
+        async Task Action() => await _tagService.GetTagById(Guid.Empty);
 
         await Assert.ThrowsAsync<TagNotFoundException>(Action);
     }
 
-    private static List<Tag> CreateMockTags()
+    private static Tag CreateMockTag()
     {
-        return
-        [
-            new(Guid.NewGuid(), Guid.NewGuid(), "whatever1"),
-            new(Guid.NewGuid(), Guid.NewGuid(), "whatever2"),
-            new(Guid.NewGuid(), Guid.NewGuid(), "whatever3"),
-        ];
+        return new(Guid.NewGuid(), Guid.NewGuid(), "whatever1");
     }
 }

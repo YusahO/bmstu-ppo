@@ -18,7 +18,7 @@ public class ScoreServiceUnitTest
     [Fact]
     public async Task TestCreateScore()
     {
-        var scores = CreateMockScores();
+        List<Score> scores = [];
         var expectedScore = CreateMockScore(1);
 
         _mockScoreRepository.Setup(s => s.GetScoreByPrimaryKey(expectedScore.AuthorId, expectedScore.AudiofileId))
@@ -49,34 +49,26 @@ public class ScoreServiceUnitTest
     [Fact]
     public async Task TestUpdateScore()
     {
-        var actualScore = CreateMockScore(1);
-        var expectedScore = actualScore;
-        expectedScore.SetValue(3);
+        var expectedScore = CreateMockScore(1);
 
-        _mockScoreRepository.Setup(s => s.GetScoreByPrimaryKey(actualScore.AuthorId, actualScore.AudiofileId))
-                            .ReturnsAsync(actualScore);
+        _mockScoreRepository.Setup(s => s.GetScoreByPrimaryKey(expectedScore.AuthorId, expectedScore.AudiofileId))
+                            .ReturnsAsync(expectedScore);
 
         _mockScoreRepository.Setup(s => s.UpdateScore(It.IsAny<Score>()))
-                            .Callback((Score sc) =>
-                            {
-                                actualScore = expectedScore;
-                            });
+                            .ReturnsAsync(expectedScore);
 
-        await _scoreService.UpdateScore(expectedScore);
+        var actualScore = await _scoreService.UpdateScore(expectedScore);
 
-        Assert.Equal(actualScore, expectedScore);
+        Assert.Equal(expectedScore, actualScore);
     }
 
     [Fact]
     public async Task TestUpdateScoreNonexistent()
     {
-        var expectedScore = CreateMockScore(4);
-        var actualScore = CreateMockScore(5);
+        _mockScoreRepository.Setup(s => s.GetScoreByPrimaryKey(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                            .ReturnsAsync(default(Score)!);
 
-        _mockScoreRepository.Setup(s => s.GetScoreByPrimaryKey(actualScore.AuthorId, actualScore.AudiofileId))
-                            .ReturnsAsync(actualScore);
-
-        async Task Action() => await _scoreService.UpdateScore(expectedScore);
+        async Task Action() => await _scoreService.UpdateScore(CreateMockScore(3));
 
         await Assert.ThrowsAsync<ScoreNotFoundException>(Action);
     }
@@ -89,21 +81,18 @@ public class ScoreServiceUnitTest
         _mockScoreRepository.Setup(s => s.GetScoreByPrimaryKey(expectedScore.AuthorId, expectedScore.AudiofileId))
                             .ReturnsAsync(expectedScore);
 
-        var score = await _scoreService.GetScoreByPrimaryKey(expectedScore.AuthorId, expectedScore.AudiofileId);
+        var actualScore = await _scoreService.GetScoreByPrimaryKey(expectedScore.AuthorId, expectedScore.AudiofileId);
 
-        Assert.Equal(expectedScore, score);
+        Assert.Equal(expectedScore, actualScore);
     }
 
     [Fact]
     public async Task TestGetScoreNonexistentByPrimaryKey()
     {
-        var expectedScore = CreateMockScore(4);
-        var actualScore = CreateMockScore(1);
+        _mockScoreRepository.Setup(s => s.GetScoreByPrimaryKey(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                            .ReturnsAsync(default(Score)!);
 
-        _mockScoreRepository.Setup(s => s.GetScoreByPrimaryKey(actualScore.AuthorId, actualScore.AudiofileId))
-                            .ReturnsAsync(actualScore);
-
-        async Task Action() => await _scoreService.GetScoreByPrimaryKey(expectedScore.AuthorId, expectedScore.AudiofileId);
+        async Task Action() => await _scoreService.GetScoreByPrimaryKey(Guid.Empty, Guid.Empty);
 
         await Assert.ThrowsAsync<ScoreNotFoundException>(Action);
     }
@@ -112,7 +101,7 @@ public class ScoreServiceUnitTest
     public async Task TestGetAudiofileScores()
     {
         Audiofile file = new(Guid.NewGuid(), "title", 4.53f, Guid.NewGuid(), "path/to/file");
-        var expectedScores = CreateMockScores();
+        List<Score> expectedScores = [CreateMockScore(1), CreateMockScore(2)];
         foreach (var score in expectedScores)
         {
             score.AudiofileId = file.Id;
@@ -161,16 +150,5 @@ public class ScoreServiceUnitTest
     private static Score CreateMockScore(int value)
     {
         return new(Guid.NewGuid(), Guid.NewGuid(), value);
-    }
-
-    private static List<Score> CreateMockScores()
-    {
-        return
-        [
-            new(Guid.NewGuid(), Guid.NewGuid(), 4),
-            new(Guid.NewGuid(), Guid.NewGuid(), 1),
-            new(Guid.NewGuid(), Guid.NewGuid(), 2),
-            new(Guid.NewGuid(), Guid.NewGuid(), 5)
-        ];
     }
 }

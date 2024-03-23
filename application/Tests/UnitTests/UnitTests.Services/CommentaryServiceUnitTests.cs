@@ -16,11 +16,11 @@ public class CommentaryServiceUnitTest
     [Fact]
     public async Task TestCreateCommentary()
     {
-        var comms = CreateMockCommentaries();
-        var expectedComm = new Commentary(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "new comm");
+        List<Commentary> comms = [];
+        var expectedComm = CreateMockCommentary();
 
         _mockCommentaryRepository.Setup(s => s.GetCommentaryById(expectedComm.Id))
-                                 .ReturnsAsync(comms.Find(f => f.Id == expectedComm.Id)!);
+                                 .ReturnsAsync(default(Commentary)!);
 
         _mockCommentaryRepository.Setup(s => s.AddCommentary(It.IsAny<Commentary>()))
                                  .Callback((Commentary c) => comms.Add(c));
@@ -34,11 +34,10 @@ public class CommentaryServiceUnitTest
     [Fact]
     public async Task TestCreateExistentCommentary()
     {
-        var comms = CreateMockCommentaries();
-        var expectedComm = comms[1];
+        var expectedComm = CreateMockCommentary();
 
         _mockCommentaryRepository.Setup(s => s.GetCommentaryById(expectedComm.Id))
-                                 .ReturnsAsync(comms.Find(f => f.Id == expectedComm.Id)!);
+                                 .ReturnsAsync(expectedComm);
 
         async Task Action() => await _commentaryService.CreateCommentary(expectedComm);
 
@@ -48,7 +47,7 @@ public class CommentaryServiceUnitTest
     [Fact]
     public async Task TestUpdateCommentary()
     {
-        var expectedComm = CreateMockCommentaries()[0];
+        var expectedComm = CreateMockCommentary();
         expectedComm.Text = "very new comm";
 
         _mockCommentaryRepository.Setup(s => s.GetCommentaryById(expectedComm.Id))
@@ -65,13 +64,10 @@ public class CommentaryServiceUnitTest
     [Fact]
     public async Task TestUpdateCommentaryNonexistent()
     {
-        var comms = CreateMockCommentaries();
-        var expectedComm = new Commentary(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "new comm");
+        _mockCommentaryRepository.Setup(s => s.GetCommentaryById(It.IsAny<Guid>()))
+                                 .ReturnsAsync(default(Commentary)!);
 
-        _mockCommentaryRepository.Setup(s => s.GetCommentaryById(expectedComm.Id))
-                                 .ReturnsAsync(comms.Find(f => f.Id == expectedComm.Id)!);
-
-        async Task Action() => await _commentaryService.UpdateCommentary(expectedComm);
+        async Task Action() => await _commentaryService.UpdateCommentary(CreateMockCommentary());
 
         await Assert.ThrowsAsync<CommentaryNotFoundException>(Action);
     }
@@ -79,38 +75,29 @@ public class CommentaryServiceUnitTest
     [Fact]
     public async Task TestGetCommentaryById()
     {
-        var comms = CreateMockCommentaries();
-        var expectedComm = comms[0];
+        var expectedComm = CreateMockCommentary();
 
         _mockCommentaryRepository.Setup(s => s.GetCommentaryById(expectedComm.Id))
-                                 .ReturnsAsync(comms.Find(f => f.Id == expectedComm.Id)!);
+                                 .ReturnsAsync(expectedComm);
         
-        var comm = await _commentaryService.GetCommentaryById(expectedComm.Id);
+        var actualComm = await _commentaryService.GetCommentaryById(expectedComm.Id);
 
-        Assert.Equal(expectedComm, comm);
+        Assert.Equal(expectedComm, actualComm);
     }
 
     [Fact]
     public async Task TestGetCommentaryNonexistentById()
     {
-        var comms = CreateMockCommentaries();
-        var expectedComm = new Commentary(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "new comm");
+        _mockCommentaryRepository.Setup(s => s.GetCommentaryById(It.IsAny<Guid>()))
+                                 .ReturnsAsync(default(Commentary)!);
         
-        _mockCommentaryRepository.Setup(s => s.GetCommentaryById(expectedComm.Id))
-                                 .ReturnsAsync(comms.Find(f => f.Id == expectedComm.Id)!);
-        
-        async Task Action() => await _commentaryService.GetCommentaryById(expectedComm.Id);
+        async Task Action() => await _commentaryService.GetCommentaryById(Guid.Empty);
 
         await Assert.ThrowsAsync<CommentaryNotFoundException>(Action);
     }
 
-    private static List<Commentary> CreateMockCommentaries()
+    private static Commentary CreateMockCommentary()
     {
-        return
-        [
-            new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "whatever1"),
-            new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "whatever2"),
-            new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "whatever3"),
-        ];
+        return new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "whatever1");
     }
 }

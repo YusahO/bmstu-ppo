@@ -17,7 +17,7 @@ public class PlaylistServiceUnitTest
     [Fact]
     public async Task TestCreatePlaylist()
     {
-        var playlists = CreateMockPlaylists();
+        List<Playlist> playlists = [];
         var expectedPlaylist = CreateMockPlaylist();
 
         _mockPlaylistRepository.Setup(s => s.GetPlaylistById(expectedPlaylist.Id))
@@ -64,12 +64,10 @@ public class PlaylistServiceUnitTest
     [Fact]
     public async Task TestUpdatePlaylistNonexistent()
     {
-        var expectedPlaylist = CreateMockPlaylist();
-
-        _mockPlaylistRepository.Setup(s => s.GetPlaylistById(expectedPlaylist.Id))
+        _mockPlaylistRepository.Setup(s => s.GetPlaylistById(It.IsAny<Guid>()))
                                .ReturnsAsync(default(Playlist)!);
 
-        async Task Action() => await _playlistService.UpdateTitle(expectedPlaylist.Id, "new title");
+        async Task Action() => await _playlistService.UpdateTitle(Guid.Empty, "new title");
 
         await Assert.ThrowsAsync<PlaylistNotFoundException>(Action);
     }
@@ -77,9 +75,8 @@ public class PlaylistServiceUnitTest
     [Fact]
     public async Task TestDeletePlaylist()
     {
-        var playlists = CreateMockPlaylists();
-        int index = 0;
-        var expectedPlaylist = new Playlist(playlists[index]);
+        List<Playlist> playlists = [CreateMockPlaylist()];
+        var expectedPlaylist = new Playlist(playlists.First());
 
         _mockPlaylistRepository.Setup(s => s.GetPlaylistById(expectedPlaylist.Id))
                                .ReturnsAsync(expectedPlaylist);
@@ -87,12 +84,12 @@ public class PlaylistServiceUnitTest
         _mockPlaylistRepository.Setup(s => s.DeletePlaylist(It.IsAny<Guid>()))
                                .Callback((Guid id) =>
                                {
-                                   playlists.RemoveAt(index);
+                                   playlists.Remove(expectedPlaylist);
                                });
 
         await _playlistService.DeletePlaylist(expectedPlaylist.Id);
 
-        Assert.Equal(2, playlists.Count);
+        Assert.Empty(playlists);
     }
 
     [Fact]
@@ -147,6 +144,7 @@ public class PlaylistServiceUnitTest
 
         _mockPlaylistRepository.Setup(s => s.GetPlaylistById(playlist.Id))
                                .ReturnsAsync(playlist);
+
         _mockPlaylistRepository.Setup(s => s.GetAllAudiofilesFromPlaylist(playlist.Id))
                                .ReturnsAsync(expectedFiles);
 
@@ -321,21 +319,6 @@ public class PlaylistServiceUnitTest
     private static Playlist CreateMockPlaylist()
     {
         return new(Guid.NewGuid(), "mock title", Guid.NewGuid());
-    }
-
-    private static List<Playlist> CreateMockPlaylists()
-    {
-        return
-        [
-            new(Guid.NewGuid(), "title1", Guid.NewGuid()),
-            new(Guid.NewGuid(), "title2", Guid.NewGuid()),
-            new(Guid.NewGuid(), "title3", Guid.NewGuid()),
-        ];
-    }
-
-    private static Audiofile CreateMockAudiofile()
-    {
-        return new(Guid.NewGuid(), "file 1", 14.14f, Guid.NewGuid(), "path/to/file");
     }
 
     private static List<Audiofile> CreateMockAudiofiles()

@@ -17,13 +17,13 @@ public class ReportServiceUnitTest
     [Fact]
     public async Task TestCreateReport()
     {
-        var reps = CreateMockReports();
-        var expectedRep = new Report(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "text");
+        List<Report> reps = [];
+        var expectedRep = CreateMockReport();
 
         _mockReportRepository.Setup(s => s.GetReportById(expectedRep.Id))
-                              .ReturnsAsync(reps.Find(r => r.Id == expectedRep.Id)!);
+                              .ReturnsAsync(default(Report)!);
 
-        _mockReportRepository.Setup(s => s.AddReport(It.IsAny<Report>()))
+        _mockReportRepository.Setup(s => s.AddReport(expectedRep))
                              .Callback((Report r) => reps.Add(r));
 
         await _reportService.CreateReport(expectedRep);
@@ -35,8 +35,7 @@ public class ReportServiceUnitTest
     [Fact]
     public async Task TestCreateExistentReport()
     {
-        var reps = CreateMockReports();
-        var expectedRep = new Report(reps[1]);
+        var expectedRep = CreateMockReport();
 
         _mockReportRepository.Setup(s => s.GetReportById(expectedRep.Id))
                              .ReturnsAsync(expectedRep);
@@ -49,30 +48,26 @@ public class ReportServiceUnitTest
     [Fact]
     public async Task TestUpdateReport()
     {
-        Report expected = new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "whatever1", ReportStatus.Accepted);
-        expected.Status = ReportStatus.Viewed;
+        var expectedRep = CreateMockReport();
 
-        _mockReportRepository.Setup(s => s.GetReportById(expected.Id))
-                              .ReturnsAsync(expected);
+        _mockReportRepository.Setup(s => s.GetReportById(expectedRep.Id))
+                              .ReturnsAsync(expectedRep);
 
-        _mockReportRepository.Setup(s => s.UpdateReport(It.IsAny<Report>()))
-                             .ReturnsAsync(expected);
+        _mockReportRepository.Setup(s => s.UpdateReport(expectedRep))
+                             .ReturnsAsync(expectedRep);
 
-        var actual = await _reportService.UpdateReportStatus(expected.Id, expected.Status);
+        var actualRep = await _reportService.UpdateReportStatus(expectedRep.Id, ReportStatus.Declined);
 
-        Assert.Equal(expected, actual);
+        Assert.Equal(expectedRep, actualRep);
     }
 
     [Fact]
     public async Task TestUpdateReportNonexistent()
     {
-        var reps = CreateMockReports();
-        var expected = new Report(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "text");
+        _mockReportRepository.Setup(s => s.GetReportById(It.IsAny<Guid>()))
+                                 .ReturnsAsync(default(Report)!);
 
-        _mockReportRepository.Setup(s => s.GetReportById(expected.Id))
-                                 .ReturnsAsync(reps.Find(f => f.Id == expected.Id)!);
-
-        async Task Action() => await _reportService.UpdateReportStatus(expected.Id, ReportStatus.Declined);
+        async Task Action() => await _reportService.UpdateReportStatus(Guid.Empty, ReportStatus.Declined);
 
         await Assert.ThrowsAsync<ReportNotFoundException>(Action);
     }
@@ -80,38 +75,29 @@ public class ReportServiceUnitTest
     [Fact]
     public async Task TestGetReportById()
     {
-        var reps = CreateMockReports();
-        var expectedRep = reps[0];
+        var expectedRep = CreateMockReport();
 
         _mockReportRepository.Setup(s => s.GetReportById(expectedRep.Id))
-                                 .ReturnsAsync(reps.Find(f => f.Id == expectedRep.Id)!);
+                                 .ReturnsAsync(expectedRep);
         
-        var comm = await _reportService.GetReportById(expectedRep.Id);
+        var actualRep = await _reportService.GetReportById(expectedRep.Id);
 
-        Assert.Equal(expectedRep, comm);
+        Assert.Equal(expectedRep, actualRep);
     }
 
     [Fact]
     public async Task TestGetReportNonexistentById()
-    {
-        var reps = CreateMockReports();
-        var expectedRep = new Report(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "new report");
+    {        
+        _mockReportRepository.Setup(s => s.GetReportById(It.IsAny<Guid>()))
+                             .ReturnsAsync(default(Report)!);
         
-        _mockReportRepository.Setup(s => s.GetReportById(expectedRep.Id))
-                             .ReturnsAsync(reps.Find(f => f.Id == expectedRep.Id)!);
-        
-        async Task Action() => await _reportService.GetReportById(expectedRep.Id);
+        async Task Action() => await _reportService.GetReportById(Guid.Empty);
 
         await Assert.ThrowsAsync<ReportNotFoundException>(Action);
     }
 
-    private static List<Report> CreateMockReports()
+    private static Report CreateMockReport(ReportStatus status = ReportStatus.NotViewed)
     {
-        return
-        [
-            new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "whatever1", ReportStatus.Accepted),
-            new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "whatever2", ReportStatus.Viewed),
-            new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "whatever3"),
-        ];
+        return new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "whatever1", status);
     }
 }

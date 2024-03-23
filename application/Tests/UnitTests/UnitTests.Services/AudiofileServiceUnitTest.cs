@@ -16,11 +16,11 @@ public class AudiofileServiceUnitTest
     [Fact]
     public async Task TestCreateAudiofile()
     {
-        var files = CreateMockAudiofiles();
+        List<Audiofile> files = [];
         var expectedFile = CreateMockAudiofile();
 
         _mockAudiofileRepository.Setup(s => s.GetAudiofileById(expectedFile.Id))
-                                .ReturnsAsync(files.Find(f => f.Id == expectedFile.Id)!);
+                                .ReturnsAsync(default(Audiofile)!);
 
         _mockAudiofileRepository.Setup(s => s.AddAudiofile(It.IsAny<Audiofile>()))
                                 .Callback((Audiofile f) => files.Add(f));
@@ -63,13 +63,10 @@ public class AudiofileServiceUnitTest
     [Fact]
     public async Task TestUpdateAudiofileNonexistent()
     {
-        var actualFile = CreateMockAudiofile(duration:14.0f);
-        var expectedFile = CreateMockAudiofile();
+        _mockAudiofileRepository.Setup(s => s.GetAudiofileById(It.IsAny<Guid>()))
+                                .ReturnsAsync(default(Audiofile)!);
 
-        _mockAudiofileRepository.Setup(s => s.GetAudiofileById(actualFile.Id))
-                                .ReturnsAsync(actualFile);
-
-        async Task Action() => await _audiofileService.UpdateAudiofile(expectedFile);
+        async Task Action() => await _audiofileService.UpdateAudiofile(CreateMockAudiofile());
 
         await Assert.ThrowsAsync<AudiofileNotFoundException>(Action);
     }
@@ -77,33 +74,30 @@ public class AudiofileServiceUnitTest
     [Fact]
     public async Task TestDeleteAudiofile()
     {
-        var files = CreateMockAudiofiles();
-        var expectedFileId = files[1].Id;
+        List<Audiofile> files = [CreateMockAudiofile()];
+        var expectedFile = new Audiofile(files.First());
 
-        _mockAudiofileRepository.Setup(s => s.GetAudiofileById(expectedFileId))
-                                .ReturnsAsync(files.Find(f => f.Id == expectedFileId)!);
+        _mockAudiofileRepository.Setup(s => s.GetAudiofileById(expectedFile.Id))
+                                .ReturnsAsync(expectedFile);
 
         _mockAudiofileRepository.Setup(s => s.DeleteAudiofile(It.IsAny<Guid>()))
                                 .Callback((Guid id) =>
                                 {
-                                    files.Remove(files.Find(f => f.Id == id)!);
+                                    files.Remove(expectedFile);
                                 });
 
-        await _audiofileService.DeleteAudiofile(expectedFileId);
+        await _audiofileService.DeleteAudiofile(expectedFile.Id);
 
-        Assert.Equal(2, files.Count);
+        Assert.Empty(files);
     }
 
     [Fact]
     public async Task TestDeleteAudiofileNonexistent()
     {
-        var files = CreateMockAudiofiles();
-        var expectedFileId = Guid.NewGuid();
+        _mockAudiofileRepository.Setup(s => s.GetAudiofileById(It.IsAny<Guid>()))
+                                .ReturnsAsync(default(Audiofile)!);
 
-        _mockAudiofileRepository.Setup(s => s.GetAudiofileById(expectedFileId))
-                                .ReturnsAsync(files.Find(f => f.Id == expectedFileId)!);
-
-        async Task Action() => await _audiofileService.DeleteAudiofile(expectedFileId);
+        async Task Action() => await _audiofileService.DeleteAudiofile(Guid.Empty);
 
         await Assert.ThrowsAsync<AudiofileNotFoundException>(Action);
     }
@@ -113,26 +107,5 @@ public class AudiofileServiceUnitTest
                                                  string filepath = "path/to/mock")
     {
         return new(Guid.NewGuid(), title, duration, Guid.NewGuid(), filepath);
-    }
-
-    private static List<Audiofile> CreateMockAudiofiles()
-    {
-        return
-        [
-            new(Guid.NewGuid(), "title1", 5.43f, Guid.NewGuid(), "path/to/file1"),
-            new(Guid.NewGuid(), "title2", 2.00f, Guid.NewGuid(), "path/to/file2"),
-            new(Guid.NewGuid(), "title3", 10.03f, Guid.NewGuid(), "path/to/file3"),
-        ];
-    }
-
-    private static List<Score> CreateMockAudiofileScores(List<Audiofile> files)
-    {
-        return
-        [
-            new(Guid.NewGuid(), files[1].Id, 3),
-            new(Guid.NewGuid(), files[0].Id, 1),
-            new(Guid.NewGuid(), files[2].Id, 5),
-            new(Guid.NewGuid(), files[2].Id, 4),
-        ];
     }
 }
