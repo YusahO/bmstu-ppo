@@ -7,10 +7,12 @@ public class TagServiceUnitTest
 {
     private readonly ITagService _tagService;
     private readonly Mock<ITagRepository> _mockTagRepository = new();
+    private readonly Mock<IAudiofileRepository> _mockAudiofileRepository = new();
 
     public TagServiceUnitTest()
     {
-        _tagService = new TagService(_mockTagRepository.Object);
+        _tagService = new TagService(_mockTagRepository.Object,
+                                     _mockAudiofileRepository.Object);
     }
 
     [Fact]
@@ -127,8 +129,57 @@ public class TagServiceUnitTest
         await Assert.ThrowsAsync<TagNotFoundException>(Action);
     }
 
+    [Fact]
+    public async Task TestGetAudiofileTags()
+    {
+        var audiofile = CreateMockAudiofile();
+        List<Tag> expectedTags = [CreateMockTag()];
+
+        _mockAudiofileRepository.Setup(s => s.GetAudiofileById(audiofile.Id))
+                                .ReturnsAsync(audiofile);
+        
+        _mockTagRepository.Setup(s => s.GetAudiofileTags(audiofile.Id))
+                          .ReturnsAsync(expectedTags);
+
+        var actualTags = await _tagService.GetAudiofileTags(audiofile.Id);
+
+        Assert.Equal(expectedTags, actualTags);
+    }
+
+    [Fact]
+    public async Task TestGetAudiofileTagsEmpty()
+    {
+        var audiofile = CreateMockAudiofile();
+
+        _mockAudiofileRepository.Setup(s => s.GetAudiofileById(audiofile.Id))
+                                .ReturnsAsync(audiofile);
+        
+        _mockTagRepository.Setup(s => s.GetAudiofileTags(audiofile.Id))
+                          .ReturnsAsync([]);
+
+        var actualTags = await _tagService.GetAudiofileTags(audiofile.Id);
+
+        Assert.Empty(actualTags);
+    }
+
+   [Fact]
+    public async Task TestGetAudiofileNonexstentTags()
+    {
+        _mockAudiofileRepository.Setup(s => s.GetAudiofileById(It.IsAny<Guid>()))
+                                .ReturnsAsync(default(Audiofile)!);
+
+        Task Action() => _tagService.GetAudiofileTags(Guid.Empty);
+
+        await Assert.ThrowsAsync<AudiofileNotFoundException>(Action);
+    }
+
     private static Tag CreateMockTag()
     {
         return new(Guid.NewGuid(), Guid.NewGuid(), "whatever1");
+    }
+
+    private static Audiofile CreateMockAudiofile()
+    {
+        return new(Guid.NewGuid(), "whatever", 10.3f, Guid.NewGuid(), "path/to/file");
     }
 }

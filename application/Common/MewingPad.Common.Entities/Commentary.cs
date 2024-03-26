@@ -36,5 +36,7 @@ public class Commentary
                other.AudiofileId == AudiofileId &&
                other.AuthorId == AuthorId &&
                other.Text == Text;
-    } 
+    }
+
+    public override int GetHashCode() => base.GetHashCode();
 }

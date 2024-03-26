@@ -24,7 +24,7 @@ public class PlaylistService(IPlaylistRepository playlistRepository,
         await _playlistRepository.AddPlaylist(playlist);
     }
 
-    public async Task<Playlist> UpdateTitle(Guid playlistId, string? title)
+    public async Task<Playlist> UpdateTitle(Guid playlistId, string title)
     {
         Playlist foundPlaylist = await _playlistRepository.GetPlaylistById(playlistId)
                                  ?? throw new PlaylistNotFoundException(playlistId);
@@ -90,5 +90,10 @@ public class PlaylistService(IPlaylistRepository playlistRepository,
             throw new PlaylistNotFoundException(playlistId);
         }
         return await _playlistRepository.GetAllAudiofilesFromPlaylist(playlistId);
+    }
+
+    public async Task<Playlist> GetPlaylistById(Guid playlistId)
+    {
+        return await _playlistRepository.GetPlaylistById(playlistId);
     }
 }

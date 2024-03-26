@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\MewingPad.Common.Entities\MewingPad.Common.Entities.csproj" />
+    <ProjectReference Include="..\..\Common\MewingPad.Common.IRepositories\MewingPad.Common.IRepositories.csproj" />
+    <ProjectReference Include="..\MewingPad.Database.Context\MewingPad.Database.Context.csproj" />
+    <ProjectReference Include="..\..\Utils\MewingPad.Utils.Converters\MewingPad.Utils.Converters.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -31,5 +31,7 @@ public class Tag
         return other.Id == Id &&
                other.AuthorId == AuthorId &&
                other.Name == Name;
-    } 
+    }
+
+    public override int GetHashCode() => base.GetHashCode();
 }

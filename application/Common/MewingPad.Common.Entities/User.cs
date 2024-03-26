@@ -48,4 +48,6 @@ public class User
                IsAdmin == other.IsAdmin &&
                IsAuthorized == other.IsAuthorized;
     }
+
+    public override int GetHashCode() => base.GetHashCode();
 }

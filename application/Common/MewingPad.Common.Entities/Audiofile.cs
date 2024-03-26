@@ -3,12 +3,12 @@ namespace MewingPad.Common.Entities;
 public class Audiofile
 {
     public Guid Id { get; set; }
-    public string? Title { get; set; }
+    public string Title { get; set; }
     public float Duration { get; set; }
     public Guid AuthorId { get; set; }
     public string Filepath { get; set; }
 
-    public Audiofile(Guid id, string? title, float duration, Guid authorId, string filepath)
+    public Audiofile(Guid id, string title, float duration, Guid authorId, string filepath)
     {
         Id = id;
         Title = title;
@@ -39,5 +39,7 @@ public class Audiofile
                other.Duration == Duration &&
                other.AuthorId == AuthorId &&
                other.Filepath == Filepath;
-    } 
+    }
+
+    public override int GetHashCode() => base.GetHashCode();
 }

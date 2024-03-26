@@ -3,10 +3,10 @@ namespace MewingPad.Common.Entities;
 public class Playlist
 {
     public Guid Id { get; set; }
-    public string? Title { get; set; }
+    public string Title { get; set; }
     public Guid UserId { get; set; }
 
-    public Playlist(Guid id, string? title, Guid userId)
+    public Playlist(Guid id, string title, Guid userId)
     {
         Id = id;
         Title = title;
@@ -31,5 +31,7 @@ public class Playlist
         return other.Id == Id && 
                other.Title == Title &&
                other.UserId == UserId;
-    } 
+    }
+
+    public override int GetHashCode() => base.GetHashCode();
 }

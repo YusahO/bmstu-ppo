@@ -42,5 +42,7 @@ public class Score
         return other.AuthorId == AuthorId &&
                other.AudiofileId == AudiofileId &&
                other.Value == Value;
-    } 
+    }
+
+    public override int GetHashCode() => base.GetHashCode();
 }

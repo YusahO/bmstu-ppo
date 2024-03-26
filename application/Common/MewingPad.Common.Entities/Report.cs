@@ -40,5 +40,7 @@ public class Report
                other.AudiofileId == AudiofileId &&
                other.Text == Text &&
                other.Status == Status;
-    } 
+    }
+
+    public override int GetHashCode() => base.GetHashCode();
 }

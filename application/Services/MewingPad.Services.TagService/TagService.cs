@@ -4,9 +4,10 @@ using MewingPad.Common.IRepositories;
 
 namespace MewingPad.Services.TagService;
 
-public class TagService(ITagRepository tagRepository) : ITagService
+public class TagService(ITagRepository tagRepository, IAudiofileRepository audiofileRepository) : ITagService
 {
     private readonly ITagRepository _tagRepository = tagRepository;
+    private readonly IAudiofileRepository _audiofileRepository = audiofileRepository;
 
     public async Task CreateTag(Tag tag)
     {
@@ -42,5 +43,14 @@ public class TagService(ITagRepository tagRepository) : ITagService
         var tag = await _tagRepository.GetTagById(tagId)
                   ?? throw new TagNotFoundException(tagId);
         return tag;
+    }
+
+    public async Task<List<Tag>> GetAudiofileTags(Guid audiofileId)
+    {
+        if (await _audiofileRepository.GetAudiofileById(audiofileId) is null)
+        {
+            throw new AudiofileNotFoundException(audiofileId);
+        }
+        return await _tagRepository.GetAudiofileTags(audiofileId);
     }
 }
