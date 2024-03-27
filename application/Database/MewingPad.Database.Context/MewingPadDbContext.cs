@@ -19,8 +19,6 @@ public class MewingPadDbContext(DbContextOptions<MewingPadDbContext> options) : 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ScoreDbModel>().HasKey(u => new { u.AuthorId, u.AudiofileId });
-        // modelBuilder.Entity<PlaylistAudiofileDbModel>().HasNoKey();
-        modelBuilder.Entity<TagAudiofileDbModel>().HasNoKey();
 
         modelBuilder.Entity<AudiofileDbModel>()
             .HasMany(e => e.Playlists)
@@ -28,6 +26,14 @@ public class MewingPadDbContext(DbContextOptions<MewingPadDbContext> options) : 
             .UsingEntity<PlaylistAudiofileDbModel>(
                 l => l.HasOne(e => e.Playlist).WithMany(e => e.PlaylistsAudiofiles),
                 r => r.HasOne(e => e.Audiofile).WithMany(e => e.PlaylistsAudiofiles)
+            );
+
+        modelBuilder.Entity<AudiofileDbModel>()
+            .HasMany(e => e.Tags)
+            .WithMany(e => e.Audiofiles)
+            .UsingEntity<TagAudiofileDbModel>(
+                l => l.HasOne(e => e.Tag).WithMany(e => e.TagsAudiofiles),
+                r => r.HasOne(e => e.Audiofile).WithMany(e => e.TagsAudiofiles)
             );
 
         base.OnModelCreating(modelBuilder);

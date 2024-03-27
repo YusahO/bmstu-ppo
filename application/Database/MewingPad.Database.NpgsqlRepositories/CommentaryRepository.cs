@@ -2,6 +2,7 @@ using MewingPad.Common.Entities;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.Context;
 using MewingPad.Utils.Converters;
+using Microsoft.EntityFrameworkCore;
 
 namespace MewingPad.Database.NpgsqlRepositories;
 
@@ -13,6 +14,14 @@ public class CommentaryRepository(MewingPadDbContext context) : ICommentaryRepos
     {
         await _context.Commentaries.AddAsync(CommentaryConverter.CoreToDbModel(commentary));
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<List<Commentary>> GetAudiofileCommentaries(Guid audiofileId)
+    {
+        return await _context.Commentaries
+            .Where(c => c.AudiofileId == audiofileId)
+            .Select(c => CommentaryConverter.DbToCoreModel(c))
+            .ToListAsync();
     }
 
     public async Task<Commentary> GetCommentaryById(Guid commentaryId)

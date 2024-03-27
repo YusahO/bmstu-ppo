@@ -78,7 +78,7 @@ public class PlaylistService(IPlaylistRepository playlistRepository,
 
     public async Task<Playlist> GetUserFavouritesPlaylist(Guid userId)
     {
-        var user = await _userRepository.GetUserById(userId) 
+        var user = await _userRepository.GetUserById(userId)
                    ?? throw new UserNotFoundException(userId);
         return await _playlistRepository.GetPlaylistById(user.FavouritesId);
     }
@@ -94,6 +94,8 @@ public class PlaylistService(IPlaylistRepository playlistRepository,
 
     public async Task<Playlist> GetPlaylistById(Guid playlistId)
     {
-        return await _playlistRepository.GetPlaylistById(playlistId);
+        var playlist = await _playlistRepository.GetPlaylistById(playlistId)
+                              ?? throw new PlaylistNotFoundException(playlistId);
+        return playlist;
     }
 }

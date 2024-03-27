@@ -1,8 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore; 
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MewingPad.Database.Models;
 
+[Index(nameof(FavouritesId), IsUnique = true)]
 public class UserDbModel(Guid id,
                          Guid favouritesId,
                          string username,

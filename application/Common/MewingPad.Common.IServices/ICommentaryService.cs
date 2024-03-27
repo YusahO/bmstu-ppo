@@ -7,4 +7,5 @@ public interface ICommentaryService
     Task CreateCommentary(Commentary commentary);
     Task<Commentary> UpdateCommentary(Commentary commentary);
     Task<Commentary> GetCommentaryById(Guid commentaryId);
+    Task<List<Commentary>> GetAudiofileCommentaries(Guid audiofileId);
 }

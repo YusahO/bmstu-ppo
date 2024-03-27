@@ -19,4 +19,7 @@ public class TagDbModel(Guid id,
     public string Name { get; set; } = name;
 
     public UserDbModel? Author { get; set; }
+
+    public List<AudiofileDbModel> Audiofiles { get; } = [];
+    public List<TagAudiofileDbModel> TagsAudiofiles { get; set; } = [];
 }

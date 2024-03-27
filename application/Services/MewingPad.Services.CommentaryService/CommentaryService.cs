@@ -4,9 +4,11 @@ using MewingPad.Common.IRepositories;
 
 namespace MewingPad.Services.CommentaryService;
 
-public class CommentaryService(ICommentaryRepository commentaryRepository) : ICommentaryService
+public class CommentaryService(ICommentaryRepository commentaryRepository,
+                               IAudiofileRepository audiofileRepository) : ICommentaryService
 {
     private readonly ICommentaryRepository _commentaryRepository = commentaryRepository;
+    private readonly IAudiofileRepository _audiofileRepository = audiofileRepository;
 
     public async Task CreateCommentary(Commentary commentary)
     {
@@ -15,6 +17,15 @@ public class CommentaryService(ICommentaryRepository commentaryRepository) : ICo
             throw new CommentaryExistsException(commentary.Id);
         }
         await _commentaryRepository.AddCommentary(commentary);
+    }
+
+    public async Task<List<Commentary>> GetAudiofileCommentaries(Guid audiofileId)
+    {
+        if (await _audiofileRepository.GetAudiofileById(audiofileId) is null)
+        {
+            throw new AudiofileNotFoundException(audiofileId);
+        }
+        return await _commentaryRepository.GetAudiofileCommentaries(audiofileId);
     }
 
     public async Task<Commentary> GetCommentaryById(Guid commentaryId)

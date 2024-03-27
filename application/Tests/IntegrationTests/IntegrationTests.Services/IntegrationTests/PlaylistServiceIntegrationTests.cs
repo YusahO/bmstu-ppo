@@ -4,12 +4,12 @@ using MewingPad.Common.Entities;
 
 namespace IntegrationTests.Services.IntegratonTests;
 
-public class PlaylistIntegrationTests : IDisposable
+public class PlaylistServiceIntegrationTests : IDisposable
 {
     private readonly InMemoryDbFixture _dbFixture;
     private readonly IPlaylistService _playlistService;
 
-    public PlaylistIntegrationTests()
+    public PlaylistServiceIntegrationTests()
     {
         _dbFixture = new();
         _playlistService = new PlaylistService(_dbFixture.PlaylistRepository,
@@ -60,5 +60,123 @@ public class PlaylistIntegrationTests : IDisposable
         Assert.Empty(actualAudiofiles);
     }
 
-    public void Dispose() =>  _dbFixture.Dispose();
+    [Fact]
+    public async Task TestGetUserFavouritesPlaylist()
+    {
+        var playlists = InMemoryDbFixture.CreateMockPlaylists();
+        var users = InMemoryDbFixture.CreateMockUsers();
+
+        var expectedUser = users.First();
+        var expectedPlaylist = playlists.First();
+        expectedUser.FavouritesId = expectedPlaylist.Id;
+
+        await _dbFixture.InsertUsers(users);
+        await _dbFixture.InsertPlaylists(playlists);
+
+        var actualPlaylist = await _playlistService.GetUserFavouritesPlaylist(expectedUser.Id);
+
+        Assert.Equal(expectedPlaylist, actualPlaylist);
+    }
+
+    [Fact]
+    public async Task TestAddAudiofileToPlaylist()
+    {
+        var playlists = InMemoryDbFixture.CreateMockPlaylists();
+        var audiofiles = InMemoryDbFixture.CreateMockAudiofiles();
+        await _dbFixture.InsertPlaylists(playlists);
+        await _dbFixture.InsertAudiofiles(audiofiles);
+
+        var expectedPlaylist = playlists.First();
+        var expectedAudiofile = audiofiles.First();
+
+        await _playlistService.AddAudiofileToPlaylist(expectedPlaylist.Id, expectedAudiofile.Id);
+
+        var actualAudiofiles = await _playlistService.GetAllAudiofilesFromPlaylist(expectedPlaylist.Id);
+
+        Assert.Equal([expectedAudiofile], actualAudiofiles);
+    }
+
+    [Fact]
+    public async Task TestRemoveAudiofileFromPlaylist()
+    {
+        var playlists = InMemoryDbFixture.CreateMockPlaylists();
+        var audiofiles = InMemoryDbFixture.CreateMockAudiofiles();
+        var expectedPlaylist = playlists.First();
+        var expectedAudiofile = audiofiles.First();
+
+        List<KeyValuePair<Guid, Guid>> pairs = [
+            new(expectedPlaylist.Id, expectedAudiofile.Id)];
+
+        await _dbFixture.InsertPlaylists(playlists);
+        await _dbFixture.InsertAudiofiles(audiofiles);
+        await _dbFixture.InsertPlaylistsAudiofiles(pairs);
+
+        await _playlistService.RemoveAudiofileFromPlaylist(expectedPlaylist.Id, expectedAudiofile.Id);
+
+        var actualAudiofiles = await _playlistService.GetAllAudiofilesFromPlaylist(expectedPlaylist.Id);
+
+        Assert.Empty(actualAudiofiles);
+    }
+
+    [Fact]
+    public async Task TestRemoveAudiofilesFromPlaylist()
+    {
+        var playlists = InMemoryDbFixture.CreateMockPlaylists();
+        var audiofiles = InMemoryDbFixture.CreateMockAudiofiles();
+
+        var expectedPlaylist = playlists.First();
+        var expectedAudiofileIds = audiofiles[..2].Select(a => a.Id)
+                                                .ToList();
+        List<KeyValuePair<Guid, Guid>> pairs = expectedAudiofileIds!
+            .Select(aid => new KeyValuePair<Guid, Guid>(expectedPlaylist.Id, aid))
+            .ToList();
+
+        await _dbFixture.InsertPlaylists(playlists);
+        await _dbFixture.InsertAudiofiles(audiofiles);
+        await _dbFixture.InsertPlaylistsAudiofiles(pairs);
+
+        await _playlistService.RemoveAudiofilesFromPlaylist(expectedPlaylist.Id, expectedAudiofileIds);
+
+        var actualAudiofiles = await _playlistService.GetAllAudiofilesFromPlaylist(expectedPlaylist.Id);
+
+        Assert.Empty(actualAudiofiles);
+    }
+
+    [Fact]
+    public async Task TestRemoveAudiofileFromPlaylistNonexistent()
+    {
+        var audiofiles = InMemoryDbFixture.CreateMockAudiofiles();
+        await _dbFixture.InsertAudiofiles(audiofiles);
+
+        Task Action() => _playlistService.RemoveAudiofileFromPlaylist(Guid.Empty, audiofiles.First().Id);
+        
+        await Assert.ThrowsAsync<PlaylistNotFoundException>(Action);
+    }
+
+    [Fact]
+    public async Task TestRemoveAudiofileNonexistentFromPlaylist()
+    {
+        var playlists = InMemoryDbFixture.CreateMockPlaylists();
+        await _dbFixture.InsertPlaylists(playlists);
+
+        Task Action() => _playlistService.RemoveAudiofileFromPlaylist(playlists.First().Id, Guid.Empty);
+        
+        await Assert.ThrowsAsync<AudiofileNotFoundException>(Action);
+    }
+
+    [Fact]
+    public async Task TestDeletePlaylist()
+    {
+        var playlists = InMemoryDbFixture.CreateMockPlaylists();
+        await _dbFixture.InsertPlaylists(playlists);
+
+        var expectedPlaylistId = playlists.First().Id;
+        await _playlistService.DeletePlaylist(expectedPlaylistId);
+
+        Task Action() => _playlistService.GetPlaylistById(expectedPlaylistId);
+        
+        await Assert.ThrowsAsync<PlaylistNotFoundException>(Action);
+    }
+
+    public void Dispose() => _dbFixture.Dispose();
 }

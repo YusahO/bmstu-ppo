@@ -52,11 +52,36 @@ public class InMemoryDbFixture : IDisposable
         }
     }
 
+    public async Task InsertTags(List<Tag> tags)
+    {
+        foreach (var tag in tags)
+        {
+            await TagRepository.AddTag(tag);
+        }
+    }
+
+    public async Task InsertCommentaries(List<Commentary> commentaries)
+    {
+        foreach (var commentary in commentaries)
+        {
+            await CommentaryRepository.AddCommentary(commentary);
+        }
+    }
+
     public async Task InsertPlaylistsAudiofiles(List<KeyValuePair<Guid, Guid>> pairs)
     {
         foreach (var p in pairs)
         {
             await _context.PlaylistsAudiofiles.AddAsync(new(p.Key, p.Value));
+        }
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task InsertTagsAudiofiles(List<KeyValuePair<Guid, Guid>> pairs)
+    {
+        foreach (var p in pairs)
+        {
+            await _context.TagsAudiofiles.AddAsync(new(p.Key, p.Value));
         }
         await _context.SaveChangesAsync();
     }
@@ -90,6 +115,26 @@ public class InMemoryDbFixture : IDisposable
             new (Guid.NewGuid(), "title1", 0.0f, Guid.NewGuid(), "path/to/file1"),
             new (Guid.NewGuid(), "title2", 0.0f, Guid.NewGuid(), "path/to/file2"),
             new (Guid.NewGuid(), "title3", 0.0f, Guid.NewGuid(), "path/to/file3")
+        ];
+    }
+
+    public static List<Tag> CreateMockTags()
+    {
+        return
+        [
+            new(Guid.NewGuid(), Guid.NewGuid(), "tag1"),
+            new(Guid.NewGuid(), Guid.NewGuid(), "tag2"),
+            new(Guid.NewGuid(), Guid.NewGuid(), "tag3")
+        ];
+    }
+
+    public static List<Commentary> CreateMockCommentaries()
+    {
+        return
+        [
+            new Commentary(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "1"),
+            new Commentary(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "2"),
+            new Commentary(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "3")
         ];
     }
 

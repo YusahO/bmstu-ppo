@@ -16,11 +16,12 @@ public class PlaylistRepository(MewingPadDbContext context) : IPlaylistRepositor
         bool hasAudiofile = await _context.PlaylistsAudiofiles
             .AnyAsync(pa => pa.PlaylistId == playlistId && pa.AudiofileId == audiofileId);
 
-        if (hasAudiofile)
+        if (!hasAudiofile)
         {
             await _context.PlaylistsAudiofiles
                 .AddAsync(new(playlistId, audiofileId));
         }
+        await _context.SaveChangesAsync();
     }
 
     public async Task AddPlaylist(Playlist playlist)

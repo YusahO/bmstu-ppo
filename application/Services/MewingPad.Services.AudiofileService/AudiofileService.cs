@@ -34,4 +34,11 @@ public class AudiofileService(IAudiofileRepository audiofileRepository) : IAudio
         }
         await _audiofileRepository.DeleteAudiofile(audiofileId);
     }
+
+    public async Task<Audiofile> GetAudiofileById(Guid audiofileId)
+    {
+        var audiofile = await _audiofileRepository.GetAudiofileById(audiofileId)
+                              ?? throw new AudiofileNotFoundException(audiofileId);
+        return audiofile;
+    }
 }

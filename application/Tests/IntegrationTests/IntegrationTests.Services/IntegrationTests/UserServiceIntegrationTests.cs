@@ -3,12 +3,12 @@ using IntegrationTests.Services.DbFixtures;
 
 namespace IntegrationTests.Services.IntegratonTests;
 
-public class UserRepositoryIntegrationTests : IDisposable
+public class UserServiceIntegrationTests : IDisposable
 {
     private readonly InMemoryDbFixture _dbFixture;
     private readonly IUserService _userService;
 
-    public UserRepositoryIntegrationTests()
+    public UserServiceIntegrationTests()
     {
         _dbFixture = new();
         _userService = new UserService(_dbFixture.UserRepository);

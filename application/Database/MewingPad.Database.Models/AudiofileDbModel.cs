@@ -32,4 +32,7 @@ public class AudiofileDbModel(Guid id,
 
     public List<PlaylistDbModel> Playlists { get; } = [];
     public List<PlaylistAudiofileDbModel> PlaylistsAudiofiles { get; set; } = [];
+
+    public List<TagDbModel> Tags { get; } = [];
+    public List<TagAudiofileDbModel> TagsAudiofiles { get; set; } = [];
 }
