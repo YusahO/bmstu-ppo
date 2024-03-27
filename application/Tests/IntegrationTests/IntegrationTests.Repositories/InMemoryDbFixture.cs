@@ -3,7 +3,7 @@ using MewingPad.Common.Entities;
 using MewingPad.Database.Context;
 using MewingPad.Database.NpgsqlRepositories;
 
-namespace IntegrationTests.Services.DbFixtures;
+namespace IntegrationTests.DbFixtures;
 
 public class InMemoryDbFixture : IDisposable
 {
@@ -65,6 +65,22 @@ public class InMemoryDbFixture : IDisposable
         foreach (var commentary in commentaries)
         {
             await CommentaryRepository.AddCommentary(commentary);
+        }
+    }
+
+    public async Task InsertScores(List<Score> scores)
+    {
+        foreach (var score in scores)
+        {
+            await ScoreRepository.AddScore(score);
+        }
+    }
+
+    public async Task InsertReports(List<Report> reports)
+    {
+        foreach (var report in reports)
+        {
+            await ReportRepository.AddReport(report);
         }
     }
 
@@ -132,9 +148,29 @@ public class InMemoryDbFixture : IDisposable
     {
         return
         [
-            new Commentary(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "1"),
-            new Commentary(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "2"),
-            new Commentary(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "3")
+            new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "1"),
+            new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "2"),
+            new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "3")
+        ];
+    }
+
+    public static List<Score> CreateMockScores()
+    {
+        return
+        [
+            new(Guid.NewGuid(), Guid.NewGuid(), 1),
+            new(Guid.NewGuid(), Guid.NewGuid(), 2),
+            new(Guid.NewGuid(), Guid.NewGuid(), 3)
+        ];
+    }
+
+    public static List<Report> CreateMockReports()
+    {
+        return
+        [
+            new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "text1"),
+            new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "text2"),
+            new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "text3")
         ];
     }
 

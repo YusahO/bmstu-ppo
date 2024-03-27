@@ -23,7 +23,7 @@ public class ReportRepository(MewingPadDbContext context) : IReportRepository
 
     public async Task<Report> UpdateReport(Report report)
     {
-        var reportDbModel = await _context.Reports.FindAsync([report.AuthorId, report.AudiofileId]);
+        var reportDbModel = await _context.Reports.FindAsync(report.Id);
 
         reportDbModel!.AuthorId = report.AuthorId;
         reportDbModel!.AudiofileId = report.AudiofileId;

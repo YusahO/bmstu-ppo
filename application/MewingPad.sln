@@ -57,7 +57,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MewingPad.Utils.Converters"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegrationTests", "IntegrationTests", "{29544071-4384-41B4-8410-824A31B7FFF6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests.Services", "Tests\IntegrationTests\IntegrationTests.Services\IntegrationTests.Services.csproj", "{11F53BE6-A844-444A-BE54-E1005041B590}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests.Repositories", "Tests\IntegrationTests\IntegrationTests.Repositories\IntegrationTests.Repositories.csproj", "{11F53BE6-A844-444A-BE54-E1005041B590}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

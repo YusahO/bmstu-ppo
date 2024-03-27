@@ -17,6 +17,13 @@ public class ScoreRepository(MewingPadDbContext context) : IScoreRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task DeleteScore(Guid authorId, Guid audiofileId)
+    {
+        var scoreDbModel = await _context.Scores.FindAsync([authorId, audiofileId]);
+        _context.Scores.Remove(scoreDbModel!);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<List<Score>> GetAllScores()
     {
         return await _context.Scores

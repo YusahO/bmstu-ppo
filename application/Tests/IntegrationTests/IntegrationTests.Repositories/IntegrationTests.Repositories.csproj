@@ -24,16 +24,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\MewingPad.Common.Entities\MewingPad.Common.Entities.csproj" />
-    <ProjectReference Include="..\..\..\Common\MewingPad.Common.IServices\MewingPad.Common.IServices.csproj" />
     <ProjectReference Include="..\..\..\Common\MewingPad.Common.IRepositories\MewingPad.Common.IRepositories.csproj" />
     <ProjectReference Include="..\..\..\Database\MewingPad.Database.Context\MewingPad.Database.Context.csproj" />
     <ProjectReference Include="..\..\..\Database\MewingPad.Database.Models\MewingPad.Database.Models.csproj" />
     <ProjectReference Include="..\..\..\Database\MewingPad.Database.NpgsqlRepositories\MewingPad.Database.NpgsqlRepositories.csproj" />
-    <ProjectReference Include="..\..\..\Services\MewingPad.Services.UserService\MewingPad.Services.UserService.csproj" />
-    <ProjectReference Include="..\..\..\Services\MewingPad.Services.PlaylistService\MewingPad.Services.PlaylistService.csproj" />
-    <ProjectReference Include="..\..\..\Services\MewingPad.Services.TagService\MewingPad.Services.TagService.csproj" />
-    <ProjectReference Include="..\..\..\Services\MewingPad.Services.CommentaryService\MewingPad.Services.CommentaryService.csproj" />
-    <ProjectReference Include="..\..\..\Services\MewingPad.Services.AudiofileService\MewingPad.Services.AudiofileService.csproj" />
   </ItemGroup>
 
 </Project>
