@@ -1,7 +1,7 @@
 using MewingPad.Common.Entities;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.Context;
-using MewingPad.Utils.Converters;
+using MewingPad.Database.Models.Converters;
 
 namespace MewingPad.Database.NpgsqlRepositories;
 
@@ -11,11 +11,11 @@ public class ReportRepository(MewingPadDbContext context) : IReportRepository
 
     public async Task AddReport(Report score)
     {
-        await _context.Reports.AddAsync(ReportConverter.CoreToDbModel(score));
+        await _context.Reports.AddAsync(ReportConverter.CoreToDbModel(score)!);
         await _context.SaveChangesAsync();
     }
 
-    public async Task<Report> GetReportById(Guid reportId)
+    public async Task<Report?> GetReportById(Guid reportId)
     {
         var reportDbModel = await _context.Reports.FindAsync(reportId);
         return ReportConverter.DbToCoreModel(reportDbModel);
@@ -31,6 +31,6 @@ public class ReportRepository(MewingPadDbContext context) : IReportRepository
         reportDbModel!.Status = report.Status;
 
         await _context.SaveChangesAsync();
-        return ReportConverter.DbToCoreModel(reportDbModel);
+        return ReportConverter.DbToCoreModel(reportDbModel)!;
     }
 }

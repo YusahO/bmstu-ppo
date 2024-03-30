@@ -1,19 +1,27 @@
 using IntegrationTests.DbFixtures;
 using MewingPad.Common.Entities;
+using MewingPad.Common.IRepositories;
+using MewingPad.Database.NpgsqlRepositories;
 
 namespace IntegrationTests.Repositories;
 
-public class AudiofileRepositoryIntegrationTests() : IDisposable
+public class AudiofileRepositoryIntegrationTests : IDisposable
 {
     private readonly InMemoryDbFixture _dbFixture = new();
+    private readonly IAudiofileRepository _audiofileRepository;
+
+    public AudiofileRepositoryIntegrationTests()
+    {
+        _audiofileRepository = new AudiofileRepository(_dbFixture.Context);
+    }
 
     [Fact]
     public async Task TestCreateAudiofile()
     {
         var expectedAudiofile = new Audiofile(Guid.NewGuid(), "", 0.1f, Guid.Empty, "path/to/file");
-        await _dbFixture.AudiofileRepository.AddAudiofile(expectedAudiofile);
+        await _audiofileRepository.AddAudiofile(expectedAudiofile);
 
-        var actualAudiofile = await _dbFixture.AudiofileRepository.GetAudiofileById(expectedAudiofile.Id);
+        var actualAudiofile = await _dbFixture.GetAudiofileById(expectedAudiofile.Id);
 
         Assert.Equal(expectedAudiofile, actualAudiofile);
     }
@@ -29,7 +37,7 @@ public class AudiofileRepositoryIntegrationTests() : IDisposable
             Duration = 13.4f
         };
 
-        var actualAudiofile = await _dbFixture.AudiofileRepository.UpdateAudiofile(expectedAudiofile);
+        var actualAudiofile = await _audiofileRepository.UpdateAudiofile(expectedAudiofile);
 
         Assert.Equal(expectedAudiofile, actualAudiofile);
     }
@@ -41,9 +49,9 @@ public class AudiofileRepositoryIntegrationTests() : IDisposable
         await _dbFixture.InsertAudiofiles(audiofiles);
 
         var expectedAudiofileId = audiofiles.First().Id;
-        await _dbFixture.AudiofileRepository.DeleteAudiofile(expectedAudiofileId);
+        await _audiofileRepository.DeleteAudiofile(expectedAudiofileId);
 
-        var actualAudiofile = await _dbFixture.AudiofileRepository.GetAudiofileById(expectedAudiofileId);
+        var actualAudiofile = await _dbFixture.GetAudiofileById(expectedAudiofileId);
 
         Assert.Null(actualAudiofile);
     }

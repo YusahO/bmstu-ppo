@@ -1,19 +1,27 @@
 using IntegrationTests.DbFixtures;
 using MewingPad.Common.Entities;
+using MewingPad.Common.IRepositories;
+using MewingPad.Database.NpgsqlRepositories;
 
 namespace IntegrationTests.Repositories;
 
 public class PlaylistRepositoryIntegrationTests : IDisposable
 {
     private readonly InMemoryDbFixture _dbFixture = new();
+    private readonly IPlaylistRepository _playlistRepository;
+
+    public PlaylistRepositoryIntegrationTests()
+    {
+        _playlistRepository = new PlaylistRepository(_dbFixture.Context);
+    }
 
     [Fact]
     public async Task TestCreatePlaylist()
     {
         var expectedPlaylist = new Playlist(Guid.NewGuid(), "title", Guid.Empty);
         
-        await _dbFixture.PlaylistRepository.AddPlaylist(expectedPlaylist);
-        var actualPlaylist = await _dbFixture.PlaylistRepository.GetPlaylistById(expectedPlaylist.Id);
+        await _playlistRepository.AddPlaylist(expectedPlaylist);
+        var actualPlaylist = await _dbFixture.GetPlaylistById(expectedPlaylist.Id);
 
         Assert.Equal(expectedPlaylist, actualPlaylist);
     }
@@ -25,7 +33,7 @@ public class PlaylistRepositoryIntegrationTests : IDisposable
         var expectedPlaylists = InMemoryDbFixture.CreateMockPlaylists();
         await _dbFixture.InsertPlaylists(expectedPlaylists);
 
-        var actualPlaylist = await _dbFixture.PlaylistRepository.GetPlaylistById(expectedPlaylists[ind].Id);
+        var actualPlaylist = await _playlistRepository.GetPlaylistById(expectedPlaylists[ind].Id);
 
         Assert.Equal(expectedPlaylists[ind], actualPlaylist);
     }
@@ -45,9 +53,9 @@ public class PlaylistRepositoryIntegrationTests : IDisposable
         await _dbFixture.InsertAudiofiles(expectedAudiofiles);
         await _dbFixture.InsertPlaylistsAudiofiles(pairs);
 
-        var actualAudiofiles = await _dbFixture.PlaylistRepository.GetAllAudiofilesFromPlaylist(playlist.Id);
+        var actualAudiofiles = await _playlistRepository.GetAllAudiofilesFromPlaylist(playlist.Id);
 
-        Assert.Equal(expectedAudiofiles[..2], actualAudiofiles);
+        Assert.Equal(expectedAudiofiles[..2].OrderBy(e => e.Id), actualAudiofiles.OrderBy(a => a.Id));
     }
 
     [Fact]
@@ -61,9 +69,9 @@ public class PlaylistRepositoryIntegrationTests : IDisposable
         var expectedPlaylist = playlists.First();
         var expectedAudiofile = audiofiles.First();
 
-        await _dbFixture.PlaylistRepository.AddAudiofileToPlaylist(expectedPlaylist.Id, expectedAudiofile.Id);
+        await _playlistRepository.AddAudiofileToPlaylist(expectedPlaylist.Id, expectedAudiofile.Id);
 
-        var actualAudiofiles = await _dbFixture.PlaylistRepository.GetAllAudiofilesFromPlaylist(expectedPlaylist.Id);
+        var actualAudiofiles = await _playlistRepository.GetAllAudiofilesFromPlaylist(expectedPlaylist.Id);
 
         Assert.Equal([expectedAudiofile], actualAudiofiles);
     }
@@ -83,9 +91,9 @@ public class PlaylistRepositoryIntegrationTests : IDisposable
         await _dbFixture.InsertAudiofiles(audiofiles);
         await _dbFixture.InsertPlaylistsAudiofiles(pairs);
 
-        await _dbFixture.PlaylistRepository.RemoveAudiofileFromPlaylist(expectedPlaylist.Id, expectedAudiofile.Id);
+        await _playlistRepository.RemoveAudiofileFromPlaylist(expectedPlaylist.Id, expectedAudiofile.Id);
 
-        var actualAudiofiles = await _dbFixture.PlaylistRepository.GetAllAudiofilesFromPlaylist(expectedPlaylist.Id);
+        var actualAudiofiles = await _playlistRepository.GetAllAudiofilesFromPlaylist(expectedPlaylist.Id);
 
         Assert.Empty(actualAudiofiles);
     }
@@ -107,9 +115,9 @@ public class PlaylistRepositoryIntegrationTests : IDisposable
         await _dbFixture.InsertAudiofiles(audiofiles);
         await _dbFixture.InsertPlaylistsAudiofiles(pairs);
 
-        await _dbFixture.PlaylistRepository.RemoveAudiofilesFromPlaylistBulk(expectedPlaylist.Id, expectedAudiofileIds);
+        await _playlistRepository.RemoveAudiofilesFromPlaylistBulk(expectedPlaylist.Id, expectedAudiofileIds);
 
-        var actualAudiofiles = await _dbFixture.PlaylistRepository.GetAllAudiofilesFromPlaylist(expectedPlaylist.Id);
+        var actualAudiofiles = await _playlistRepository.GetAllAudiofilesFromPlaylist(expectedPlaylist.Id);
 
         Assert.Empty(actualAudiofiles);
     }
@@ -121,9 +129,9 @@ public class PlaylistRepositoryIntegrationTests : IDisposable
         await _dbFixture.InsertPlaylists(playlists);
 
         var expectedPlaylistId = playlists.First().Id;
-        await _dbFixture.PlaylistRepository.DeletePlaylist(expectedPlaylistId);
+        await _playlistRepository.DeletePlaylist(expectedPlaylistId);
 
-        var actualPlaylist = await _dbFixture.PlaylistRepository.GetPlaylistById(expectedPlaylistId);
+        var actualPlaylist = await _dbFixture.GetPlaylistById(expectedPlaylistId);
         
         Assert.Null(actualPlaylist);
     }

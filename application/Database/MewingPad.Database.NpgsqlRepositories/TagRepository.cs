@@ -1,7 +1,7 @@
 using MewingPad.Common.Entities;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.Context;
-using MewingPad.Utils.Converters;
+using MewingPad.Database.Models.Converters;
 using Microsoft.EntityFrameworkCore;
 
 namespace MewingPad.Database.NpgsqlRepositories;
@@ -12,7 +12,7 @@ public class TagRepository(MewingPadDbContext context) : ITagRepository
 
     public async Task AddTag(Tag tag)
     {
-        await _context.Tags.AddAsync(TagConverter.CoreToDbModel(tag));
+        await _context.Tags.AddAsync(TagConverter.CoreToDbModel(tag)!);
         await _context.SaveChangesAsync();
     }
 
@@ -26,7 +26,7 @@ public class TagRepository(MewingPadDbContext context) : ITagRepository
     public async Task<List<Tag>> GetAllTags()
     {
         return await _context.Tags
-            .Select(t => TagConverter.DbToCoreModel(t))
+            .Select(t => TagConverter.DbToCoreModel(t)!)
             .ToListAsync();
     }
 
@@ -34,17 +34,13 @@ public class TagRepository(MewingPadDbContext context) : ITagRepository
     {
         var tags = await _context.TagsAudiofiles
             .Where(ta => ta.AudiofileId == audiofileId)
-            .Join(
-                _context.Tags,
-                ta => ta.TagId,
-                t => t.Id,
-                (ta, t) => t)
-            .Select(t => TagConverter.DbToCoreModel(t))
+            .Include(ta => ta.Tag)
+            .Select(ta => TagConverter.DbToCoreModel(ta.Tag))
             .ToListAsync();
-        return tags;
+        return tags!;
     }
 
-    public async Task<Tag> GetTagById(Guid tagId)
+    public async Task<Tag?> GetTagById(Guid tagId)
     {
         var tagDbModel = await _context.Tags.FindAsync(tagId);
         return TagConverter.DbToCoreModel(tagDbModel);
@@ -59,6 +55,6 @@ public class TagRepository(MewingPadDbContext context) : ITagRepository
         tagDbModel!.Name = tag.Name;
 
         await _context.SaveChangesAsync();
-        return TagConverter.DbToCoreModel(tagDbModel);
+        return TagConverter.DbToCoreModel(tagDbModel)!;
     }
 }

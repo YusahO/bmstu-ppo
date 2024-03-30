@@ -3,7 +3,7 @@
 using MewingPad.Common.Entities;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.Context;
-using MewingPad.Utils.Converters;
+using MewingPad.Database.Models.Converters;
 
 namespace MewingPad.Database.NpgsqlRepositories;
 
@@ -13,9 +13,7 @@ public class UserRepository(MewingPadDbContext context) : IUserRepository
 
     public async Task AddUser(User user)
     {
-        var userDbModel = UserConverter.CoreToDbModel(user);
-
-        await _context.Users.AddAsync(userDbModel);
+        await _context.Users.AddAsync(UserConverter.CoreToDbModel(user)!);
         await _context.SaveChangesAsync();
     }
 
@@ -23,24 +21,24 @@ public class UserRepository(MewingPadDbContext context) : IUserRepository
     {
         return _context.Users
             .Where(u => u.IsAdmin == true)
-            .Select(u => UserConverter.DbToCoreModel(u))
+            .Select(u => UserConverter.DbToCoreModel(u)!)
             .ToListAsync();
     }
 
     public Task<List<User>> GetAllUsers()
     {
         return _context.Users
-            .Select(u => UserConverter.DbToCoreModel(u))
+            .Select(u => UserConverter.DbToCoreModel(u)!)
             .ToListAsync();
     }
 
-    public async Task<User> GetUserByEmail(string email)
+    public async Task<User?> GetUserByEmail(string email)
     {
         var user = await _context.Users.FirstAsync(u => u.Email == email);
         return UserConverter.DbToCoreModel(user);
     }
 
-    public async Task<User> GetUserById(Guid id)
+    public async Task<User?> GetUserById(Guid id)
     {
         var user = await _context.Users.FindAsync(id);
         return UserConverter.DbToCoreModel(user);
@@ -58,8 +56,7 @@ public class UserRepository(MewingPadDbContext context) : IUserRepository
         userDbModel!.IsAdmin = user.IsAdmin;
         userDbModel!.IsAuthorized = user.IsAuthorized;
 
-        _context.SaveChanges();
-
-        return user;
+        await _context.SaveChangesAsync();
+        return UserConverter.DbToCoreModel(userDbModel)!;
     }
 }

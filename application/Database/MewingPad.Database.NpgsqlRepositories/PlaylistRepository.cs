@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MewingPad.Common.Entities;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.Context;
-using MewingPad.Utils.Converters;
+using MewingPad.Database.Models.Converters;
 
 namespace MewingPad.Database.NpgsqlRepositories;
 
@@ -26,7 +26,7 @@ public class PlaylistRepository(MewingPadDbContext context) : IPlaylistRepositor
 
     public async Task AddPlaylist(Playlist playlist)
     {
-        await _context.Playlists.AddAsync(PlaylistConverter.CoreToDbModel(playlist));
+        await _context.Playlists.AddAsync(PlaylistConverter.CoreToDbModel(playlist)!);
         await _context.SaveChangesAsync();
     }
 
@@ -41,14 +41,10 @@ public class PlaylistRepository(MewingPadDbContext context) : IPlaylistRepositor
     {
         var audiofiles = await _context.PlaylistsAudiofiles
             .Where(pa => pa.PlaylistId == playlistId)
-            .Join(
-                _context.Audiofiles,
-                pa => pa.AudiofileId,
-                a => a.Id,
-                (pa, a) => a)
-            .Select(a => AudiofileConverter.DbToCoreModel(a))
+            .Include(pa => pa.Audiofile)
+            .Select(pa => AudiofileConverter.DbToCoreModel(pa.Audiofile))
             .ToListAsync();
-        return audiofiles;
+        return audiofiles!;
     }
 
     public async Task<List<Playlist>> GetAllPlaylists()
@@ -58,7 +54,7 @@ public class PlaylistRepository(MewingPadDbContext context) : IPlaylistRepositor
             .ToListAsync();
     }
 
-    public async Task<Playlist> GetPlaylistById(Guid playlistId)
+    public async Task<Playlist?> GetPlaylistById(Guid playlistId)
     {
         var playlistDbModel = await _context.Playlists.FindAsync(playlistId);
         return PlaylistConverter.DbToCoreModel(playlistDbModel);
@@ -100,6 +96,6 @@ public class PlaylistRepository(MewingPadDbContext context) : IPlaylistRepositor
         playlistDbModel!.UserId = playlist.UserId;
 
         await _context.SaveChangesAsync();
-        return PlaylistConverter.DbToCoreModel(playlistDbModel);
+        return PlaylistConverter.DbToCoreModel(playlistDbModel)!;
     }
 }

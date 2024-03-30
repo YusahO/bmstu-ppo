@@ -1,25 +1,24 @@
 using MewingPad.Common.Entities;
-using MewingPad.Database.Models;
 
-namespace MewingPad.Utils.Converters;
+namespace MewingPad.Database.Models.Converters;
 
 public static class ScoreConverter
 {
-    public static Score DbToCoreModel(ScoreDbModel? model)
+    public static Score? DbToCoreModel(ScoreDbModel? model)
     {
         return model is not null
                ? new(audiofileId: model.AudiofileId,
                      authorId: model.AuthorId,
                      value: model.Value)
-               : default!;
+               : default;
     }
 
-    public static ScoreDbModel CoreToDbModel(Score? model)
+    public static ScoreDbModel? CoreToDbModel(Score? model)
     {
         return model is not null
                ? new(audiofileId: model.AudiofileId,
                      authorId: model.AuthorId,
                      value: model.Value)
-               : default!;
+               : default;
     }
 }

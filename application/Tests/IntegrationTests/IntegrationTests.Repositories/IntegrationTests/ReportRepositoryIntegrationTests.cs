@@ -1,19 +1,26 @@
 using IntegrationTests.DbFixtures;
 using MewingPad.Common.Entities;
+using MewingPad.Database.NpgsqlRepositories;
 
 namespace IntegrationTests.Repositories;
 
 public class ReportRepositoryIntegrationTests : IDisposable
 {
     private readonly InMemoryDbFixture _dbFixture = new();
+    private readonly ReportRepository _reportRepository;
+
+    public ReportRepositoryIntegrationTests()
+    {
+        _reportRepository = new ReportRepository(_dbFixture.Context);
+    }
 
     [Fact]
     public async Task TestCreateReport()
     {
         var expectedReport = new Report(Guid.NewGuid(), Guid.Empty, Guid.Empty, "");
         
-        await _dbFixture.ReportRepository.AddReport(expectedReport);
-        var actualReport = await _dbFixture.ReportRepository.GetReportById(expectedReport.Id);
+        await _reportRepository.AddReport(expectedReport);
+        var actualReport = await _dbFixture.GetReportById(expectedReport.Id);
 
         Assert.Equal(expectedReport, actualReport);
     }
@@ -26,7 +33,7 @@ public class ReportRepositoryIntegrationTests : IDisposable
 
         var expectedReport = new Report(reports.First());
 
-        var actualReport = await _dbFixture.ReportRepository.GetReportById(expectedReport.Id);
+        var actualReport = await _reportRepository.GetReportById(expectedReport.Id);
 
         Assert.Equal(expectedReport, actualReport);
     }
@@ -42,7 +49,7 @@ public class ReportRepositoryIntegrationTests : IDisposable
             Text = "new text"
         };
 
-        var actualReport = await _dbFixture.ReportRepository.UpdateReport(expectedReport);
+        var actualReport = await _reportRepository.UpdateReport(expectedReport);
 
         Assert.Equal(expectedReport, actualReport);
     }

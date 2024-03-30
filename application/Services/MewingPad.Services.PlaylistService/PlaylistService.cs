@@ -80,7 +80,7 @@ public class PlaylistService(IPlaylistRepository playlistRepository,
     {
         var user = await _userRepository.GetUserById(userId)
                    ?? throw new UserNotFoundException(userId);
-        return await _playlistRepository.GetPlaylistById(user.FavouritesId);
+        return (await _playlistRepository.GetPlaylistById(user.FavouritesId))!;
     }
 
     public async Task<List<Audiofile>> GetAllAudiofilesFromPlaylist(Guid playlistId)

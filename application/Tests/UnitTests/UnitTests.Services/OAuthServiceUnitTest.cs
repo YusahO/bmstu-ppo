@@ -133,7 +133,7 @@ public class OAuthServiceUnitTests
         await _oauthService.SignOutUser(expectedUser);
         var user = _mockUserRepository.Object.GetUserById(expectedUser.Id).Result;
 
-        Assert.False(user.IsAuthorized);
+        Assert.False(user!.IsAuthorized);
     }
 
     [Fact]

@@ -14,7 +14,7 @@
     <ProjectReference Include="..\..\Common\MewingPad.Common.Entities\MewingPad.Common.Entities.csproj" />
     <ProjectReference Include="..\..\Common\MewingPad.Common.IRepositories\MewingPad.Common.IRepositories.csproj" />
     <ProjectReference Include="..\MewingPad.Database.Context\MewingPad.Database.Context.csproj" />
-    <ProjectReference Include="..\..\Utils\MewingPad.Utils.Converters\MewingPad.Utils.Converters.csproj" />
+    <ProjectReference Include="..\MewingPad.Database.Models.Converters\MewingPad.Database.Models.Converters.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,19 +1,27 @@
 using IntegrationTests.DbFixtures;
 using MewingPad.Common.Entities;
+using MewingPad.Common.IRepositories;
+using MewingPad.Database.NpgsqlRepositories;
 
 namespace IntegrationTests.Repositories;
 
-public class CommentaryRepositoryIntegrationTests() : IDisposable
+public class CommentaryRepositoryIntegrationTests : IDisposable
 {
     private readonly InMemoryDbFixture _dbFixture = new();
+    private readonly ICommentaryRepository _commentaryRepository;
+
+    public CommentaryRepositoryIntegrationTests()
+    {
+        _commentaryRepository = new CommentaryRepository(_dbFixture.Context);
+    }
 
     [Fact]
     public async Task TestCreateCommentary()
     {
         var expectedCommentary = new Commentary(Guid.NewGuid(), Guid.Empty, Guid.Empty, "");
-        await _dbFixture.CommentaryRepository.AddCommentary(expectedCommentary);
+        await _commentaryRepository.AddCommentary(expectedCommentary);
 
-        var actualCommentary = await _dbFixture.CommentaryRepository.GetCommentaryById(expectedCommentary.Id);
+        var actualCommentary = await _dbFixture.GetCommentaryById(expectedCommentary.Id);
 
         Assert.Equal(expectedCommentary, actualCommentary);
     }
@@ -29,7 +37,7 @@ public class CommentaryRepositoryIntegrationTests() : IDisposable
             Text = "new text"
         };
 
-        var actualCommentary = await _dbFixture.CommentaryRepository.UpdateCommentary(expectedCommentary);
+        var actualCommentary = await _commentaryRepository.UpdateCommentary(expectedCommentary);
 
         Assert.Equal(expectedCommentary, actualCommentary);
     }
@@ -49,9 +57,9 @@ public class CommentaryRepositoryIntegrationTests() : IDisposable
         await _dbFixture.InsertAudiofiles(audiofiles);
         await _dbFixture.InsertCommentaries(expectedCommentaries);
 
-        var actualCommentaries = await _dbFixture.CommentaryRepository.GetAudiofileCommentaries(expectedAudiofile.Id);
+        var actualCommentaries = await _commentaryRepository.GetAudiofileCommentaries(expectedAudiofile.Id);
 
-        Assert.Equal(expectedCommentaries, actualCommentaries);
+        Assert.Equal(expectedCommentaries.OrderBy(e => e.Id), actualCommentaries.OrderBy(a => a.Id));
     }
 
     public void Dispose() => _dbFixture.Dispose();

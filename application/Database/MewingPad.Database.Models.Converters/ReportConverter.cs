@@ -1,11 +1,10 @@
 using MewingPad.Common.Entities;
-using MewingPad.Database.Models;
 
-namespace MewingPad.Utils.Converters;
+namespace MewingPad.Database.Models.Converters;
 
 public static class ReportConverter
 {
-    public static Report DbToCoreModel(ReportDbModel? model)
+    public static Report? DbToCoreModel(ReportDbModel? model)
     {
         return model is not null
                ? new(id: model.Id,
@@ -13,10 +12,10 @@ public static class ReportConverter
                      audiofileId: model.AudiofileId,
                      text: model.Text,
                      status: model.Status)
-               : default!;
+               : default;
     }
 
-    public static ReportDbModel CoreToDbModel(Report? model)
+    public static ReportDbModel? CoreToDbModel(Report? model)
     {
         return model is not null
                ? new(id: model.Id,
@@ -24,6 +23,6 @@ public static class ReportConverter
                      audiofileId: model.AudiofileId,
                      text: model.Text,
                      status: model.Status)
-               : default!;
+               : default;
     }
 }

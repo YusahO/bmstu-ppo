@@ -1,19 +1,27 @@
 using IntegrationTests.DbFixtures;
 using MewingPad.Common.Entities;
+using MewingPad.Common.IRepositories;
+using MewingPad.Database.NpgsqlRepositories;
 
 namespace IntegrationTests.Repositories;
 
-public class UserRepositoryIntegrationTests() : IDisposable
+public class UserRepositoryIntegrationTests : IDisposable
 {
     private readonly InMemoryDbFixture _dbFixture = new();
+    private readonly IUserRepository _userRepository;
+
+    public UserRepositoryIntegrationTests()
+    {
+        _userRepository = new UserRepository(_dbFixture.Context);
+    }
 
     [Fact]
     public async Task TestCreateUser()
     {
         var expectedUser = new User(Guid.NewGuid(), Guid.Empty, "", "", "", false, false);
 
-        await _dbFixture.UserRepository.AddUser(expectedUser);
-        var actualUser = await _dbFixture.UserRepository.GetUserById(expectedUser.Id);
+        await _userRepository.AddUser(expectedUser);
+        var actualUser = await _userRepository.GetUserById(expectedUser.Id);
 
         Assert.Equal(expectedUser, actualUser);
     }
@@ -24,7 +32,7 @@ public class UserRepositoryIntegrationTests() : IDisposable
         var expectedUsers = InMemoryDbFixture.CreateMockUsers();
         await _dbFixture.InsertUsers(expectedUsers);
 
-        var actualUsers = await _dbFixture.UserRepository.GetAllUsers();
+        var actualUsers = await _userRepository.GetAllUsers();
 
         Assert.Equal(expectedUsers, actualUsers);
     }
@@ -36,7 +44,7 @@ public class UserRepositoryIntegrationTests() : IDisposable
         var expectedUsers = InMemoryDbFixture.CreateMockUsers();
         await _dbFixture.InsertUsers(expectedUsers);
 
-        var actualUser = await _dbFixture.UserRepository.GetUserById(expectedUsers[ind].Id);
+        var actualUser = await _userRepository.GetUserById(expectedUsers[ind].Id);
 
         Assert.Equal(expectedUsers[ind], actualUser);
     }
@@ -52,7 +60,7 @@ public class UserRepositoryIntegrationTests() : IDisposable
             IsAdmin = true
         };
 
-        var actualUser = await _dbFixture.UserRepository.UpdateUser(expectedUser);
+        var actualUser = await _userRepository.UpdateUser(expectedUser);
 
         Assert.Equal(expectedUser, actualUser);
     }

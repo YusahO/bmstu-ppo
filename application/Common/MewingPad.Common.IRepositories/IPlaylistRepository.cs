@@ -12,5 +12,5 @@ public interface IPlaylistRepository
     Task RemoveAudiofilesFromPlaylistBulk(Guid playlistId, List<Guid> audiofileIds);
     Task RemoveAudiofileFromPlaylist(Guid playlistId, Guid audiofileId);
     Task<List<Playlist>> GetAllPlaylists();
-    Task<Playlist> GetPlaylistById(Guid playlistId);
+    Task<Playlist?> GetPlaylistById(Guid playlistId);
 }

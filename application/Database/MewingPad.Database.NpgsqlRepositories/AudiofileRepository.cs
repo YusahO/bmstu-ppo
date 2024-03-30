@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MewingPad.Common.Entities;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.Context;
-using MewingPad.Utils.Converters;
+using MewingPad.Database.Models.Converters;
 
 namespace MewingPad.Database.NpgsqlRepositories;
 
@@ -13,7 +13,7 @@ public class AudiofileRepository(MewingPadDbContext context) : IAudiofileReposit
 
     public async Task AddAudiofile(Audiofile audiofile)
     {
-        await _context.Audiofiles.AddAsync(AudiofileConverter.CoreToDbModel(audiofile));
+        await _context.Audiofiles.AddAsync(AudiofileConverter.CoreToDbModel(audiofile)!);
         await _context.SaveChangesAsync();
     }
 
@@ -27,11 +27,11 @@ public class AudiofileRepository(MewingPadDbContext context) : IAudiofileReposit
     public Task<List<Audiofile>> GetAllAudiofiles()
     {
         return _context.Audiofiles
-            .Select(a => AudiofileConverter.DbToCoreModel(a))
+            .Select(a => AudiofileConverter.DbToCoreModel(a)!)
             .ToListAsync();
     }
 
-    public async Task<Audiofile> GetAudiofileById(Guid audiofileId)
+    public async Task<Audiofile?> GetAudiofileById(Guid audiofileId)
     {
         var audiofileDbModel = await _context.Audiofiles.FindAsync(audiofileId);
         return AudiofileConverter.DbToCoreModel(audiofileDbModel);
@@ -48,6 +48,6 @@ public class AudiofileRepository(MewingPadDbContext context) : IAudiofileReposit
         audiofileDbModel!.Filepath = audiofile.Filepath;
 
         await _context.SaveChangesAsync();
-        return AudiofileConverter.DbToCoreModel(audiofileDbModel);
+        return AudiofileConverter.DbToCoreModel(audiofileDbModel)!;
     }
 }

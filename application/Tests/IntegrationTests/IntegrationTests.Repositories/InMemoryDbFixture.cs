@@ -1,78 +1,98 @@
-using MewingPad.Common.IRepositories;
 using MewingPad.Common.Entities;
 using MewingPad.Database.Context;
-using MewingPad.Database.NpgsqlRepositories;
+using MewingPad.Database.Models.Converters;
 
 namespace IntegrationTests.DbFixtures;
 
-public class InMemoryDbFixture : IDisposable
+public class InMemoryDbFixture() : IDisposable
 {
-    private readonly MewingPadDbContext _context = new InMemoryDbContextFactory().GetDbContext();
+    public readonly MewingPadDbContext Context = new InMemoryDbContextFactory().GetDbContext();
 
-    public IUserRepository UserRepository { get; }
-    public IPlaylistRepository PlaylistRepository { get; }
-    public IAudiofileRepository AudiofileRepository { get; }
-    public ITagRepository TagRepository { get; }
-    public IScoreRepository ScoreRepository { get; }
-    public ICommentaryRepository CommentaryRepository { get; }
-    public IReportRepository ReportRepository { get; }
-
-    public InMemoryDbFixture()
+    public async Task<User?> GetUserById(Guid userId)
     {
-        UserRepository = new UserRepository(_context);
-        PlaylistRepository = new PlaylistRepository(_context);
-        AudiofileRepository = new AudiofileRepository(_context);
-        TagRepository = new TagRepository(_context);
-        ScoreRepository = new ScoreRepository(_context);
-        CommentaryRepository = new CommentaryRepository(_context);
-        ReportRepository = new ReportRepository(_context);
+        return UserConverter.DbToCoreModel(await Context.Users.FindAsync(userId));
+    }
+
+    public async Task<Audiofile?> GetAudiofileById(Guid audiofileId)
+    {
+        return AudiofileConverter.DbToCoreModel(await Context.Audiofiles.FindAsync(audiofileId));
+    }
+
+    public async Task<Commentary?> GetCommentaryById(Guid commentaryId)
+    {
+        return CommentaryConverter.DbToCoreModel(await Context.Commentaries.FindAsync(commentaryId));
+    }
+
+    public async Task<Tag?> GetTagById(Guid tagId)
+    {
+        return TagConverter.DbToCoreModel(await Context.Tags.FindAsync(tagId));
+    }
+
+    public async Task<Report?> GetReportById(Guid reportId)
+    {
+        return ReportConverter.DbToCoreModel(await Context.Reports.FindAsync(reportId));
+    }
+
+    public async Task<Score?> GetScoreById(Guid scoreId)
+    {
+        return ScoreConverter.DbToCoreModel(await Context.Scores.FindAsync(scoreId));
+    }
+
+    public async Task<Playlist?> GetPlaylistById(Guid playlistId)
+    {
+        return PlaylistConverter.DbToCoreModel(await Context.Playlists.FindAsync(playlistId));
     }
 
     public async Task InsertUsers(List<User> users)
     {
         foreach (var user in users)
         {
-            await UserRepository.AddUser(user);
+            await Context.Users.AddAsync(UserConverter.CoreToDbModel(user)!);
         }
+        await Context.SaveChangesAsync();
     }
 
     public async Task InsertPlaylists(List<Playlist> playlists)
     {
         foreach (var playlist in playlists)
         {
-            await PlaylistRepository.AddPlaylist(playlist);
+            await Context.Playlists.AddAsync(PlaylistConverter.CoreToDbModel(playlist)!);
         }
+        await Context.SaveChangesAsync();
     }
 
     public async Task InsertAudiofiles(List<Audiofile> audiofiles)
     {
         foreach (var audiofile in audiofiles)
         {
-            await AudiofileRepository.AddAudiofile(audiofile);
+            await Context.Audiofiles.AddAsync(AudiofileConverter.CoreToDbModel(audiofile)!);
         }
+        await Context.SaveChangesAsync();
     }
 
     public async Task InsertTags(List<Tag> tags)
     {
         foreach (var tag in tags)
         {
-            await TagRepository.AddTag(tag);
+            await Context.Tags.AddAsync(TagConverter.CoreToDbModel(tag)!);
         }
+        await Context.SaveChangesAsync();
     }
 
     public async Task InsertCommentaries(List<Commentary> commentaries)
     {
         foreach (var commentary in commentaries)
         {
-            await CommentaryRepository.AddCommentary(commentary);
+            await Context.Commentaries.AddAsync(CommentaryConverter.CoreToDbModel(commentary)!);
         }
+        await Context.SaveChangesAsync();
     }
 
     public async Task InsertScores(List<Score> scores)
     {
         foreach (var score in scores)
         {
-            await ScoreRepository.AddScore(score);
+            await Context.Scores.AddAsync(ScoreConverter.CoreToDbModel(score)!);
         }
     }
 
@@ -80,7 +100,7 @@ public class InMemoryDbFixture : IDisposable
     {
         foreach (var report in reports)
         {
-            await ReportRepository.AddReport(report);
+            await Context.Reports.AddAsync(ReportConverter.CoreToDbModel(report)!);
         }
     }
 
@@ -88,18 +108,18 @@ public class InMemoryDbFixture : IDisposable
     {
         foreach (var p in pairs)
         {
-            await _context.PlaylistsAudiofiles.AddAsync(new(p.Key, p.Value));
+            await Context.PlaylistsAudiofiles.AddAsync(new(p.Key, p.Value));
         }
-        await _context.SaveChangesAsync();
+        await Context.SaveChangesAsync();
     }
 
     public async Task InsertTagsAudiofiles(List<KeyValuePair<Guid, Guid>> pairs)
     {
         foreach (var p in pairs)
         {
-            await _context.TagsAudiofiles.AddAsync(new(p.Key, p.Value));
+            await Context.TagsAudiofiles.AddAsync(new(p.Key, p.Value));
         }
-        await _context.SaveChangesAsync();
+        await Context.SaveChangesAsync();
     }
 
     public static List<User> CreateMockUsers()
@@ -174,5 +194,5 @@ public class InMemoryDbFixture : IDisposable
         ];
     }
 
-    public void Dispose() => _context.Dispose();
+    public void Dispose() => Context.Dispose();
 }

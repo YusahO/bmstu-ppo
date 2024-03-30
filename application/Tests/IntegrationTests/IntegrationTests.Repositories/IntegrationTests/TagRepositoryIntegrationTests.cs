@@ -1,19 +1,27 @@
 using IntegrationTests.DbFixtures;
 using MewingPad.Common.Entities;
+using MewingPad.Common.IRepositories;
+using MewingPad.Database.NpgsqlRepositories;
 
 namespace IntegrationTests.Repositories;
 
 public class TagRepositoryIntegrationTests : IDisposable
 {
     private readonly InMemoryDbFixture _dbFixture = new();
+    private readonly ITagRepository _tagRepository;
+
+    public TagRepositoryIntegrationTests()
+    {
+        _tagRepository = new TagRepository(_dbFixture.Context);
+    }
 
     [Fact]
     public async Task TestCreateTag()
     {
         var expectedTag = new Tag(Guid.NewGuid(), Guid.Empty, "name");
         
-        await _dbFixture.TagRepository.AddTag(expectedTag);
-        var actualTag = await _dbFixture.TagRepository.GetTagById(expectedTag.Id);
+        await _tagRepository.AddTag(expectedTag);
+        var actualTag = await _dbFixture.GetTagById(expectedTag.Id);
 
         Assert.Equal(expectedTag, actualTag);
     }
@@ -26,7 +34,7 @@ public class TagRepositoryIntegrationTests : IDisposable
 
         var expectedTag = new Tag(tags.First());
 
-        var actualTag = await _dbFixture.TagRepository.GetTagById(expectedTag.Id);
+        var actualTag = await _tagRepository.GetTagById(expectedTag.Id);
 
         Assert.Equal(expectedTag, actualTag);
     }
@@ -42,7 +50,7 @@ public class TagRepositoryIntegrationTests : IDisposable
             Name = "new name"
         };
 
-        var actualTag = await _dbFixture.TagRepository.UpdateTag(expectedTag);
+        var actualTag = await _tagRepository.UpdateTag(expectedTag);
 
         Assert.Equal(expectedTag, actualTag);
     }
@@ -62,7 +70,7 @@ public class TagRepositoryIntegrationTests : IDisposable
         await _dbFixture.InsertAudiofiles(audiofiles);
         await _dbFixture.InsertTagsAudiofiles(pairs);
 
-        var actualTags = await _dbFixture.TagRepository.GetAudiofileTags(expectedAudiofile.Id);
+        var actualTags = await _tagRepository.GetAudiofileTags(expectedAudiofile.Id);
 
         Assert.Equal([expectedTag], actualTags);
     }
@@ -74,9 +82,9 @@ public class TagRepositoryIntegrationTests : IDisposable
         await _dbFixture.InsertTags(tags);
 
         var expectedTagId = tags.Last().Id;
-        await _dbFixture.TagRepository.DeleteTag(expectedTagId);
+        await _tagRepository.DeleteTag(expectedTagId);
 
-        var actualTag = await _dbFixture.TagRepository.GetTagById(expectedTagId);
+        var actualTag = await _dbFixture.GetTagById(expectedTagId);
 
         Assert.Null(actualTag);
     }

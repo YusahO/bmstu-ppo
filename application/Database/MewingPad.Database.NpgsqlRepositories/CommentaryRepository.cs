@@ -1,7 +1,7 @@
 using MewingPad.Common.Entities;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.Context;
-using MewingPad.Utils.Converters;
+using MewingPad.Database.Models.Converters;
 using Microsoft.EntityFrameworkCore;
 
 namespace MewingPad.Database.NpgsqlRepositories;
@@ -12,7 +12,7 @@ public class CommentaryRepository(MewingPadDbContext context) : ICommentaryRepos
 
     public async Task AddCommentary(Commentary commentary)
     {
-        await _context.Commentaries.AddAsync(CommentaryConverter.CoreToDbModel(commentary));
+        await _context.Commentaries.AddAsync(CommentaryConverter.CoreToDbModel(commentary)!);
         await _context.SaveChangesAsync();
     }
 
@@ -20,11 +20,11 @@ public class CommentaryRepository(MewingPadDbContext context) : ICommentaryRepos
     {
         return await _context.Commentaries
             .Where(c => c.AudiofileId == audiofileId)
-            .Select(c => CommentaryConverter.DbToCoreModel(c))
+            .Select(c => CommentaryConverter.DbToCoreModel(c)!)
             .ToListAsync();
     }
 
-    public async Task<Commentary> GetCommentaryById(Guid commentaryId)
+    public async Task<Commentary?> GetCommentaryById(Guid commentaryId)
     {
         var commentaryDbModel = await _context.Commentaries.FindAsync(commentaryId);
         return CommentaryConverter.DbToCoreModel(commentaryDbModel);
@@ -40,6 +40,6 @@ public class CommentaryRepository(MewingPadDbContext context) : ICommentaryRepos
         commentaryDbModel!.Text = commentary.Text;
 
         await _context.SaveChangesAsync();
-        return CommentaryConverter.DbToCoreModel(commentaryDbModel);
+        return CommentaryConverter.DbToCoreModel(commentaryDbModel)!;
     }
 }

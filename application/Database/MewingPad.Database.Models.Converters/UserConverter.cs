@@ -1,11 +1,10 @@
 ﻿using MewingPad.Common.Entities;
-using MewingPad.Database.Models;
 
-namespace MewingPad.Utils.Converters;
+namespace MewingPad.Database.Models.Converters;
 
 public static class UserConverter
 {
-    public static User DbToCoreModel(UserDbModel? model)
+    public static User? DbToCoreModel(UserDbModel? model)
     {
         return model is not null
                ? new(id: model.Id,
@@ -15,10 +14,10 @@ public static class UserConverter
                      passwordHashed: model.PasswordHashed,
                      isAdmin: model.IsAdmin,
                      isAuthorized: model.IsAuthorized)
-               : default!;
+               : default;
     }
 
-    public static UserDbModel CoreToDbModel(User? model)
+    public static UserDbModel? CoreToDbModel(User? model)
     {
         return model is not null
                ? new(id: model.Id,
@@ -28,6 +27,6 @@ public static class UserConverter
                      passwordHashed: model.PasswordHashed,
                      isAdmin: model.IsAdmin,
                      isAuthorized: model.IsAuthorized)
-               : default!;
+               : default;
     }
 }
