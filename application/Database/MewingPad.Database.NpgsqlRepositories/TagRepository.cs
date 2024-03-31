@@ -26,7 +26,7 @@ public class TagRepository(MewingPadDbContext context) : ITagRepository
     public async Task<List<Tag>> GetAllTags()
     {
         return await _context.Tags
-            .Select(t => TagConverter.DbToCoreModel(t)!)
+            .Select(t => TagConverter.DbToCoreModel(t))
             .ToListAsync();
     }
 
@@ -55,6 +55,6 @@ public class TagRepository(MewingPadDbContext context) : ITagRepository
         tagDbModel!.Name = tag.Name;
 
         await _context.SaveChangesAsync();
-        return TagConverter.DbToCoreModel(tagDbModel)!;
+        return TagConverter.DbToCoreModel(tagDbModel);
     }
 }

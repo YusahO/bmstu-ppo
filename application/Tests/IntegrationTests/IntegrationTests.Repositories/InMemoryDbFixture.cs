@@ -1,6 +1,7 @@
 using MewingPad.Common.Entities;
 using MewingPad.Database.Context;
 using MewingPad.Database.Models.Converters;
+using Microsoft.EntityFrameworkCore;
 
 namespace IntegrationTests.DbFixtures;
 
@@ -33,14 +34,23 @@ public class InMemoryDbFixture() : IDisposable
         return ReportConverter.DbToCoreModel(await Context.Reports.FindAsync(reportId));
     }
 
-    public async Task<Score?> GetScoreById(Guid scoreId)
+    public async Task<Score?> GetScoreByPrimaryKey(Guid authorId, Guid audiofileId)
     {
-        return ScoreConverter.DbToCoreModel(await Context.Scores.FindAsync(scoreId));
+        return ScoreConverter.DbToCoreModel(await Context.Scores.FindAsync([authorId, audiofileId]));
     }
 
     public async Task<Playlist?> GetPlaylistById(Guid playlistId)
     {
         return PlaylistConverter.DbToCoreModel(await Context.Playlists.FindAsync(playlistId));
+    }
+
+    public async Task<List<Audiofile>> GetAllAudiofilesFromPlaylist(Guid playlistId)
+    {
+        return await Context.PlaylistsAudiofiles
+            .Where(pa => pa.PlaylistId == playlistId)
+            .Include(pa => pa.Audiofile)
+            .Select(pa => AudiofileConverter.DbToCoreModel(pa.Audiofile))
+            .ToListAsync();
     }
 
     public async Task InsertUsers(List<User> users)

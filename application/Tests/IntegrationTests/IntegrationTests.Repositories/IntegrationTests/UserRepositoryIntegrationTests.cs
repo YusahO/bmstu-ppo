@@ -21,7 +21,7 @@ public class UserRepositoryIntegrationTests : IDisposable
         var expectedUser = new User(Guid.NewGuid(), Guid.Empty, "", "", "", false, false);
 
         await _userRepository.AddUser(expectedUser);
-        var actualUser = await _userRepository.GetUserById(expectedUser.Id);
+        var actualUser = await _dbFixture.GetUserById(expectedUser.Id);
 
         Assert.Equal(expectedUser, actualUser);
     }

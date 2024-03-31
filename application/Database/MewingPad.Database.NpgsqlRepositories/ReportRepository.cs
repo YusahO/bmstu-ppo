@@ -31,6 +31,6 @@ public class ReportRepository(MewingPadDbContext context) : IReportRepository
         reportDbModel!.Status = report.Status;
 
         await _context.SaveChangesAsync();
-        return ReportConverter.DbToCoreModel(reportDbModel)!;
+        return ReportConverter.DbToCoreModel(reportDbModel);
     }
 }

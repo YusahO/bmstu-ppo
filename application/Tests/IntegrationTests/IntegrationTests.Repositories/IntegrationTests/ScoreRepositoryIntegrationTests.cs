@@ -21,8 +21,8 @@ public class ScoreRepositoryIntegrationTests : IDisposable
         var expectedScore = new Score(Guid.NewGuid(), Guid.NewGuid(), 4);
         
         await _scoreRepository.AddScore(expectedScore);
-        var actualScore = await _scoreRepository.GetScoreByPrimaryKey(expectedScore.AuthorId,
-                                                                                expectedScore.AudiofileId);
+        var actualScore = await _dbFixture.GetScoreByPrimaryKey(expectedScore.AuthorId,
+                                                                expectedScore.AudiofileId);
 
         Assert.Equal(expectedScore, actualScore);
     }
@@ -36,7 +36,7 @@ public class ScoreRepositoryIntegrationTests : IDisposable
         var expectedScore = new Score(scores.First());
 
         var actualScore = await _scoreRepository.GetScoreByPrimaryKey(expectedScore.AuthorId,
-                                                                                expectedScore.AudiofileId);
+                                                                      expectedScore.AudiofileId);
 
         Assert.Equal(expectedScore, actualScore);
     }
@@ -84,8 +84,8 @@ public class ScoreRepositoryIntegrationTests : IDisposable
         var expectedScore = scores.First();
         await _scoreRepository.DeleteScore(expectedScore.AuthorId, expectedScore.AudiofileId);
 
-        var actualScore = await _scoreRepository.GetScoreByPrimaryKey(expectedScore.AuthorId,
-                                                                                expectedScore.AudiofileId);
+        var actualScore = await _dbFixture.GetScoreByPrimaryKey(expectedScore.AuthorId,
+                                                                expectedScore.AudiofileId);
 
         Assert.Null(actualScore);
     }

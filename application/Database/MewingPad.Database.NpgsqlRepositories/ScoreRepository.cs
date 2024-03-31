@@ -27,7 +27,7 @@ public class ScoreRepository(MewingPadDbContext context) : IScoreRepository
     public async Task<List<Score>> GetAllScores()
     {
         return await _context.Scores
-            .Select(s => ScoreConverter.DbToCoreModel(s)!)
+            .Select(s => ScoreConverter.DbToCoreModel(s))
             .ToListAsync();
     }
 
@@ -55,6 +55,6 @@ public class ScoreRepository(MewingPadDbContext context) : IScoreRepository
         scoreDbModel!.Value = score.Value;
 
         await _context.SaveChangesAsync();
-        return ScoreConverter.DbToCoreModel(scoreDbModel)!;
+        return ScoreConverter.DbToCoreModel(scoreDbModel);
     }
 }

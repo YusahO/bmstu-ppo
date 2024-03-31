@@ -59,7 +59,8 @@ public class CommentaryRepositoryIntegrationTests : IDisposable
 
         var actualCommentaries = await _commentaryRepository.GetAudiofileCommentaries(expectedAudiofile.Id);
 
-        Assert.Equal(expectedCommentaries.OrderBy(e => e.Id), actualCommentaries.OrderBy(a => a.Id));
+        Assert.Equal(expectedCommentaries.OrderBy(e => e.Id),
+                     actualCommentaries.OrderBy(a => a.Id));
     }
 
     public void Dispose() => _dbFixture.Dispose();

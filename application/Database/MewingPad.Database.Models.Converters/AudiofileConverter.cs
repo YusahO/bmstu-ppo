@@ -1,10 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using MewingPad.Common.Entities;
-using MewingPad.Database.Models;
 
 namespace MewingPad.Database.Models.Converters;
 
 public static class AudiofileConverter
 {
+    [return: NotNullIfNotNull(nameof(model))]
     public static Audiofile? DbToCoreModel(AudiofileDbModel? model)
     {
         return model is not null
@@ -16,6 +17,7 @@ public static class AudiofileConverter
                : default;
     }
 
+    [return: NotNullIfNotNull(nameof(model))]
     public static AudiofileDbModel? CoreToDbModel(Audiofile? model)
     {
         return model is not null

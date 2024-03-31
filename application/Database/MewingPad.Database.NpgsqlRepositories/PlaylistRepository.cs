@@ -96,6 +96,6 @@ public class PlaylistRepository(MewingPadDbContext context) : IPlaylistRepositor
         playlistDbModel!.UserId = playlist.UserId;
 
         await _context.SaveChangesAsync();
-        return PlaylistConverter.DbToCoreModel(playlistDbModel)!;
+        return PlaylistConverter.DbToCoreModel(playlistDbModel);
     }
 }

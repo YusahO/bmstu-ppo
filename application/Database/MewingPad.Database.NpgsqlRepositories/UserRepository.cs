@@ -21,14 +21,14 @@ public class UserRepository(MewingPadDbContext context) : IUserRepository
     {
         return _context.Users
             .Where(u => u.IsAdmin == true)
-            .Select(u => UserConverter.DbToCoreModel(u)!)
+            .Select(u => UserConverter.DbToCoreModel(u))
             .ToListAsync();
     }
 
     public Task<List<User>> GetAllUsers()
     {
         return _context.Users
-            .Select(u => UserConverter.DbToCoreModel(u)!)
+            .Select(u => UserConverter.DbToCoreModel(u))
             .ToListAsync();
     }
 
@@ -57,6 +57,6 @@ public class UserRepository(MewingPadDbContext context) : IUserRepository
         userDbModel!.IsAuthorized = user.IsAuthorized;
 
         await _context.SaveChangesAsync();
-        return UserConverter.DbToCoreModel(userDbModel)!;
+        return UserConverter.DbToCoreModel(userDbModel);
     }
 }

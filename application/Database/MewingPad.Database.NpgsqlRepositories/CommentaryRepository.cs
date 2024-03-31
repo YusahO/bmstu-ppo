@@ -20,7 +20,7 @@ public class CommentaryRepository(MewingPadDbContext context) : ICommentaryRepos
     {
         return await _context.Commentaries
             .Where(c => c.AudiofileId == audiofileId)
-            .Select(c => CommentaryConverter.DbToCoreModel(c)!)
+            .Select(c => CommentaryConverter.DbToCoreModel(c))
             .ToListAsync();
     }
 
@@ -40,6 +40,6 @@ public class CommentaryRepository(MewingPadDbContext context) : ICommentaryRepos
         commentaryDbModel!.Text = commentary.Text;
 
         await _context.SaveChangesAsync();
-        return CommentaryConverter.DbToCoreModel(commentaryDbModel)!;
+        return CommentaryConverter.DbToCoreModel(commentaryDbModel);
     }
 }

@@ -1,9 +1,11 @@
-﻿using MewingPad.Common.Entities;
+﻿using System.Diagnostics.CodeAnalysis;
+using MewingPad.Common.Entities;
 
 namespace MewingPad.Database.Models.Converters;
 
 public static class UserConverter
 {
+    [return: NotNullIfNotNull(nameof(model))]
     public static User? DbToCoreModel(UserDbModel? model)
     {
         return model is not null
@@ -17,6 +19,7 @@ public static class UserConverter
                : default;
     }
 
+    [return: NotNullIfNotNull(nameof(model))]
     public static UserDbModel? CoreToDbModel(User? model)
     {
         return model is not null

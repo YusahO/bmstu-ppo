@@ -27,7 +27,7 @@ public class AudiofileRepository(MewingPadDbContext context) : IAudiofileReposit
     public Task<List<Audiofile>> GetAllAudiofiles()
     {
         return _context.Audiofiles
-            .Select(a => AudiofileConverter.DbToCoreModel(a)!)
+            .Select(a => AudiofileConverter.DbToCoreModel(a))
             .ToListAsync();
     }
 
