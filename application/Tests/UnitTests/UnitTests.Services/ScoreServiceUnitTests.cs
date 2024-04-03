@@ -7,12 +7,12 @@ public class ScoreServiceUnitTest
 {
     private readonly IScoreService _scoreService;
     private readonly Mock<IScoreRepository> _mockScoreRepository = new();
-    private readonly Mock<IAudiofileRepository> _mockAudiofileRepository = new();
+    private readonly Mock<IAudiotrackRepository> _mockAudiotrackRepository = new();
 
     public ScoreServiceUnitTest()
     {
         _scoreService = new ScoreService(_mockScoreRepository.Object,
-                                         _mockAudiofileRepository.Object);
+                                         _mockAudiotrackRepository.Object);
     }
 
     [Fact]
@@ -21,7 +21,7 @@ public class ScoreServiceUnitTest
         List<Score> scores = [];
         var expectedScore = CreateMockScore(1);
 
-        _mockScoreRepository.Setup(s => s.GetScoreByPrimaryKey(expectedScore.AuthorId, expectedScore.AudiofileId))
+        _mockScoreRepository.Setup(s => s.GetScoreByPrimaryKey(expectedScore.AuthorId, expectedScore.AudiotrackId))
                             .ReturnsAsync(default(Score)!);
 
         _mockScoreRepository.Setup(s => s.AddScore(It.IsAny<Score>()))
@@ -38,7 +38,7 @@ public class ScoreServiceUnitTest
     {
         var expectedScore = CreateMockScore(1);
 
-        _mockScoreRepository.Setup(s => s.GetScoreByPrimaryKey(expectedScore.AuthorId, expectedScore.AudiofileId))
+        _mockScoreRepository.Setup(s => s.GetScoreByPrimaryKey(expectedScore.AuthorId, expectedScore.AudiotrackId))
                             .ReturnsAsync(expectedScore);
 
         async Task Action() => await _scoreService.CreateScore(expectedScore);
@@ -51,7 +51,7 @@ public class ScoreServiceUnitTest
     {
         var expectedScore = CreateMockScore(1);
 
-        _mockScoreRepository.Setup(s => s.GetScoreByPrimaryKey(expectedScore.AuthorId, expectedScore.AudiofileId))
+        _mockScoreRepository.Setup(s => s.GetScoreByPrimaryKey(expectedScore.AuthorId, expectedScore.AudiotrackId))
                             .ReturnsAsync(expectedScore);
 
         _mockScoreRepository.Setup(s => s.UpdateScore(It.IsAny<Score>()))
@@ -78,10 +78,10 @@ public class ScoreServiceUnitTest
     {
         var expectedScore = CreateMockScore(3);
 
-        _mockScoreRepository.Setup(s => s.GetScoreByPrimaryKey(expectedScore.AuthorId, expectedScore.AudiofileId))
+        _mockScoreRepository.Setup(s => s.GetScoreByPrimaryKey(expectedScore.AuthorId, expectedScore.AudiotrackId))
                             .ReturnsAsync(expectedScore);
 
-        var actualScore = await _scoreService.GetScoreByPrimaryKey(expectedScore.AuthorId, expectedScore.AudiofileId);
+        var actualScore = await _scoreService.GetScoreByPrimaryKey(expectedScore.AuthorId, expectedScore.AudiotrackId);
 
         Assert.Equal(expectedScore, actualScore);
     }
@@ -100,20 +100,20 @@ public class ScoreServiceUnitTest
     [Fact]
     public async Task TestGetAudiofileScores()
     {
-        Audiofile file = new(Guid.NewGuid(), "title", 4.53f, Guid.NewGuid(), "path/to/file");
+        Audiotrack file = new(Guid.NewGuid(), "title", 4.53f, Guid.NewGuid(), "path/to/file");
         List<Score> expectedScores = [CreateMockScore(1), CreateMockScore(2)];
         foreach (var score in expectedScores)
         {
-            score.AudiofileId = file.Id;
+            score.AudiotrackId = file.Id;
         }
 
-        _mockAudiofileRepository.Setup(s => s.GetAudiofileById(file.Id))
+        _mockAudiotrackRepository.Setup(s => s.GetAudiotrackById(file.Id))
                                 .ReturnsAsync(file);
 
-        _mockScoreRepository.Setup(s => s.GetAudiofileScores(file.Id))
+        _mockScoreRepository.Setup(s => s.GetAudiotrackScores(file.Id))
                             .ReturnsAsync(expectedScores);
 
-        var actualScores = await _scoreService.GetAudiofileScores(file.Id);
+        var actualScores = await _scoreService.GetAudiotrackScores(file.Id);
 
         Assert.Equal(expectedScores, actualScores);
     }
@@ -124,12 +124,12 @@ public class ScoreServiceUnitTest
         var expectedFileId = Guid.NewGuid();
         var fakeFileId = Guid.NewGuid();
 
-        _mockScoreRepository.Setup(s => s.GetAudiofileScores(fakeFileId))
+        _mockScoreRepository.Setup(s => s.GetAudiotrackScores(fakeFileId))
                             .ReturnsAsync([]);
 
-        async Task Action() => await _scoreService.GetAudiofileScores(expectedFileId);
+        async Task Action() => await _scoreService.GetAudiotrackScores(expectedFileId);
 
-        await Assert.ThrowsAsync<AudiofileNotFoundException>(Action);
+        await Assert.ThrowsAsync<AudiotrackNotFoundException>(Action);
     }
 
     [Fact]

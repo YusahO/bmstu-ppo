@@ -9,5 +9,6 @@ public interface ITagRepository
     Task DeleteTag(Guid tagId);
     Task<Tag?> GetTagById(Guid tagId);
     Task<List<Tag>> GetAllTags();
-    Task<List<Tag>> GetAudiofileTags(Guid audiofileId);
+    Task<List<Tag>> GetAudiotrackTags(Guid audiotrackId);
+    Task<List<Audiotrack>> GetAudiotracksWithTag(Guid tagId);
 }

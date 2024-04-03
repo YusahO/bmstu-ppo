@@ -5,16 +5,16 @@ using MewingPad.Common.IRepositories;
 namespace MewingPad.Services.ScoreService;
 
 public class ScoreService(IScoreRepository scoreRepository, 
-                          IAudiofileRepository audiofileRepository) : IScoreService
+                          IAudiotrackRepository audiofileRepository) : IScoreService
 {
     private readonly IScoreRepository _scoreRepository = scoreRepository;
-    private readonly IAudiofileRepository _audiofileRepository = audiofileRepository;
+    private readonly IAudiotrackRepository _audiofileRepository = audiofileRepository;
 
     public async Task CreateScore(Score score)
     {
-        if (await _scoreRepository.GetScoreByPrimaryKey(score.AuthorId, score.AudiofileId) is not null)
+        if (await _scoreRepository.GetScoreByPrimaryKey(score.AuthorId, score.AudiotrackId) is not null)
         {
-            throw new ScoreExistsException(score.AuthorId, score.AudiofileId);
+            throw new ScoreExistsException(score.AuthorId, score.AudiotrackId);
         }
         await _scoreRepository.AddScore(score);
     }
@@ -28,19 +28,19 @@ public class ScoreService(IScoreRepository scoreRepository,
 
     public async Task<Score> UpdateScore(Score score)
     {
-        if (await _scoreRepository.GetScoreByPrimaryKey(score.AuthorId, score.AudiofileId) is null)
+        if (await _scoreRepository.GetScoreByPrimaryKey(score.AuthorId, score.AudiotrackId) is null)
         {
-            throw new ScoreNotFoundException(score.AuthorId, score.AudiofileId);
+            throw new ScoreNotFoundException(score.AuthorId, score.AudiotrackId);
         }
         return await _scoreRepository.UpdateScore(score);
     }
 
-    public async Task<List<Score>> GetAudiofileScores(Guid audiofileId)
+    public async Task<List<Score>> GetAudiotrackScores(Guid audiofileId)
     {
-        if (await _audiofileRepository.GetAudiofileById(audiofileId) is null)
+        if (await _audiofileRepository.GetAudiotrackById(audiofileId) is null)
         {
-            throw new AudiofileNotFoundException(audiofileId);
+            throw new AudiotrackNotFoundException(audiofileId);
         }
-        return await _scoreRepository.GetAudiofileScores(audiofileId);
+        return await _scoreRepository.GetAudiotrackScores(audiofileId);
     }
 }

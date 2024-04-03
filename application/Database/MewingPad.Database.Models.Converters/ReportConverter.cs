@@ -11,7 +11,7 @@ public static class ReportConverter
         return model is not null
                ? new(id: model.Id,
                      authorId: model.AuthorId,
-                     audiofileId: model.AudiofileId,
+                     audiotrackId: model.AudiotrackId,
                      text: model.Text,
                      status: model.Status)
                : default;
@@ -23,7 +23,7 @@ public static class ReportConverter
         return model is not null
                ? new(id: model.Id,
                      authorId: model.AuthorId,
-                     audiofileId: model.AudiofileId,
+                     audiotrackId: model.AudiotrackId,
                      text: model.Text,
                      status: model.Status)
                : default;

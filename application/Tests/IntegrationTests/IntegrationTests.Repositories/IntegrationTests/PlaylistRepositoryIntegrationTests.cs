@@ -42,7 +42,7 @@ public class PlaylistRepositoryIntegrationTests : IDisposable
     public async Task TestGetAllAudiofilesFromPlaylist()
     {
         var playlist = new Playlist(Guid.NewGuid(), "title", Guid.NewGuid());
-        var expectedAudiofiles = InMemoryDbFixture.CreateMockAudiofiles();
+        var expectedAudiofiles = InMemoryDbFixture.CreateMockAudiotracks();
 
         List<KeyValuePair<Guid, Guid>> pairs = [
             new(playlist.Id, expectedAudiofiles[0].Id),
@@ -50,10 +50,10 @@ public class PlaylistRepositoryIntegrationTests : IDisposable
         ];
 
         await _dbFixture.InsertPlaylists([playlist]);
-        await _dbFixture.InsertAudiofiles(expectedAudiofiles);
-        await _dbFixture.InsertPlaylistsAudiofiles(pairs);
+        await _dbFixture.InsertAudiotracks(expectedAudiofiles);
+        await _dbFixture.InsertPlaylistsAudiotracks(pairs);
 
-        var actualAudiofiles = await _playlistRepository.GetAllAudiofilesFromPlaylist(playlist.Id);
+        var actualAudiofiles = await _playlistRepository.GetAllAudiotracksFromPlaylist(playlist.Id);
 
         Assert.Equal(expectedAudiofiles[..2].OrderBy(e => e.Id), actualAudiofiles.OrderBy(a => a.Id));
     }
@@ -62,16 +62,16 @@ public class PlaylistRepositoryIntegrationTests : IDisposable
     public async Task TestAddAudiofileToPlaylist()
     {
         var playlists = InMemoryDbFixture.CreateMockPlaylists();
-        var audiofiles = InMemoryDbFixture.CreateMockAudiofiles();
+        var audiofiles = InMemoryDbFixture.CreateMockAudiotracks();
         await _dbFixture.InsertPlaylists(playlists);
-        await _dbFixture.InsertAudiofiles(audiofiles);
+        await _dbFixture.InsertAudiotracks(audiofiles);
 
         var expectedPlaylist = playlists.First();
         var expectedAudiofile = audiofiles.First();
 
-        await _playlistRepository.AddAudiofileToPlaylist(expectedPlaylist.Id, expectedAudiofile.Id);
+        await _playlistRepository.AddAudiotrackToPlaylist(expectedPlaylist.Id, expectedAudiofile.Id);
 
-        var actualAudiofiles = await _dbFixture.GetAllAudiofilesFromPlaylist(expectedPlaylist.Id);
+        var actualAudiofiles = await _dbFixture.GetAllAudiotracksFromPlaylist(expectedPlaylist.Id);
 
         Assert.Equal([expectedAudiofile], actualAudiofiles);
     }
@@ -80,7 +80,7 @@ public class PlaylistRepositoryIntegrationTests : IDisposable
     public async Task TestRemoveAudiofileFromPlaylist()
     {
         var playlists = InMemoryDbFixture.CreateMockPlaylists();
-        var audiofiles = InMemoryDbFixture.CreateMockAudiofiles();
+        var audiofiles = InMemoryDbFixture.CreateMockAudiotracks();
         var expectedPlaylist = playlists.First();
         var expectedAudiofile = audiofiles.First();
 
@@ -88,12 +88,12 @@ public class PlaylistRepositoryIntegrationTests : IDisposable
             new(expectedPlaylist.Id, expectedAudiofile.Id)];
 
         await _dbFixture.InsertPlaylists(playlists);
-        await _dbFixture.InsertAudiofiles(audiofiles);
-        await _dbFixture.InsertPlaylistsAudiofiles(pairs);
+        await _dbFixture.InsertAudiotracks(audiofiles);
+        await _dbFixture.InsertPlaylistsAudiotracks(pairs);
 
         await _playlistRepository.RemoveAudiofileFromPlaylist(expectedPlaylist.Id, expectedAudiofile.Id);
 
-        var actualAudiofiles = await _dbFixture.GetAllAudiofilesFromPlaylist(expectedPlaylist.Id);
+        var actualAudiofiles = await _dbFixture.GetAllAudiotracksFromPlaylist(expectedPlaylist.Id);
 
         Assert.Empty(actualAudiofiles);
     }
@@ -102,7 +102,7 @@ public class PlaylistRepositoryIntegrationTests : IDisposable
     public async Task TestRemoveAudiofilesFromPlaylist()
     {
         var playlists = InMemoryDbFixture.CreateMockPlaylists();
-        var audiofiles = InMemoryDbFixture.CreateMockAudiofiles();
+        var audiofiles = InMemoryDbFixture.CreateMockAudiotracks();
 
         var expectedPlaylist = playlists.First();
         var expectedAudiofileIds = audiofiles[..2].Select(a => a.Id)
@@ -112,12 +112,12 @@ public class PlaylistRepositoryIntegrationTests : IDisposable
             .ToList();
 
         await _dbFixture.InsertPlaylists(playlists);
-        await _dbFixture.InsertAudiofiles(audiofiles);
-        await _dbFixture.InsertPlaylistsAudiofiles(pairs);
+        await _dbFixture.InsertAudiotracks(audiofiles);
+        await _dbFixture.InsertPlaylistsAudiotracks(pairs);
 
         await _playlistRepository.RemoveAudiofilesFromPlaylistBulk(expectedPlaylist.Id, expectedAudiofileIds);
 
-        var actualAudiofiles = await _dbFixture.GetAllAudiofilesFromPlaylist(expectedPlaylist.Id);
+        var actualAudiofiles = await _dbFixture.GetAllAudiotracksFromPlaylist(expectedPlaylist.Id);
 
         Assert.Empty(actualAudiofiles);
     }

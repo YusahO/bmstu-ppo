@@ -30,4 +30,9 @@ public class ReportService(IReportRepository reportRepository) : IReportService
     {
         return await _reportRepository.GetReportById(reportId) ?? throw new ReportNotFoundException(reportId);
     }
+
+    public async Task<List<Report>> GetAllReports()
+    {
+        return await _reportRepository.GetAllReports();
+    }
 }

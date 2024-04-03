@@ -13,7 +13,8 @@ public class UserRepository(MewingPadDbContext context) : IUserRepository
 
     public async Task AddUser(User user)
     {
-        await _context.Users.AddAsync(UserConverter.CoreToDbModel(user)!);
+        await _context.Users.AddAsync(UserConverter.CoreToDbModel(user));
+        await _context.Playlists.AddAsync(PlaylistConverter.CoreToDbModel(new(user.FavouritesId, "Favourites", user.Id)));
         await _context.SaveChangesAsync();
     }
 
@@ -34,7 +35,7 @@ public class UserRepository(MewingPadDbContext context) : IUserRepository
 
     public async Task<User?> GetUserByEmail(string email)
     {
-        var user = await _context.Users.FirstAsync(u => u.Email == email);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         return UserConverter.DbToCoreModel(user);
     }
 

@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MewingPad.Database.Models;
 
+[Table("Tags")]
 public class TagDbModel(Guid id,
                         Guid authorId,
                         string name)
@@ -20,6 +21,6 @@ public class TagDbModel(Guid id,
 
     public UserDbModel? Author { get; set; }
 
-    public List<AudiofileDbModel> Audiofiles { get; } = [];
-    public List<TagAudiofileDbModel> TagsAudiofiles { get; set; } = [];
+    public List<AudiotrackDbModel> Audiotracks { get; } = [];
+    public List<TagAudiotrackDbModel> TagsAudiotracks { get; set; } = [];
 }

@@ -29,7 +29,7 @@
     <ProjectReference Include="..\..\..\Common\MewingPad.Common.Enums\MewingPad.Common.Enums.csproj" />
     <ProjectReference Include="..\..\..\Common\MewingPad.Common.Exceptions\MewingPad.Common.Exceptions.csproj" />
     <ProjectReference Include="..\..\..\Common\MewingPad.Common.IRepositories\MewingPad.Common.IRepositories.csproj" />
-    <ProjectReference Include="..\..\..\Services\MewingPad.Services.AudiofileService\MewingPad.Services.AudiofileService.csproj" />
+    <ProjectReference Include="..\..\..\Services\MewingPad.Services.AudiotrackService\MewingPad.Services.AudiotrackService.csproj" />
     <ProjectReference Include="..\..\..\Services\MewingPad.Services.CommentaryService\MewingPad.Services.CommentaryService.csproj" />
     <ProjectReference Include="..\..\..\Services\MewingPad.Services.ReportService\MewingPad.Services.ReportService.csproj" />
     <ProjectReference Include="..\..\..\Services\MewingPad.Services.OAuthService\MewingPad.Services.OAuthService.csproj" />

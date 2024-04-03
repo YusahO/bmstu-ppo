@@ -3,38 +3,52 @@ using MewingPad.Database.Models;
 
 namespace MewingPad.Database.Context;
 
-public class MewingPadDbContext(DbContextOptions<MewingPadDbContext> options) : DbContext(options)
+public class MewingPadDbContext : DbContext
 {
     public DbSet<UserDbModel> Users { get; set; }
     public DbSet<PlaylistDbModel> Playlists { get; set; }
-    public DbSet<AudiofileDbModel> Audiofiles { get; set; }
+    public DbSet<AudiotrackDbModel> Audiotracks { get; set; }
     public DbSet<CommentaryDbModel> Commentaries { get; set; }
     public DbSet<ScoreDbModel> Scores { get; set; }
     public DbSet<ReportDbModel> Reports { get; set; }
     public DbSet<TagDbModel> Tags { get; set; }
 
-    public DbSet<PlaylistAudiofileDbModel> PlaylistsAudiofiles { get; set; }
-    public DbSet<TagAudiofileDbModel> TagsAudiofiles { get; set; }
+    public DbSet<PlaylistAudiotrackDbModel> PlaylistsAudiotracks { get; set; }
+    public DbSet<TagAudiotrackDbModel> TagsAudiofiles { get; set; }
+
+    public MewingPadDbContext(DbContextOptions<MewingPadDbContext> options) : base(options)
+    {
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<ScoreDbModel>().HasKey(u => new { u.AuthorId, u.AudiofileId });
+        modelBuilder.Entity<ScoreDbModel>().HasKey(u => new { u.AuthorId, u.AudiotrackId });
 
-        modelBuilder.Entity<AudiofileDbModel>()
+        modelBuilder.Entity<AudiotrackDbModel>()
             .HasMany(e => e.Playlists)
-            .WithMany(e => e.Audiofiles)
-            .UsingEntity<PlaylistAudiofileDbModel>(
-                l => l.HasOne(e => e.Playlist).WithMany(e => e.PlaylistsAudiofiles),
-                r => r.HasOne(e => e.Audiofile).WithMany(e => e.PlaylistsAudiofiles)
+            .WithMany(e => e.Audiotracks)
+            .UsingEntity<PlaylistAudiotrackDbModel>(
+                l => l.HasOne(e => e.Playlist).WithMany(e => e.PlaylistsAudiotracks),
+                r => r.HasOne(e => e.Audiotrack).WithMany(e => e.PlaylistsAudiotracks)
             );
 
-        modelBuilder.Entity<AudiofileDbModel>()
+        modelBuilder.Entity<AudiotrackDbModel>()
             .HasMany(e => e.Tags)
-            .WithMany(e => e.Audiofiles)
-            .UsingEntity<TagAudiofileDbModel>(
-                l => l.HasOne(e => e.Tag).WithMany(e => e.TagsAudiofiles),
-                r => r.HasOne(e => e.Audiofile).WithMany(e => e.TagsAudiofiles)
+            .WithMany(e => e.Audiotracks)
+            .UsingEntity<TagAudiotrackDbModel>(
+                l => l.HasOne(e => e.Tag).WithMany(e => e.TagsAudiotracks),
+                r => r.HasOne(e => e.Audiotrack).WithMany(e => e.TagsAudiotracks)
             );
+
+        modelBuilder.Entity<UserDbModel>()
+            .HasMany(u => u.Playlists)
+            .WithOne(p => p.User)
+            .HasForeignKey(p => p.UserId);
+
+        // modelBuilder.Entity<UserDbModel>()
+        //     .HasOne(u => u.FavouritesPlaylist)
+        //     .WithOne()
+        //     .HasForeignKey<UserDbModel>(u => u.FavouritesId);
 
         base.OnModelCreating(modelBuilder);
     }

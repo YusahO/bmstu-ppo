@@ -7,39 +7,48 @@ using MewingPad.Database.Models.Converters;
 
 namespace MewingPad.Database.NpgsqlRepositories;
 
-public class AudiofileRepository(MewingPadDbContext context) : IAudiofileRepository
+public class AudiotrackRepository(MewingPadDbContext context) : IAudiotrackRepository
 {
     private readonly MewingPadDbContext _context = context;
 
-    public async Task AddAudiofile(Audiofile audiofile)
+    public async Task AddAudiotrack(Audiotrack audiofile)
     {
-        await _context.Audiofiles.AddAsync(AudiofileConverter.CoreToDbModel(audiofile)!);
+        await _context.Audiotracks.AddAsync(AudiotrackConverter.CoreToDbModel(audiofile)!);
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAudiofile(Guid audiofileId)
+    public async Task DeleteAudiotrack(Guid audiotrackId)
     {
-        var audiofileDbModel = await _context.Audiofiles.FindAsync(audiofileId);
+        var audiofileDbModel = await _context.Audiotracks.FindAsync(audiotrackId);
         _context.Remove(audiofileDbModel!);
         await _context.SaveChangesAsync();
     }
 
-    public Task<List<Audiofile>> GetAllAudiofiles()
+    public Task<List<Audiotrack>> GetAllAudiotracks()
     {
-        return _context.Audiofiles
-            .Select(a => AudiofileConverter.DbToCoreModel(a))
+        return _context.Audiotracks
+            .Select(a => AudiotrackConverter.DbToCoreModel(a))
             .ToListAsync();
     }
 
-    public async Task<Audiofile?> GetAudiofileById(Guid audiofileId)
+    public async Task<Audiotrack?> GetAudiotrackById(Guid audiotrackId)
     {
-        var audiofileDbModel = await _context.Audiofiles.FindAsync(audiofileId);
-        return AudiofileConverter.DbToCoreModel(audiofileDbModel);
+        var audiofileDbModel = await _context.Audiotracks.FindAsync(audiotrackId);
+        return AudiotrackConverter.DbToCoreModel(audiofileDbModel);
     }
 
-    public async Task<Audiofile> UpdateAudiofile(Audiofile audiofile)
+    public async Task<List<Audiotrack>> GetAudiotracksByTitle(string title)
     {
-        var audiofileDbModel = await _context.Audiofiles.FindAsync(audiofile.Id);
+        var audiotracks = await _context.Audiotracks
+            .Where(a => a.Title == title)
+            .Select(a => AudiotrackConverter.DbToCoreModel(a))
+            .ToListAsync();
+        return audiotracks!;
+    }
+
+    public async Task<Audiotrack> UpdateAudiotrack(Audiotrack audiofile)
+    {
+        var audiofileDbModel = await _context.Audiotracks.FindAsync(audiofile.Id);
 
         audiofileDbModel!.Id = audiofile.Id;
         audiofileDbModel!.AuthorId = audiofile.AuthorId;
@@ -48,6 +57,6 @@ public class AudiofileRepository(MewingPadDbContext context) : IAudiofileReposit
         audiofileDbModel!.Filepath = audiofile.Filepath;
 
         await _context.SaveChangesAsync();
-        return AudiofileConverter.DbToCoreModel(audiofileDbModel)!;
+        return AudiotrackConverter.DbToCoreModel(audiofileDbModel)!;
     }
 }

@@ -4,13 +4,13 @@ namespace MewingPad.Common.Entities;
 
 public class Score
 {
-    public Guid AudiofileId { get; set; }
+    public Guid AudiotrackId { get; set; }
     public Guid AuthorId { get; set; }
     public int Value { get; private set; }
 
-    public Score(Guid audiofileId, Guid authorId, int value)
+    public Score(Guid audiotrackId, Guid authorId, int value)
     {
-        AudiofileId = audiofileId;
+        AudiotrackId = audiotrackId;
         AuthorId = authorId;
         Value = (0 <= value && value <= 5) ? value : throw new ScoreInvalidValueException(value);
     }
@@ -26,7 +26,7 @@ public class Score
 
     public Score(Score other)
     {
-        AudiofileId = other.AudiofileId;
+        AudiotrackId = other.AudiotrackId;
         AuthorId = other.AuthorId;
         Value = other.Value;
     }
@@ -40,7 +40,7 @@ public class Score
 
         Score other = (Score)obj;
         return other.AuthorId == AuthorId &&
-               other.AudiofileId == AudiofileId &&
+               other.AudiotrackId == AudiotrackId &&
                other.Value == Value;
     }
 

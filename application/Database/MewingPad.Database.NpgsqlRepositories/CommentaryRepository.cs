@@ -16,10 +16,17 @@ public class CommentaryRepository(MewingPadDbContext context) : ICommentaryRepos
         await _context.SaveChangesAsync();
     }
 
-    public async Task<List<Commentary>> GetAudiofileCommentaries(Guid audiofileId)
+    public async Task DeleteCommentary(Guid commentaryId)
+    {
+        var commentaryDbModel = await _context.Commentaries.FindAsync(commentaryId);
+        _context.Commentaries.Remove(commentaryDbModel!);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<List<Commentary>> GetAudiotrackCommentaries(Guid audiofileId)
     {
         return await _context.Commentaries
-            .Where(c => c.AudiofileId == audiofileId)
+            .Where(c => c.AudiotrackId == audiofileId)
             .Select(c => CommentaryConverter.DbToCoreModel(c))
             .ToListAsync();
     }
@@ -36,7 +43,7 @@ public class CommentaryRepository(MewingPadDbContext context) : ICommentaryRepos
 
         commentaryDbModel!.Id = commentary.Id;
         commentaryDbModel!.AuthorId = commentary.AuthorId;
-        commentaryDbModel!.AudiofileId = commentary.AudiofileId;
+        commentaryDbModel!.AudiotrackId = commentary.AudiotrackId;
         commentaryDbModel!.Text = commentary.Text;
 
         await _context.SaveChangesAsync();

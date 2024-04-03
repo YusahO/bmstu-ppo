@@ -13,13 +13,13 @@ public class ScoreRepository(MewingPadDbContext context) : IScoreRepository
 
     public async Task AddScore(Score score)
     {
-        await _context.Scores.AddAsync(ScoreConverter.CoreToDbModel(score)!);
+        await _context.Scores.AddAsync(ScoreConverter.CoreToDbModel(score));
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteScore(Guid authorId, Guid audiofileId)
+    public async Task DeleteScore(Guid authorId, Guid audiotrackId)
     {
-        var scoreDbModel = await _context.Scores.FindAsync([authorId, audiofileId]);
+        var scoreDbModel = await _context.Scores.FindAsync([authorId, audiotrackId]);
         _context.Scores.Remove(scoreDbModel!);
         await _context.SaveChangesAsync();
     }
@@ -31,27 +31,27 @@ public class ScoreRepository(MewingPadDbContext context) : IScoreRepository
             .ToListAsync();
     }
 
-    public async Task<List<Score>> GetAudiofileScores(Guid audiofileId)
+    public async Task<List<Score>> GetAudiotrackScores(Guid audiotrackId)
     {
         var scores = await _context.Scores
-            .Where(s => s.AudiofileId == audiofileId)
+            .Where(s => s.AudiotrackId == audiotrackId)
             .Select(s => ScoreConverter.DbToCoreModel(s))
             .ToListAsync();
         return scores!;
     }
 
-    public async Task<Score?> GetScoreByPrimaryKey(Guid authorId, Guid audiofileId)
+    public async Task<Score?> GetScoreByPrimaryKey(Guid authorId, Guid audiotrackId)
     {
-        var scoreDbModel = await _context.Scores.FindAsync([authorId, audiofileId]);
+        var scoreDbModel = await _context.Scores.FindAsync([authorId, audiotrackId]);
         return ScoreConverter.DbToCoreModel(scoreDbModel);
     }
 
     public async Task<Score> UpdateScore(Score score)
     {
-        var scoreDbModel = await _context.Scores.FindAsync([score.AuthorId, score.AudiofileId]);
+        var scoreDbModel = await _context.Scores.FindAsync([score.AuthorId, score.AudiotrackId]);
 
         scoreDbModel!.AuthorId = score.AuthorId;
-        scoreDbModel!.AudiofileId = score.AudiofileId;
+        scoreDbModel!.AudiotrackId = score.AudiotrackId;
         scoreDbModel!.Value = score.Value;
 
         await _context.SaveChangesAsync();

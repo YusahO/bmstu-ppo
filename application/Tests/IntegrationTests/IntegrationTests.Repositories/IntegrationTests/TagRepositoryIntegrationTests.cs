@@ -59,7 +59,7 @@ public class TagRepositoryIntegrationTests : IDisposable
     public async Task TestGetAudiofileTags()
     {
         var tags = InMemoryDbFixture.CreateMockTags();
-        var audiofiles = InMemoryDbFixture.CreateMockAudiofiles();
+        var audiofiles = InMemoryDbFixture.CreateMockAudiotracks();
 
         var expectedTag = tags.First();
         var expectedAudiofile = audiofiles.First();
@@ -67,10 +67,10 @@ public class TagRepositoryIntegrationTests : IDisposable
             new(expectedTag.Id, expectedAudiofile.Id)];
 
         await _dbFixture.InsertTags(tags);
-        await _dbFixture.InsertAudiofiles(audiofiles);
-        await _dbFixture.InsertTagsAudiofiles(pairs);
+        await _dbFixture.InsertAudiotracks(audiofiles);
+        await _dbFixture.InsertTagsAudiotracks(pairs);
 
-        var actualTags = await _tagRepository.GetAudiofileTags(expectedAudiofile.Id);
+        var actualTags = await _tagRepository.GetAudiotrackTags(expectedAudiofile.Id);
 
         Assert.Equal([expectedTag], actualTags);
     }

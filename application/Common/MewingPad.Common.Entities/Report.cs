@@ -5,15 +5,15 @@ public class Report
 {
     public Guid Id { get; set; }
     public Guid AuthorId { get; set; }
-    public Guid AudiofileId { get; set; }
+    public Guid AudiotrackId { get; set; }
     public string Text { get; set; }
     public ReportStatus Status { get; set; }
 
-    public Report(Guid id, Guid authorId, Guid audiofileId, string text, ReportStatus status = ReportStatus.NotViewed)
+    public Report(Guid id, Guid authorId, Guid audiotrackId, string text, ReportStatus status = ReportStatus.NotViewed)
     {
         Id = id;
         AuthorId = authorId;
-        AudiofileId = audiofileId;
+        AudiotrackId = audiotrackId;
         Text = text;
         Status = status;
     }
@@ -22,7 +22,7 @@ public class Report
     {
         Id = other.Id;
         AuthorId = other.AuthorId;
-        AudiofileId = other.AudiofileId;
+        AudiotrackId = other.AudiotrackId;
         Text = other.Text;
         Status = other.Status;
     }
@@ -37,7 +37,7 @@ public class Report
         Report other = (Report)obj;
         return other.Id == Id && 
                other.AuthorId == AuthorId &&
-               other.AudiofileId == AudiofileId &&
+               other.AudiotrackId == AudiotrackId &&
                other.Text == Text &&
                other.Status == Status;
     }

@@ -7,5 +7,7 @@ public interface ITagService
     Task<Tag> UpdateTagName(Guid tagId, string tagName);
     Task DeleteTag(Guid tagId);
     Task<Tag> GetTagById(Guid tagId);
-    Task<List<Tag>> GetAudiofileTags(Guid audiofileId);
+    Task<List<Tag>> GetAllTags();
+    Task<List<Tag>> GetAudiotrackTags(Guid audiotrackId);
+    Task<List<Audiotrack>> GetAudiotracksWithTag(Guid tagId);
 }

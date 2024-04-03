@@ -3,10 +3,10 @@ using MewingPad.Common.Entities;
 
 namespace MewingPad.Database.Models.Converters;
 
-public static class AudiofileConverter
+public static class AudiotrackConverter
 {
     [return: NotNullIfNotNull(nameof(model))]
-    public static Audiofile? DbToCoreModel(AudiofileDbModel? model)
+    public static Audiotrack? DbToCoreModel(AudiotrackDbModel? model)
     {
         return model is not null
                ? new(id: model.Id,
@@ -18,7 +18,7 @@ public static class AudiofileConverter
     }
 
     [return: NotNullIfNotNull(nameof(model))]
-    public static AudiofileDbModel? CoreToDbModel(Audiofile? model)
+    public static AudiotrackDbModel? CoreToDbModel(Audiotrack? model)
     {
         return model is not null
                ? new(id: model.Id,

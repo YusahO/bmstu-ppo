@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore; 
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MewingPad.Database.Models;
 
 [Index(nameof(FavouritesId), IsUnique = true)]
+[Table("Users")]
 public class UserDbModel(Guid id,
                          Guid favouritesId,
                          string username,
@@ -41,5 +42,6 @@ public class UserDbModel(Guid id,
     [Column("is_authorized", TypeName = "bool")]
     public bool IsAuthorized { get; set; } = isAuthorized;
 
+    public ICollection<PlaylistDbModel> Playlists { get; set; } = [];
     public PlaylistDbModel? FavouritesPlaylist { get; set; }
 }

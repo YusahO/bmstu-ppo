@@ -7,11 +7,11 @@ public class PlaylistServiceUnitTest
 {
     private readonly IPlaylistService _playlistService;
     private readonly Mock<IPlaylistRepository> _mockPlaylistRepository = new();
-    private readonly Mock<IAudiofileRepository> _mockAudiofileRepository = new();
+    private readonly Mock<IAudiotrackRepository> _mockAudiotrackRepository = new();
     private readonly Mock<IUserRepository> _mockUserRepository = new();
 
     public PlaylistServiceUnitTest() => _playlistService = new PlaylistService(_mockPlaylistRepository.Object,
-                                                                               _mockAudiofileRepository.Object,
+                                                                               _mockAudiotrackRepository.Object,
                                                                                _mockUserRepository.Object);
 
     [Fact]
@@ -145,10 +145,10 @@ public class PlaylistServiceUnitTest
         _mockPlaylistRepository.Setup(s => s.GetPlaylistById(playlist.Id))
                                .ReturnsAsync(playlist);
 
-        _mockPlaylistRepository.Setup(s => s.GetAllAudiofilesFromPlaylist(playlist.Id))
+        _mockPlaylistRepository.Setup(s => s.GetAllAudiotracksFromPlaylist(playlist.Id))
                                .ReturnsAsync(expectedFiles);
 
-        var actualFiles = await _playlistService.GetAllAudiofilesFromPlaylist(playlist.Id);
+        var actualFiles = await _playlistService.GetAllAudiotracksFromPlaylist(playlist.Id);
 
         Assert.Equal(expectedFiles, actualFiles);  
     }
@@ -159,7 +159,7 @@ public class PlaylistServiceUnitTest
         _mockPlaylistRepository.Setup(s => s.GetPlaylistById(It.IsAny<Guid>()))
                                .ReturnsAsync(default(Playlist)!);
 
-        async Task Action() => await _playlistService.GetAllAudiofilesFromPlaylist(Guid.Empty);
+        async Task Action() => await _playlistService.GetAllAudiotracksFromPlaylist(Guid.Empty);
 
         await Assert.ThrowsAsync<PlaylistNotFoundException>(Action);  
     }
@@ -169,7 +169,7 @@ public class PlaylistServiceUnitTest
         return new(Guid.NewGuid(), "mock title", Guid.NewGuid());
     }
 
-    private static List<Audiofile> CreateMockAudiofiles()
+    private static List<Audiotrack> CreateMockAudiofiles()
     {
         return
         [

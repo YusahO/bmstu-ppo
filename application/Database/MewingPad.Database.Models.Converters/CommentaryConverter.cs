@@ -11,7 +11,7 @@ public static class CommentaryConverter
         return model is not null
                ? new(id: model.Id,
                      authorId: model.AuthorId,
-                     audiofileId: model.AudiofileId,
+                     audiotrackId: model.AudiotrackId,
                      text: model.Text)
                : default;
     }
@@ -22,7 +22,7 @@ public static class CommentaryConverter
         return model is not null
                ? new(id: model.Id,
                      authorId: model.AuthorId,
-                     audiofileId: model.AudiofileId,
+                     audiotrackId: model.AudiotrackId,
                      text: model.Text)
                : default;
     }

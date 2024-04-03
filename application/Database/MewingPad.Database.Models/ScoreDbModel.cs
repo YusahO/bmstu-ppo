@@ -3,22 +3,23 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MewingPad.Database.Models;
 
+[Table("Scores")]
 public class ScoreDbModel(Guid authorId,
-                          Guid audiofileId,
+                          Guid audiotrackId,
                           int value)
 {
     [ForeignKey("Author")]
     [Column("author_id")]
     public Guid AuthorId { get; set; } = authorId;
 
-    [ForeignKey("Audiofile")]
-    [Column("audiofile_id")]
-    public Guid AudiofileId { get; set; } = audiofileId;
+    [ForeignKey("Audiotrack")]
+    [Column("audiotrack_id")]
+    public Guid AudiotrackId { get; set; } = audiotrackId;
 
     [Required]
     [Column("value", TypeName = "integer")]
     public int Value { get; set; } = value;
 
     public UserDbModel? Author { get; set; }
-    public AudiofileDbModel? Audiofile { get; set; }
+    public AudiotrackDbModel? Audiotrack { get; set; }
 }

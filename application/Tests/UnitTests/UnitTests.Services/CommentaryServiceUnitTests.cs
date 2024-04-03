@@ -7,12 +7,12 @@ public class CommentaryServiceUnitTest
 {
     private readonly ICommentaryService _commentaryService;
     private readonly Mock<ICommentaryRepository> _mockCommentaryRepository = new();
-    private readonly Mock<IAudiofileRepository> _mockAudiofileRepository = new();
+    private readonly Mock<IAudiotrackRepository> _mockAudiotrackRepository = new();
 
     public CommentaryServiceUnitTest()
     {
         _commentaryService = new CommentaryService(_mockCommentaryRepository.Object,
-                                                   _mockAudiofileRepository.Object);
+                                                   _mockAudiotrackRepository.Object);
     }
 
     [Fact]
@@ -101,13 +101,13 @@ public class CommentaryServiceUnitTest
     [Fact]
     public async Task TestGetAudiofileCommentaries()
     {
-        var audiofile = new Audiofile(Guid.NewGuid(), "", 0.1f, Guid.NewGuid(), "");
+        var audiofile = new Audiotrack(Guid.NewGuid(), "", 0.1f, Guid.NewGuid(), "");
         List<Commentary> expectedComms = [CreateMockCommentary()]; 
 
-        _mockAudiofileRepository.Setup(s => s.GetAudiofileById(audiofile.Id))
+        _mockAudiotrackRepository.Setup(s => s.GetAudiotrackById(audiofile.Id))
                                 .ReturnsAsync(audiofile);
         
-        _mockCommentaryRepository.Setup(s => s.GetAudiofileCommentaries(audiofile.Id))
+        _mockCommentaryRepository.Setup(s => s.GetAudiotrackCommentaries(audiofile.Id))
                                  .ReturnsAsync(expectedComms);
 
         var actualComms = await _commentaryService.GetAudiofileCommentaries(audiofile.Id);
@@ -118,12 +118,12 @@ public class CommentaryServiceUnitTest
     [Fact]
     public async Task TestGetAudiofileNonexistentCommentaries()
     {
-        _mockAudiofileRepository.Setup(s => s.GetAudiofileById(It.IsAny<Guid>()))
-                                .ReturnsAsync(default(Audiofile)!);
+        _mockAudiotrackRepository.Setup(s => s.GetAudiotrackById(It.IsAny<Guid>()))
+                                .ReturnsAsync(default(Audiotrack)!);
 
         Task Action() => _commentaryService.GetAudiofileCommentaries(Guid.Empty);
 
-        await Assert.ThrowsAsync<AudiofileNotFoundException>(Action);
+        await Assert.ThrowsAsync<AudiotrackNotFoundException>(Action);
     }
 
     private static Commentary CreateMockCommentary()

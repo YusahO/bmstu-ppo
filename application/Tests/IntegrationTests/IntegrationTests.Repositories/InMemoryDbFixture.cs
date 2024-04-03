@@ -14,9 +14,9 @@ public class InMemoryDbFixture() : IDisposable
         return UserConverter.DbToCoreModel(await Context.Users.FindAsync(userId));
     }
 
-    public async Task<Audiofile?> GetAudiofileById(Guid audiofileId)
+    public async Task<Audiotrack?> GetAudiotrackById(Guid audiofileId)
     {
-        return AudiofileConverter.DbToCoreModel(await Context.Audiofiles.FindAsync(audiofileId));
+        return AudiotrackConverter.DbToCoreModel(await Context.Audiotracks.FindAsync(audiofileId));
     }
 
     public async Task<Commentary?> GetCommentaryById(Guid commentaryId)
@@ -44,12 +44,12 @@ public class InMemoryDbFixture() : IDisposable
         return PlaylistConverter.DbToCoreModel(await Context.Playlists.FindAsync(playlistId));
     }
 
-    public async Task<List<Audiofile>> GetAllAudiofilesFromPlaylist(Guid playlistId)
+    public async Task<List<Audiotrack>> GetAllAudiotracksFromPlaylist(Guid playlistId)
     {
-        return await Context.PlaylistsAudiofiles
+        return await Context.PlaylistsAudiotracks
             .Where(pa => pa.PlaylistId == playlistId)
-            .Include(pa => pa.Audiofile)
-            .Select(pa => AudiofileConverter.DbToCoreModel(pa.Audiofile))
+            .Include(pa => pa.Audiotrack)
+            .Select(pa => AudiotrackConverter.DbToCoreModel(pa.Audiotrack))
             .ToListAsync();
     }
 
@@ -71,11 +71,11 @@ public class InMemoryDbFixture() : IDisposable
         await Context.SaveChangesAsync();
     }
 
-    public async Task InsertAudiofiles(List<Audiofile> audiofiles)
+    public async Task InsertAudiotracks(List<Audiotrack> audiotracks)
     {
-        foreach (var audiofile in audiofiles)
+        foreach (var audiotrack in audiotracks)
         {
-            await Context.Audiofiles.AddAsync(AudiofileConverter.CoreToDbModel(audiofile)!);
+            await Context.Audiotracks.AddAsync(AudiotrackConverter.CoreToDbModel(audiotrack));
         }
         await Context.SaveChangesAsync();
     }
@@ -84,7 +84,7 @@ public class InMemoryDbFixture() : IDisposable
     {
         foreach (var tag in tags)
         {
-            await Context.Tags.AddAsync(TagConverter.CoreToDbModel(tag)!);
+            await Context.Tags.AddAsync(TagConverter.CoreToDbModel(tag));
         }
         await Context.SaveChangesAsync();
     }
@@ -93,7 +93,7 @@ public class InMemoryDbFixture() : IDisposable
     {
         foreach (var commentary in commentaries)
         {
-            await Context.Commentaries.AddAsync(CommentaryConverter.CoreToDbModel(commentary)!);
+            await Context.Commentaries.AddAsync(CommentaryConverter.CoreToDbModel(commentary));
         }
         await Context.SaveChangesAsync();
     }
@@ -102,7 +102,7 @@ public class InMemoryDbFixture() : IDisposable
     {
         foreach (var score in scores)
         {
-            await Context.Scores.AddAsync(ScoreConverter.CoreToDbModel(score)!);
+            await Context.Scores.AddAsync(ScoreConverter.CoreToDbModel(score));
         }
     }
 
@@ -110,20 +110,20 @@ public class InMemoryDbFixture() : IDisposable
     {
         foreach (var report in reports)
         {
-            await Context.Reports.AddAsync(ReportConverter.CoreToDbModel(report)!);
+            await Context.Reports.AddAsync(ReportConverter.CoreToDbModel(report));
         }
     }
 
-    public async Task InsertPlaylistsAudiofiles(List<KeyValuePair<Guid, Guid>> pairs)
+    public async Task InsertPlaylistsAudiotracks(List<KeyValuePair<Guid, Guid>> pairs)
     {
         foreach (var p in pairs)
         {
-            await Context.PlaylistsAudiofiles.AddAsync(new(p.Key, p.Value));
+            await Context.PlaylistsAudiotracks.AddAsync(new(p.Key, p.Value));
         }
         await Context.SaveChangesAsync();
     }
 
-    public async Task InsertTagsAudiofiles(List<KeyValuePair<Guid, Guid>> pairs)
+    public async Task InsertTagsAudiotracks(List<KeyValuePair<Guid, Guid>> pairs)
     {
         foreach (var p in pairs)
         {
@@ -154,7 +154,7 @@ public class InMemoryDbFixture() : IDisposable
         ];
     }
 
-    public static List<Audiofile> CreateMockAudiofiles()
+    public static List<Audiotrack> CreateMockAudiotracks()
     {
         return
         [

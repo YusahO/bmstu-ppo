@@ -5,12 +5,12 @@ using MewingPad.Common.IRepositories;
 namespace MewingPad.Services.PlaylistService;
 
 public class PlaylistService(IPlaylistRepository playlistRepository,
-                             IAudiofileRepository audiofileRepository,
+                             IAudiotrackRepository audiofileRepository,
                              IUserRepository userRepository) : IPlaylistService
 {
     private readonly IPlaylistRepository _playlistRepository = playlistRepository
                                                                ?? throw new ArgumentNullException();
-    private readonly IAudiofileRepository _audiofileRepository = audiofileRepository
+    private readonly IAudiotrackRepository _audiofileRepository = audiofileRepository
                                                                  ?? throw new ArgumentNullException();
     private readonly IUserRepository _userRepository = userRepository
                                                        ?? throw new ArgumentNullException();
@@ -47,11 +47,15 @@ public class PlaylistService(IPlaylistRepository playlistRepository,
         {
             throw new PlaylistNotFoundException(playlistId);
         }
-        if (await _audiofileRepository.GetAudiofileById(audiofileId) is null)
+        if (await _audiofileRepository.GetAudiotrackById(audiofileId) is null)
         {
-            throw new AudiofileNotFoundException(playlistId);
+            throw new AudiotrackNotFoundException(playlistId);
         }
-        await _playlistRepository.AddAudiofileToPlaylist(playlistId, audiofileId);
+        if (await _playlistRepository.IsAudiotrackInPlaylist(playlistId, audiofileId))
+        {
+            throw new AudiotrackExistsInPlaylistException(playlistId, audiofileId);
+        }
+        await _playlistRepository.AddAudiotrackToPlaylist(playlistId, audiofileId);
     }
 
     public async Task RemoveAudiofileFromPlaylist(Guid playlistId, Guid audiofileId)
@@ -60,9 +64,13 @@ public class PlaylistService(IPlaylistRepository playlistRepository,
         {
             throw new PlaylistNotFoundException(playlistId);
         }
-        if (await _audiofileRepository.GetAudiofileById(audiofileId) is null)
+        if (await _audiofileRepository.GetAudiotrackById(audiofileId) is null)
         {
-            throw new AudiofileNotFoundException(audiofileId);
+            throw new AudiotrackNotFoundException(audiofileId);
+        }
+        if (!await _playlistRepository.IsAudiotrackInPlaylist(playlistId, audiofileId))
+        {
+            throw new AudiotrackNotFoundInPlaylistException(playlistId, audiofileId);
         }
         await _playlistRepository.RemoveAudiofileFromPlaylist(playlistId, audiofileId);
     }
@@ -72,6 +80,17 @@ public class PlaylistService(IPlaylistRepository playlistRepository,
         if (await _playlistRepository.GetPlaylistById(playlistId) is null)
         {
             throw new PlaylistNotFoundException(playlistId);
+        }
+        foreach (var aid in audiofileIds)
+        {
+            if (await _audiofileRepository.GetAudiotrackById(aid) is null)
+            {
+                throw new AudiotrackNotFoundException(aid);
+            }
+            if (!await _playlistRepository.IsAudiotrackInPlaylist(playlistId, aid))
+            {
+                throw new AudiotrackNotFoundInPlaylistException(playlistId, aid);
+            }
         }
         await _playlistRepository.RemoveAudiofilesFromPlaylistBulk(playlistId, audiofileIds);
     }
@@ -83,13 +102,13 @@ public class PlaylistService(IPlaylistRepository playlistRepository,
         return (await _playlistRepository.GetPlaylistById(user.FavouritesId))!;
     }
 
-    public async Task<List<Audiofile>> GetAllAudiofilesFromPlaylist(Guid playlistId)
+    public async Task<List<Audiotrack>> GetAllAudiotracksFromPlaylist(Guid playlistId)
     {
         if (await _playlistRepository.GetPlaylistById(playlistId) is null)
         {
             throw new PlaylistNotFoundException(playlistId);
         }
-        return await _playlistRepository.GetAllAudiofilesFromPlaylist(playlistId);
+        return await _playlistRepository.GetAllAudiotracksFromPlaylist(playlistId);
     }
 
     public async Task<Playlist> GetPlaylistById(Guid playlistId)
@@ -97,5 +116,12 @@ public class PlaylistService(IPlaylistRepository playlistRepository,
         var playlist = await _playlistRepository.GetPlaylistById(playlistId)
                               ?? throw new PlaylistNotFoundException(playlistId);
         return playlist;
+    }
+
+    public async Task<List<Playlist>> GetUserPlaylists(Guid userId)
+    {
+        var user = await _userRepository.GetUserById(userId)
+                   ?? throw new UserNotFoundException(userId);
+        return await _playlistRepository.GetUserPlaylists(userId);
     }
 }

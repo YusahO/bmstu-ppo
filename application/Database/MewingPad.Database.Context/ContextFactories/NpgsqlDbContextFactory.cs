@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace MewingPad.Database.Context;
 
@@ -9,10 +10,11 @@ public class NpgsqlDbContextFactory(IConfiguration config) : IDbContextFactory
 
     public MewingPadDbContext GetDbContext()
     {
-        var connName = _config["Database Connection"]!;
+        var connName = _config["DbConnection"]!;
 
         var builder = new DbContextOptionsBuilder<MewingPadDbContext>();
-        builder.UseNpgsql(_config.GetConnectionString(connName));
+        builder.UseNpgsql(_config.GetConnectionString(connName))
+            .EnableSensitiveDataLogging();
 
         return new(builder.Options);
     }

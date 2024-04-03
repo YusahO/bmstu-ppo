@@ -1,6 +1,6 @@
 namespace MewingPad.Common.Entities;
 
-public class Audiofile
+public class Audiotrack
 {
     public Guid Id { get; set; }
     public string Title { get; set; }
@@ -8,7 +8,7 @@ public class Audiofile
     public Guid AuthorId { get; set; }
     public string Filepath { get; set; }
 
-    public Audiofile(Guid id, string title, float duration, Guid authorId, string filepath)
+    public Audiotrack(Guid id, string title, float duration, Guid authorId, string filepath)
     {
         Id = id;
         Title = title;
@@ -17,7 +17,7 @@ public class Audiofile
         Filepath = filepath;
     }
 
-    public Audiofile(Audiofile other)
+    public Audiotrack(Audiotrack other)
     {
         Id = other.Id;
         Title = other.Title;
@@ -28,12 +28,12 @@ public class Audiofile
 
     public override bool Equals(object? obj)
     {
-        if (obj is null || obj is not Audiofile)
+        if (obj is null || obj is not Audiotrack)
         {
             return false;
         }
 
-        Audiofile other = (Audiofile)obj;
+        Audiotrack other = (Audiotrack)obj;
         return other.Id == Id && 
                other.Title == Title &&
                other.Duration == Duration &&

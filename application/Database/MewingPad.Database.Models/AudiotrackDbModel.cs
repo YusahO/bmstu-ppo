@@ -3,7 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MewingPad.Database.Models;
 
-public class AudiofileDbModel(Guid id,
+[Table("Audiotracks")]
+public class AudiotrackDbModel(Guid id,
                               string title,
                               float duration,
                               Guid authorId,
@@ -31,8 +32,8 @@ public class AudiofileDbModel(Guid id,
     public UserDbModel? Author { get; set; }
 
     public List<PlaylistDbModel> Playlists { get; } = [];
-    public List<PlaylistAudiofileDbModel> PlaylistsAudiofiles { get; set; } = [];
+    public List<PlaylistAudiotrackDbModel> PlaylistsAudiotracks { get; set; } = [];
 
     public List<TagDbModel> Tags { get; } = [];
-    public List<TagAudiofileDbModel> TagsAudiofiles { get; set; } = [];
+    public List<TagAudiotrackDbModel> TagsAudiotracks { get; set; } = [];
 }

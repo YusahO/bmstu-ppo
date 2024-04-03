@@ -11,14 +11,14 @@ public class PlaylistRepository(MewingPadDbContext context) : IPlaylistRepositor
 {
     private readonly MewingPadDbContext _context = context;
 
-    public async Task AddAudiofileToPlaylist(Guid playlistId, Guid audiofileId)
+    public async Task AddAudiotrackToPlaylist(Guid playlistId, Guid audiofileId)
     {
-        bool hasAudiofile = await _context.PlaylistsAudiofiles
-            .AnyAsync(pa => pa.PlaylistId == playlistId && pa.AudiofileId == audiofileId);
+        bool hasAudiofile = await _context.PlaylistsAudiotracks
+            .AnyAsync(pa => pa.PlaylistId == playlistId && pa.AudiotrackId == audiofileId);
 
         if (!hasAudiofile)
         {
-            await _context.PlaylistsAudiofiles
+            await _context.PlaylistsAudiotracks
                 .AddAsync(new(playlistId, audiofileId));
         }
         await _context.SaveChangesAsync();
@@ -26,23 +26,40 @@ public class PlaylistRepository(MewingPadDbContext context) : IPlaylistRepositor
 
     public async Task AddPlaylist(Playlist playlist)
     {
-        await _context.Playlists.AddAsync(PlaylistConverter.CoreToDbModel(playlist)!);
+        var playlistDbModel = PlaylistConverter.CoreToDbModel(playlist);
+        await _context.Playlists.AddAsync(playlistDbModel);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<bool> IsAudiotrackInPlaylist(Guid playlistId, Guid audiotrackId)
+    {
+        return await _context.PlaylistsAudiotracks
+            .AnyAsync(pa => pa.AudiotrackId == audiotrackId && pa.PlaylistId == playlistId);
     }
 
     public async Task DeletePlaylist(Guid playlistId)
     {
         var playlistDbModel = await _context.Playlists.FindAsync(playlistId);
+        var containedAudiotracks = await _context.PlaylistsAudiotracks
+            .Where(pa => pa.PlaylistId == playlistId)
+            .Include(pa => pa.Audiotrack)
+            .ToListAsync(); 
+            
+        if (containedAudiotracks.Count != 0)
+        {
+            _context.PlaylistsAudiotracks.RemoveRange(containedAudiotracks);
+        }
+
         _context.Playlists.Remove(playlistDbModel!);
         await _context.SaveChangesAsync();
     }
 
-    public async Task<List<Audiofile>> GetAllAudiofilesFromPlaylist(Guid playlistId)
+    public async Task<List<Audiotrack>> GetAllAudiotracksFromPlaylist(Guid playlistId)
     {
-        var audiofiles = await _context.PlaylistsAudiofiles
+        var audiofiles = await _context.PlaylistsAudiotracks
             .Where(pa => pa.PlaylistId == playlistId)
-            .Include(pa => pa.Audiofile)
-            .Select(pa => AudiofileConverter.DbToCoreModel(pa.Audiofile))
+            .Include(pa => pa.Audiotrack)
+            .Select(pa => AudiotrackConverter.DbToCoreModel(pa.Audiotrack))
             .ToListAsync();
         return audiofiles!;
     }
@@ -60,14 +77,22 @@ public class PlaylistRepository(MewingPadDbContext context) : IPlaylistRepositor
         return PlaylistConverter.DbToCoreModel(playlistDbModel);
     }
 
+    public async Task<List<Playlist>> GetUserPlaylists(Guid userId)
+    {
+        return await _context.Playlists
+            .Where(p => p.UserId == userId)
+            .Select(p => PlaylistConverter.DbToCoreModel(p))
+            .ToListAsync();
+    }
+
     public async Task RemoveAudiofileFromPlaylist(Guid playlistId, Guid audiofileId)
     {
-        var audiofileDbModel = await _context.PlaylistsAudiofiles
-            .FirstOrDefaultAsync(pa => pa.PlaylistId == playlistId && pa.AudiofileId == audiofileId);
+        var audiofileDbModel = await _context.PlaylistsAudiotracks
+            .FirstOrDefaultAsync(pa => pa.PlaylistId == playlistId && pa.AudiotrackId == audiofileId);
 
         if (audiofileDbModel is not null)
         {
-            _context.PlaylistsAudiofiles.Remove(audiofileDbModel);
+            _context.PlaylistsAudiotracks.Remove(audiofileDbModel);
         }
         await _context.SaveChangesAsync();
     }
@@ -76,12 +101,12 @@ public class PlaylistRepository(MewingPadDbContext context) : IPlaylistRepositor
     {
         foreach (var audiofileId in audiofileIds)
         {
-            var audiofileDbModel = await _context.PlaylistsAudiofiles
-                .FirstOrDefaultAsync(pa => pa.PlaylistId == playlistId && pa.AudiofileId == audiofileId);
+            var audiofileDbModel = await _context.PlaylistsAudiotracks
+                .FirstOrDefaultAsync(pa => pa.PlaylistId == playlistId && pa.AudiotrackId == audiofileId);
 
             if (audiofileDbModel is not null)
             {
-                _context.PlaylistsAudiofiles.Remove(audiofileDbModel);
+                _context.PlaylistsAudiotracks.Remove(audiofileDbModel);
             }
         }
         await _context.SaveChangesAsync();

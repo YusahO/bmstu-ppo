@@ -7,12 +7,12 @@ public class TagServiceUnitTest
 {
     private readonly ITagService _tagService;
     private readonly Mock<ITagRepository> _mockTagRepository = new();
-    private readonly Mock<IAudiofileRepository> _mockAudiofileRepository = new();
+    private readonly Mock<IAudiotrackRepository> _mockAudiotrackRepository = new();
 
     public TagServiceUnitTest()
     {
         _tagService = new TagService(_mockTagRepository.Object,
-                                     _mockAudiofileRepository.Object);
+                                     _mockAudiotrackRepository.Object);
     }
 
     [Fact]
@@ -135,13 +135,13 @@ public class TagServiceUnitTest
         var audiofile = CreateMockAudiofile();
         List<Tag> expectedTags = [CreateMockTag()];
 
-        _mockAudiofileRepository.Setup(s => s.GetAudiofileById(audiofile.Id))
+        _mockAudiotrackRepository.Setup(s => s.GetAudiotrackById(audiofile.Id))
                                 .ReturnsAsync(audiofile);
         
-        _mockTagRepository.Setup(s => s.GetAudiofileTags(audiofile.Id))
+        _mockTagRepository.Setup(s => s.GetAudiotrackTags(audiofile.Id))
                           .ReturnsAsync(expectedTags);
 
-        var actualTags = await _tagService.GetAudiofileTags(audiofile.Id);
+        var actualTags = await _tagService.GetAudiotrackTags(audiofile.Id);
 
         Assert.Equal(expectedTags, actualTags);
     }
@@ -151,13 +151,13 @@ public class TagServiceUnitTest
     {
         var audiofile = CreateMockAudiofile();
 
-        _mockAudiofileRepository.Setup(s => s.GetAudiofileById(audiofile.Id))
+        _mockAudiotrackRepository.Setup(s => s.GetAudiotrackById(audiofile.Id))
                                 .ReturnsAsync(audiofile);
         
-        _mockTagRepository.Setup(s => s.GetAudiofileTags(audiofile.Id))
+        _mockTagRepository.Setup(s => s.GetAudiotrackTags(audiofile.Id))
                           .ReturnsAsync([]);
 
-        var actualTags = await _tagService.GetAudiofileTags(audiofile.Id);
+        var actualTags = await _tagService.GetAudiotrackTags(audiofile.Id);
 
         Assert.Empty(actualTags);
     }
@@ -165,12 +165,12 @@ public class TagServiceUnitTest
    [Fact]
     public async Task TestGetAudiofileNonexstentTags()
     {
-        _mockAudiofileRepository.Setup(s => s.GetAudiofileById(It.IsAny<Guid>()))
-                                .ReturnsAsync(default(Audiofile)!);
+        _mockAudiotrackRepository.Setup(s => s.GetAudiotrackById(It.IsAny<Guid>()))
+                                .ReturnsAsync(default(Audiotrack)!);
 
-        Task Action() => _tagService.GetAudiofileTags(Guid.Empty);
+        Task Action() => _tagService.GetAudiotrackTags(Guid.Empty);
 
-        await Assert.ThrowsAsync<AudiofileNotFoundException>(Action);
+        await Assert.ThrowsAsync<AudiotrackNotFoundException>(Action);
     }
 
     private static Tag CreateMockTag()
@@ -178,7 +178,7 @@ public class TagServiceUnitTest
         return new(Guid.NewGuid(), Guid.NewGuid(), "whatever1");
     }
 
-    private static Audiofile CreateMockAudiofile()
+    private static Audiotrack CreateMockAudiofile()
     {
         return new(Guid.NewGuid(), "whatever", 10.3f, Guid.NewGuid(), "path/to/file");
     }

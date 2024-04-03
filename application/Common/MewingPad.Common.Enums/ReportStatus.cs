@@ -6,7 +6,7 @@ public enum ReportStatus
     [EnumMember(Value = "Не рассмотрена")]
     NotViewed = 0,
 
-    [EnumMember(Value = "Рассмотрена")]
+    [EnumMember(Value = "Прочитано")]
     Viewed = 1,
 
     [EnumMember(Value = "Принята")]

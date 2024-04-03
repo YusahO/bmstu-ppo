@@ -22,7 +22,7 @@ public class ScoreRepositoryIntegrationTests : IDisposable
         
         await _scoreRepository.AddScore(expectedScore);
         var actualScore = await _dbFixture.GetScoreByPrimaryKey(expectedScore.AuthorId,
-                                                                expectedScore.AudiofileId);
+                                                                expectedScore.AudiotrackId);
 
         Assert.Equal(expectedScore, actualScore);
     }
@@ -36,7 +36,7 @@ public class ScoreRepositoryIntegrationTests : IDisposable
         var expectedScore = new Score(scores.First());
 
         var actualScore = await _scoreRepository.GetScoreByPrimaryKey(expectedScore.AuthorId,
-                                                                      expectedScore.AudiofileId);
+                                                                      expectedScore.AudiotrackId);
 
         Assert.Equal(expectedScore, actualScore);
     }
@@ -58,19 +58,19 @@ public class ScoreRepositoryIntegrationTests : IDisposable
     [Fact]
     public async Task TestGetAudiofileScores()
     {
-        var audiofiles = InMemoryDbFixture.CreateMockAudiofiles();
+        var audiofiles = InMemoryDbFixture.CreateMockAudiotracks();
         var expectedAudiofile = audiofiles.First();
 
         var expectedScores = InMemoryDbFixture.CreateMockScores();
         foreach (var score in expectedScores)
         {
-            score.AudiofileId = expectedAudiofile.Id;
+            score.AudiotrackId = expectedAudiofile.Id;
         }
 
         await _dbFixture.InsertScores(expectedScores);
-        await _dbFixture.InsertAudiofiles(audiofiles);
+        await _dbFixture.InsertAudiotracks(audiofiles);
 
-        var actualScores = await _scoreRepository.GetAudiofileScores(expectedAudiofile.Id);
+        var actualScores = await _scoreRepository.GetAudiotrackScores(expectedAudiofile.Id);
 
         Assert.Equal(expectedScores, actualScores);
     }
@@ -82,10 +82,10 @@ public class ScoreRepositoryIntegrationTests : IDisposable
         await _dbFixture.InsertScores(scores);
 
         var expectedScore = scores.First();
-        await _scoreRepository.DeleteScore(expectedScore.AuthorId, expectedScore.AudiofileId);
+        await _scoreRepository.DeleteScore(expectedScore.AuthorId, expectedScore.AudiotrackId);
 
         var actualScore = await _dbFixture.GetScoreByPrimaryKey(expectedScore.AuthorId,
-                                                                expectedScore.AudiofileId);
+                                                                expectedScore.AudiotrackId);
 
         Assert.Null(actualScore);
     }

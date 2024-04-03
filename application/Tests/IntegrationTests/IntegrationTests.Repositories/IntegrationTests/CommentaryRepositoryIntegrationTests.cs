@@ -45,19 +45,19 @@ public class CommentaryRepositoryIntegrationTests : IDisposable
     [Fact]
     public async Task TestGetAudiofileCommentaries()
     {
-        var audiofiles = InMemoryDbFixture.CreateMockAudiofiles();
+        var audiofiles = InMemoryDbFixture.CreateMockAudiotracks();
         var expectedAudiofile = audiofiles.First();
 
         var expectedCommentaries = InMemoryDbFixture.CreateMockCommentaries();
         foreach (var comm in expectedCommentaries)
         {
-            comm.AudiofileId = expectedAudiofile.Id;
+            comm.AudiotrackId = expectedAudiofile.Id;
         }
 
-        await _dbFixture.InsertAudiofiles(audiofiles);
+        await _dbFixture.InsertAudiotracks(audiofiles);
         await _dbFixture.InsertCommentaries(expectedCommentaries);
 
-        var actualCommentaries = await _commentaryRepository.GetAudiofileCommentaries(expectedAudiofile.Id);
+        var actualCommentaries = await _commentaryRepository.GetAudiotrackCommentaries(expectedAudiofile.Id);
 
         Assert.Equal(expectedCommentaries.OrderBy(e => e.Id),
                      actualCommentaries.OrderBy(a => a.Id));

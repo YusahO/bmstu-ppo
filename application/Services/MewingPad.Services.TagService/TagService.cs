@@ -4,10 +4,11 @@ using MewingPad.Common.IRepositories;
 
 namespace MewingPad.Services.TagService;
 
-public class TagService(ITagRepository tagRepository, IAudiofileRepository audiofileRepository) : ITagService
+public class TagService(ITagRepository tagRepository,
+                        IAudiotrackRepository audiofileRepository) : ITagService
 {
     private readonly ITagRepository _tagRepository = tagRepository;
-    private readonly IAudiofileRepository _audiofileRepository = audiofileRepository;
+    private readonly IAudiotrackRepository _audiofileRepository = audiofileRepository;
 
     public async Task CreateTag(Tag tag)
     {
@@ -45,12 +46,26 @@ public class TagService(ITagRepository tagRepository, IAudiofileRepository audio
         return tag;
     }
 
-    public async Task<List<Tag>> GetAudiofileTags(Guid audiofileId)
+    public async Task<List<Tag>> GetAudiotrackTags(Guid audiotrackId)
     {
-        if (await _audiofileRepository.GetAudiofileById(audiofileId) is null)
+        if (await _audiofileRepository.GetAudiotrackById(audiotrackId) is null)
         {
-            throw new AudiofileNotFoundException(audiofileId);
+            throw new AudiotrackNotFoundException(audiotrackId);
         }
-        return await _tagRepository.GetAudiofileTags(audiofileId);
+        return await _tagRepository.GetAudiotrackTags(audiotrackId);
+    }
+
+    public async Task<List<Tag>> GetAllTags()
+    {
+        return await _tagRepository.GetAllTags();
+    }
+
+    public async Task<List<Audiotrack>> GetAudiotracksWithTag(Guid tagId)
+    {
+        if (await _tagRepository.GetTagById(tagId) is null)
+        {
+            throw new TagNotFoundException(tagId);
+        }
+        return await _tagRepository.GetAudiotracksWithTag(tagId);
     }
 }

@@ -10,14 +10,13 @@ public class OAuthService(IUserRepository repository) : IOAuthService
     private readonly IUserRepository _userRepository = repository
                                                        ?? throw new ArgumentNullException();
 
-    public async Task RegisterUser(User user, string password)
+    public async Task RegisterUser(User user)
     {
-        User foundUser = await _userRepository.GetUserByEmail(user.Email);
+        var foundUser = await _userRepository.GetUserByEmail(user.Email);
         if (foundUser is not null)
         {
             throw new UserRegisteredException($"User with email \"{user.Email}\" already registered");
         }
-        user.PasswordHashed = PasswordHasher.HashPassword(password);
         await _userRepository.AddUser(user);
     }
 

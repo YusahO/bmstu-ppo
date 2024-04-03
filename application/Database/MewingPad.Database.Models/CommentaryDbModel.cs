@@ -3,9 +3,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MewingPad.Database.Models;
 
+[Table("Commentaries")]
 public class CommentaryDbModel(Guid id,
                                Guid authorId,
-                               Guid audiofileId,
+                               Guid audiotrackId,
                                string text)
 {
     [Key]
@@ -16,14 +17,14 @@ public class CommentaryDbModel(Guid id,
     [Column("author_id")]
     public Guid AuthorId { get; set; } = authorId;
 
-    [ForeignKey("Audiofile")]
-    [Column("audiofile_id")]
-    public Guid AudiofileId { get; set; } = audiofileId;
+    [ForeignKey("Audiotrack")]
+    [Column("audiotrack_id")]
+    public Guid AudiotrackId { get; set; } = audiotrackId;
 
     [Required]
     [Column("text", TypeName = "text")]
     public string Text { get; set; } = text;
 
     public UserDbModel? Author { get; set; }
-    public AudiofileDbModel? Audiofile { get; set; }
+    public AudiotrackDbModel? Audiotrack { get; set; }
 }

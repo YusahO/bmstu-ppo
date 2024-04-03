@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Database\MewingPad.Database.Context\MewingPad.Database.Context.csproj" />
+    <ProjectReference Include="..\Common\MewingPad.Common.IRepositories\MewingPad.Common.IRepositories.csproj" />
+    <ProjectReference Include="..\Database\MewingPad.Database.NpgsqlRepositories\MewingPad.Database.NpgsqlRepositories.csproj" />
+    <ProjectReference Include="..\Services\MewingPad.Services.UserService\MewingPad.Services.UserService.csproj" />
+    <ProjectReference Include="..\Services\MewingPad.Services.AudiotrackService\MewingPad.Services.AudiotrackService.csproj" />
+    <ProjectReference Include="..\Services\MewingPad.Services.CommentaryService\MewingPad.Services.CommentaryService.csproj" />
+    <ProjectReference Include="..\Services\MewingPad.Services.OAuthService\MewingPad.Services.OAuthService.csproj" />
+    <ProjectReference Include="..\Services\MewingPad.Services.PlaylistService\MewingPad.Services.PlaylistService.csproj" />
+    <ProjectReference Include="..\Services\MewingPad.Services.ReportService\MewingPad.Services.ReportService.csproj" />
+    <ProjectReference Include="..\Services\MewingPad.Services.ScoreService\MewingPad.Services.ScoreService.csproj" />
+    <ProjectReference Include="..\Services\MewingPad.Services.TagService\MewingPad.Services.TagService.csproj" />
+    <ProjectReference Include="..\Utils\MewingPad.Utils.AudioManager\MewingPad.Utils.AudioManager.csproj" />
+  </ItemGroup>
+
+
+
+</Project>

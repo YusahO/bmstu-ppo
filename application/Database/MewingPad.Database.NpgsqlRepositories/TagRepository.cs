@@ -30,10 +30,20 @@ public class TagRepository(MewingPadDbContext context) : ITagRepository
             .ToListAsync();
     }
 
-    public async Task<List<Tag>> GetAudiofileTags(Guid audiofileId)
+    public async Task<List<Audiotrack>> GetAudiotracksWithTag(Guid tagId)
+    {
+        var audiotracks = await _context.TagsAudiofiles
+            .Where(ta => ta.TagId == tagId)
+            .Include(ta => ta.Audiotrack)
+            .Select(ta => AudiotrackConverter.DbToCoreModel(ta.Audiotrack))
+            .ToListAsync();
+        return audiotracks!;
+    }
+
+    public async Task<List<Tag>> GetAudiotrackTags(Guid audiotrackId)
     {
         var tags = await _context.TagsAudiofiles
-            .Where(ta => ta.AudiofileId == audiofileId)
+            .Where(ta => ta.AudiotrackId == audiotrackId)
             .Include(ta => ta.Tag)
             .Select(ta => TagConverter.DbToCoreModel(ta.Tag))
             .ToListAsync();
