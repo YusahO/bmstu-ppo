@@ -127,7 +127,7 @@ public class InMemoryDbFixture() : IDisposable
     {
         foreach (var p in pairs)
         {
-            await Context.TagsAudiofiles.AddAsync(new(p.Key, p.Value));
+            await Context.TagsAudiotracks.AddAsync(new(p.Key, p.Value));
         }
         await Context.SaveChangesAsync();
     }

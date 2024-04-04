@@ -22,7 +22,7 @@ public class OAuthServiceUnitTests
         var email = "email";
         var password = "password";
 
-        var expectedUser = CreateMockUser(email, password);
+        var expectedUser = CreateMockUser(email, PasswordHasher.HashPassword(password));
 
         _mockUserRepository
             .Setup(s => s.GetUserByEmail(email))
@@ -32,7 +32,7 @@ public class OAuthServiceUnitTests
            .Setup(s => s.AddUser(It.IsAny<User>()))
            .Callback((User u) => users.Add(u));
 
-        await _oauthService.RegisterUser(expectedUser, password);
+        await _oauthService.RegisterUser(expectedUser);
         var actualUser = users.Last();
 
         Assert.Equal(expectedUser.Id, actualUser.Id);
@@ -43,7 +43,7 @@ public class OAuthServiceUnitTests
     {
         var email = "email";
         var password = "password";
-        var expectedUser = CreateMockUser(email, password);
+        var expectedUser = CreateMockUser(email, PasswordHasher.HashPassword(password));
 
         expectedUser.Email = email;
         expectedUser.PasswordHashed = PasswordHasher.HashPassword(password);
@@ -52,7 +52,7 @@ public class OAuthServiceUnitTests
             .Setup(s => s.GetUserByEmail(email))
             .ReturnsAsync(expectedUser);
 
-        async Task Action() => await _oauthService.RegisterUser(expectedUser, password);
+        async Task Action() => await _oauthService.RegisterUser(expectedUser);
 
         await Assert.ThrowsAsync<UserRegisteredException>(Action);
     }

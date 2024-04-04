@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MewingPad.Database.Context.Migrations
 {
     [DbContext(typeof(MewingPadDbContext))]
-    [Migration("20240402111156_InitialCreate")]
+    [Migration("20240403182706_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -240,10 +240,6 @@ namespace MewingPad.Database.Context.Migrations
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("bool")
                         .HasColumnName("is_admin");
-
-                    b.Property<bool>("IsAuthorized")
-                        .HasColumnType("bool")
-                        .HasColumnName("is_authorized");
 
                     b.Property<string>("PasswordHashed")
                         .IsRequired()

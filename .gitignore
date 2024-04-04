@@ -3,6 +3,7 @@
 
 # Visual Studio
 .vscode
+pgadmin
 
 # User-specific files
 *.suo

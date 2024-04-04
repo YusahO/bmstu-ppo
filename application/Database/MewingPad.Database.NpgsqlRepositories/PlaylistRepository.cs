@@ -40,16 +40,9 @@ public class PlaylistRepository(MewingPadDbContext context) : IPlaylistRepositor
     public async Task DeletePlaylist(Guid playlistId)
     {
         var playlistDbModel = await _context.Playlists.FindAsync(playlistId);
-        var containedAudiotracks = await _context.PlaylistsAudiotracks
-            .Where(pa => pa.PlaylistId == playlistId)
-            .Include(pa => pa.Audiotrack)
-            .ToListAsync(); 
-            
-        if (containedAudiotracks.Count != 0)
-        {
-            _context.PlaylistsAudiotracks.RemoveRange(containedAudiotracks);
-        }
-
+        var paToDelete = _context.PlaylistsAudiotracks
+            .Where(pa => pa.PlaylistId == playlistId);
+        _context.PlaylistsAudiotracks.RemoveRange(paToDelete);
         _context.Playlists.Remove(playlistDbModel!);
         await _context.SaveChangesAsync();
     }

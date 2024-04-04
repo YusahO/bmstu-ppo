@@ -60,12 +60,41 @@ public class TagService(ITagRepository tagRepository,
         return await _tagRepository.GetAllTags();
     }
 
-    public async Task<List<Audiotrack>> GetAudiotracksWithTag(Guid tagId)
+    public async Task<List<Audiotrack>> GetAudiotracksWithTags(List<Guid> tagIds)
+    {
+        foreach (var tid in tagIds)
+        {
+            if (await _tagRepository.GetTagById(tid) is null)
+            {
+                throw new TagNotFoundException(tid);
+            }
+        }
+        return await _tagRepository.GetAudiotracksWithTags(tagIds);
+    }
+
+    public async Task AssignTagToAudiotrack(Guid audiotrackId, Guid tagId)
     {
         if (await _tagRepository.GetTagById(tagId) is null)
         {
             throw new TagNotFoundException(tagId);
         }
-        return await _tagRepository.GetAudiotracksWithTag(tagId);
+        if (await _audiofileRepository.GetAudiotrackById(audiotrackId) is null)
+        {
+            throw new AudiotrackNotFoundException(audiotrackId);
+        }
+        await _tagRepository.AssignTagToAudiotrack(audiotrackId, tagId);
+    }
+
+    public async Task DeleteTagFromAudiotrack(Guid audiotrackId, Guid tagId)
+    {
+        if (await _tagRepository.GetTagById(tagId) is null)
+        {
+            throw new TagNotFoundException(tagId);
+        }
+        if (await _audiofileRepository.GetAudiotrackById(audiotrackId) is null)
+        {
+            throw new AudiotrackNotFoundException(audiotrackId);
+        }
+        await _tagRepository.RemoveTagFromAudiotrack(audiotrackId, tagId);
     }
 }

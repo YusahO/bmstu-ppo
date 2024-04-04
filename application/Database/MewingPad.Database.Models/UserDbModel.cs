@@ -11,8 +11,7 @@ public class UserDbModel(Guid id,
                          string username,
                          string passwordHashed,
                          string email,
-                         bool isAdmin,
-                         bool isAuthorized)
+                         bool isAdmin)
 {
     [Key]
     [Column("id")]
@@ -37,10 +36,6 @@ public class UserDbModel(Guid id,
     [Required]
     [Column("is_admin", TypeName = "bool")]
     public bool IsAdmin { get; set; } = isAdmin;
-
-    [Required]
-    [Column("is_authorized", TypeName = "bool")]
-    public bool IsAuthorized { get; set; } = isAuthorized;
 
     public ICollection<PlaylistDbModel> Playlists { get; set; } = [];
     public PlaylistDbModel? FavouritesPlaylist { get; set; }

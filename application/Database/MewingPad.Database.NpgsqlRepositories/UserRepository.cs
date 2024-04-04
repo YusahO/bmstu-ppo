@@ -55,7 +55,6 @@ public class UserRepository(MewingPadDbContext context) : IUserRepository
         userDbModel!.PasswordHashed = user.PasswordHashed;
         userDbModel!.Email = user.Email;
         userDbModel!.IsAdmin = user.IsAdmin;
-        userDbModel!.IsAuthorized = user.IsAuthorized;
 
         await _context.SaveChangesAsync();
         return UserConverter.DbToCoreModel(userDbModel);

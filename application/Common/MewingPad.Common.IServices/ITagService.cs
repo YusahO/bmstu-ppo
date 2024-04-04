@@ -9,5 +9,7 @@ public interface ITagService
     Task<Tag> GetTagById(Guid tagId);
     Task<List<Tag>> GetAllTags();
     Task<List<Tag>> GetAudiotrackTags(Guid audiotrackId);
-    Task<List<Audiotrack>> GetAudiotracksWithTag(Guid tagId);
+    Task<List<Audiotrack>> GetAudiotracksWithTags(List<Guid> tagId);
+    Task AssignTagToAudiotrack(Guid audiotrackId, Guid tagId);
+    Task DeleteTagFromAudiotrack(Guid audiotrackId, Guid tagId);
 }

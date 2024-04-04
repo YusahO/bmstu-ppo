@@ -238,10 +238,6 @@ namespace MewingPad.Database.Context.Migrations
                         .HasColumnType("bool")
                         .HasColumnName("is_admin");
 
-                    b.Property<bool>("IsAuthorized")
-                        .HasColumnType("bool")
-                        .HasColumnName("is_authorized");
-
                     b.Property<string>("PasswordHashed")
                         .IsRequired()
                         .HasColumnType("varchar(128)")

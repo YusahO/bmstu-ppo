@@ -2,7 +2,7 @@
 
 public class AudioManager
 {
-    private static readonly HttpClient _client = new() { BaseAddress = new Uri("http://192.168.0.10:9877/") };
+    private static readonly HttpClient _client = new() { BaseAddress = new Uri("http://178.140.95.215:9877/") };
 
     public static async Task<bool> GetFileAsync(string srcpath, string savepath)
     {

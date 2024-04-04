@@ -14,7 +14,7 @@ public class MewingPadDbContext : DbContext
     public DbSet<TagDbModel> Tags { get; set; }
 
     public DbSet<PlaylistAudiotrackDbModel> PlaylistsAudiotracks { get; set; }
-    public DbSet<TagAudiotrackDbModel> TagsAudiofiles { get; set; }
+    public DbSet<TagAudiotrackDbModel> TagsAudiotracks { get; set; }
 
     public MewingPadDbContext(DbContextOptions<MewingPadDbContext> options) : base(options)
     {

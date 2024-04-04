@@ -93,7 +93,6 @@ namespace MewingPad.Database.Context.Migrations
                     password = table.Column<string>(type: "varchar(128)", nullable: false),
                     email = table.Column<string>(type: "varchar(320)", nullable: false),
                     is_admin = table.Column<bool>(type: "bool", nullable: false),
-                    is_authorized = table.Column<bool>(type: "bool", nullable: false),
                     FavouritesPlaylistId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>

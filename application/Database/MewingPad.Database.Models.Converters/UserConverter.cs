@@ -14,8 +14,7 @@ public static class UserConverter
                      username: model.Username,
                      email: model.Email,
                      passwordHashed: model.PasswordHashed,
-                     isAdmin: model.IsAdmin,
-                     isAuthorized: model.IsAuthorized)
+                     isAdmin: model.IsAdmin)
                : default;
     }
 
@@ -28,8 +27,7 @@ public static class UserConverter
                      username: model.Username,
                      email: model.Email,
                      passwordHashed: model.PasswordHashed,
-                     isAdmin: model.IsAdmin,
-                     isAuthorized: model.IsAuthorized)
+                     isAdmin: model.IsAdmin)
                : default;
     }
 }

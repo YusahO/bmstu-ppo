@@ -28,16 +28,7 @@ public class OAuthService(IUserRepository repository) : IOAuthService
         {
             throw new UserCredentialsException($"Incorrect password for user with login \"{email}\"");
         }
-        user.IsAuthorized = true;
         await _userRepository.UpdateUser(user);
         return user;
-    }
-
-    public async Task SignOutUser(User user)
-    {
-        User foundUser = await _userRepository.GetUserById(user.Id)
-                         ?? throw new UserNotFoundException(user.Id);
-        foundUser.IsAuthorized = false;
-        await _userRepository.UpdateUser(user);
     }
 }

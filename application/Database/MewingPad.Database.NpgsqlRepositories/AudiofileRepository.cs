@@ -20,7 +20,11 @@ public class AudiotrackRepository(MewingPadDbContext context) : IAudiotrackRepos
     public async Task DeleteAudiotrack(Guid audiotrackId)
     {
         var audiofileDbModel = await _context.Audiotracks.FindAsync(audiotrackId);
-        _context.Remove(audiofileDbModel!);
+        var taToDelete = _context.TagsAudiotracks.Where(ta => ta.AudiotrackId == audiotrackId);
+        var paToDelete = _context.PlaylistsAudiotracks.Where(pa => pa.AudiotrackId == audiotrackId);
+        _context.Audiotracks.Remove(audiofileDbModel!);
+        _context.TagsAudiotracks.RemoveRange(taToDelete);
+        _context.PlaylistsAudiotracks.RemoveRange(paToDelete);
         await _context.SaveChangesAsync();
     }
 
