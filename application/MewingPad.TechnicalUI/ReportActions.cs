@@ -6,9 +6,9 @@ using MewingPad.Services.UserService;
 
 namespace MewingPad.TechnicalUI.Actions;
 
-internal class ReportsActions(AudiotrackService audiotrackService,
-                              UserService userService,
-                              ReportService reportService)
+internal class ReportActions(AudiotrackService audiotrackService,
+                             UserService userService,
+                             ReportService reportService)
 {
     private readonly AudiotrackService _audiotrackService = audiotrackService;
     private readonly UserService _userService = userService;

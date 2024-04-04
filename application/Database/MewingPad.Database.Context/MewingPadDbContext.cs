@@ -45,10 +45,10 @@ public class MewingPadDbContext : DbContext
             .WithOne(p => p.User)
             .HasForeignKey(p => p.UserId);
 
-        // modelBuilder.Entity<UserDbModel>()
-        //     .HasOne(u => u.FavouritesPlaylist)
-        //     .WithOne()
-        //     .HasForeignKey<UserDbModel>(u => u.FavouritesId);
+        modelBuilder.Entity<UserDbModel>()
+            .HasMany(u => u.Scores)
+            .WithOne(s => s.Author)
+            .HasForeignKey(s => s.AuthorId);
 
         base.OnModelCreating(modelBuilder);
     }

@@ -38,5 +38,6 @@ public class UserDbModel(Guid id,
     public bool IsAdmin { get; set; } = isAdmin;
 
     public ICollection<PlaylistDbModel> Playlists { get; set; } = [];
+    public ICollection<ScoreDbModel> Scores { get; set; } = [];
     public PlaylistDbModel? FavouritesPlaylist { get; set; }
 }

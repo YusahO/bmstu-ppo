@@ -1,48 +1,38 @@
 using MewingPad.Common.Entities;
-using MewingPad.Services.AudiotrackService;
-using MewingPad.Services.CommentaryService;
-using MewingPad.Services.OAuthService;
-using MewingPad.Services.PlaylistService;
-using MewingPad.Services.ReportService;
-using MewingPad.Services.ScoreService;
-using MewingPad.Services.TagService;
-using MewingPad.Services.UserService;
-using MewingPad.TechnicalUI.Actions;
 using Microsoft.Extensions.Configuration;
+using MewingPad.TechnicalUI.Actions;
 
 namespace MewingPad.TechnicalUI;
 
-public class Startup
+internal class Startup
 {
     private readonly IConfiguration _config;
     private User? _currentUser = null;
 
 
     private PlaylistActions _playlistActions;
-    private AudiotracksActions _audiotrackActions;
-    private ReportsActions _reportActions;
+    private AudiotrackActions _audiotrackActions;
+    private ReportActions _reportActions;
     private SearchActions _searchActions;
     private AuthActions _authActions;
     private TagActions _tagActions;
 
     public Startup(IConfiguration config,
-                   UserService userService,
-                   OAuthService oauthService,
-                   PlaylistService playlistService,
-                   AudiotrackService audiotrackService,
-                   TagService tagService,
-                   ScoreService scoreService,
-                   CommentaryService commentaryService,
-                   ReportService reportService)
+                   PlaylistActions playlistActions,
+                   AudiotrackActions audiotrackActions,
+                   ReportActions reportActions,
+                   SearchActions searchActions,
+                   AuthActions authActions,
+                   TagActions tagActions)
     {
         _config = config;
 
-        _playlistActions = new(playlistService, audiotrackService);
-        _audiotrackActions = new(audiotrackService, scoreService, commentaryService, userService, reportService, tagService);
-        _reportActions = new(audiotrackService, userService, reportService);
-        _searchActions = new(tagService, audiotrackService);
-        _authActions = new(oauthService);
-        _tagActions = new(tagService, userService);
+        _playlistActions = playlistActions;
+        _audiotrackActions = audiotrackActions;
+        _reportActions = reportActions;
+        _searchActions = searchActions;
+        _authActions = authActions;
+        _tagActions = tagActions;
     }
 
     public async Task Run()

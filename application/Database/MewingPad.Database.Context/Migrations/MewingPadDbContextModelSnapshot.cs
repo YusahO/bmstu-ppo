@@ -346,7 +346,7 @@ namespace MewingPad.Database.Context.Migrations
                         .IsRequired();
 
                     b.HasOne("MewingPad.Database.Models.UserDbModel", "Author")
-                        .WithMany()
+                        .WithMany("Scores")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -415,6 +415,8 @@ namespace MewingPad.Database.Context.Migrations
             modelBuilder.Entity("MewingPad.Database.Models.UserDbModel", b =>
                 {
                     b.Navigation("Playlists");
+
+                    b.Navigation("Scores");
                 });
 #pragma warning restore 612, 618
         }

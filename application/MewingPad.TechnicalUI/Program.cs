@@ -5,6 +5,7 @@ using MewingPad.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.NpgsqlRepositories;
+using MewingPad.TechnicalUI.Actions;
 using MewingPad.Services.UserService;
 using MewingPad.Services.OAuthService;
 using MewingPad.Services.PlaylistService;
@@ -40,6 +41,13 @@ internal static class Program
             services.AddScoped<ICommentaryRepository, CommentaryRepository>();
             services.AddScoped<IReportRepository, ReportRepository>();
 
+            services.AddScoped<PlaylistActions>();
+            services.AddScoped<AudiotrackActions>();
+            services.AddScoped<ReportActions>();
+            services.AddScoped<SearchActions>();
+            services.AddScoped<AuthActions>();
+            services.AddScoped<TagActions>();
+
             services.AddScoped<UserService>();
             services.AddScoped<OAuthService>();
             services.AddScoped<PlaylistService>();
@@ -72,4 +80,4 @@ internal static class Program
             }
         }
     }
-} 
+}

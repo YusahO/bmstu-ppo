@@ -10,12 +10,12 @@ using MewingPad.Utils.AudioManager;
 
 namespace MewingPad.TechnicalUI.Actions;
 
-internal class AudiotracksActions(AudiotrackService audiotrackService,
-                                  ScoreService scoreService,
-                                  CommentaryService commentaryService,
-                                  UserService userService,
-                                  ReportService reportService,
-                                  TagService tagService)
+internal class AudiotrackActions(AudiotrackService audiotrackService,
+                                 ScoreService scoreService,
+                                 CommentaryService commentaryService,
+                                 UserService userService,
+                                 ReportService reportService,
+                                 TagService tagService)
 {
     private readonly NumberFormatInfo _nfi = new()
     {
@@ -121,10 +121,12 @@ internal class AudiotracksActions(AudiotrackService audiotrackService,
             {
                 var scores = await _scoreService.GetAudiotrackScores(a.Id);
                 var tags = await _tagService.GetAudiotrackTags(a.Id);
-                float meanScore = 0.0f;
+                double meanScore = 0.0f;
                 if (scores.Count != 0)
                 {
-                    meanScore = (float)scores.Average(s => s.Value);
+                    meanScore = scores.Average(s => s.Value);
+                    meanScore = (meanScore - Math.Floor(meanScore)
+                                 < 0.5) ? Math.Floor(meanScore) : Math.Floor(meanScore) + 0.5;
                 }
                 Console.WriteLine($"{++i}) {a.Title}");
                 Console.WriteLine($"   {a.Duration} сек.");
