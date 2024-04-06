@@ -62,10 +62,10 @@ public class UserServiceUnitTests
     {
         return
         [
-            new(Guid.NewGuid(), Guid.NewGuid(), "user1", "u1@mail.ru", "$2a$11$2RL0J3feilWw6859UcNwY.dighT4cPxG/she0Omtu36eVtamkV.8y", true, false),
-            new(Guid.NewGuid(), Guid.NewGuid(), "user2", "u2@mail.ru", "$2a$11$2RL0J3feilWw6859UcNwY.dighT4cPxG/she0Omtu36eVtamkV.8y", false, false),
-            new(Guid.NewGuid(), Guid.NewGuid(), "user3", "u3@mail.ru", "$2a$11$2RL0J3feilWw6859UcNwY.dighT4cPxG/she0Omtu36eVtamkV.8y", false, true),
-            new(Guid.NewGuid(), Guid.NewGuid(), "user4", "u4@mail.ru", "$2a$11$2RL0J3feilWw6859UcNwY.dighT4cPxG/she0Omtu36eVtamkV.8y", true, true)
+            new(Guid.NewGuid(), Guid.NewGuid(), "user1", "u1@mail.ru", "$2a$11$2RL0J3feilWw6859UcNwY.dighT4cPxG/she0Omtu36eVtamkV.8y", true),
+            new(Guid.NewGuid(), Guid.NewGuid(), "user2", "u2@mail.ru", "$2a$11$2RL0J3feilWw6859UcNwY.dighT4cPxG/she0Omtu36eVtamkV.8y", false),
+            new(Guid.NewGuid(), Guid.NewGuid(), "user3", "u3@mail.ru", "$2a$11$2RL0J3feilWw6859UcNwY.dighT4cPxG/she0Omtu36eVtamkV.8y", false),
+            new(Guid.NewGuid(), Guid.NewGuid(), "user4", "u4@mail.ru", "$2a$11$2RL0J3feilWw6859UcNwY.dighT4cPxG/she0Omtu36eVtamkV.8y", true)
         ];
     }
 }

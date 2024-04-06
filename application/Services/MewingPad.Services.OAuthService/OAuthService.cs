@@ -17,6 +17,7 @@ public class OAuthService(IUserRepository repository) : IOAuthService
         {
             throw new UserRegisteredException($"User with email \"{user.Email}\" already registered");
         }
+        user.PasswordHashed = PasswordHasher.HashPassword(user.PasswordHashed);
         await _userRepository.AddUser(user);
     }
 

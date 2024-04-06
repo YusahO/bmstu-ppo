@@ -5,7 +5,6 @@ using MewingPad.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.NpgsqlRepositories;
-using MewingPad.TechnicalUI.Actions;
 using MewingPad.Services.UserService;
 using MewingPad.Services.OAuthService;
 using MewingPad.Services.PlaylistService;
@@ -14,6 +13,9 @@ using MewingPad.Services.TagService;
 using MewingPad.Services.ScoreService;
 using MewingPad.Services.ReportService;
 using MewingPad.Services.CommentaryService;
+using MewingPad.TechnicalUI.BaseMenu;
+using MewingPad.TechnicalUI.GuestMenu;
+using MewingPad.TechnicalUI.AdminMenu;
 
 namespace MewingPad.TechnicalUI;
 
@@ -31,7 +33,15 @@ internal static class Program
                 opt.UseNpgsql(config.GetConnectionString("default"));
             });
 
+            var menus = new List<Menu>
+            {
+                new GuestMenuBuilder().BuildMenu(),
+                new AuthorizedMenuBuilder().BuildMenu(),
+                new AdminMenuBuilder().BuildMenu()
+            };
+
             services.AddSingleton(config);
+            services.AddSingleton(menus);
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAudiotrackRepository, AudiotrackRepository>();
@@ -41,12 +51,7 @@ internal static class Program
             services.AddScoped<ICommentaryRepository, CommentaryRepository>();
             services.AddScoped<IReportRepository, ReportRepository>();
 
-            services.AddScoped<PlaylistActions>();
-            services.AddScoped<AudiotrackActions>();
-            services.AddScoped<ReportActions>();
-            services.AddScoped<SearchActions>();
-            services.AddScoped<AuthActions>();
-            services.AddScoped<TagActions>();
+            services.AddScoped<Context>();
 
             services.AddScoped<UserService>();
             services.AddScoped<OAuthService>();

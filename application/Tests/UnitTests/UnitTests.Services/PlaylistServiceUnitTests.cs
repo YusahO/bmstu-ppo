@@ -109,7 +109,7 @@ public class PlaylistServiceUnitTest
     public async Task TestGetUserFavouritesPlaylist()
     {
         var expectedPlaylist = CreateMockPlaylist();
-        var user = new User(Guid.NewGuid(), expectedPlaylist.Id, "username", "email", "", false, false);
+        var user = new User(Guid.NewGuid(), expectedPlaylist.Id, "username", "email", "", false);
 
         _mockUserRepository.Setup(s => s.GetUserById(user.Id))
                            .ReturnsAsync(user);

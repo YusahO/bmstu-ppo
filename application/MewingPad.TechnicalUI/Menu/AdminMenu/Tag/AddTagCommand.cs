@@ -1,0 +1,29 @@
+
+using MewingPad.Common.Entities;
+using MewingPad.TechnicalUI.BaseMenu;
+
+namespace MewingPad.TechnicalUI.AdminMenu.TagCommands;
+
+public class AddTagCommand : Command
+{
+    public override string? Description()
+    {
+        return "Добавить";
+    }
+
+    public override async Task Execute(Context context)
+    {
+        Console.Write("Введите название тега: ");
+        var name = Console.ReadLine();
+        if (name is null)
+        {
+            Console.WriteLine("[!] Название тега должно быть непустым");
+            return;
+        }
+
+        var tag = new Tag(Guid.NewGuid(), context.CurrentUser!.Id, name);
+        await context.TagService.CreateTag(tag);
+        Console.WriteLine("Тег создан");
+    }
+}
+

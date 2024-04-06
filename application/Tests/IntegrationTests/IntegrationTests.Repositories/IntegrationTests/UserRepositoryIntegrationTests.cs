@@ -18,7 +18,7 @@ public class UserRepositoryIntegrationTests : IDisposable
     [Fact]
     public async Task TestCreateUser()
     {
-        var expectedUser = new User(Guid.NewGuid(), Guid.Empty, "", "", "", false, false);
+        var expectedUser = new User(Guid.NewGuid(), Guid.Empty, "", "", "", false);
 
         await _userRepository.AddUser(expectedUser);
         var actualUser = await _dbFixture.GetUserById(expectedUser.Id);

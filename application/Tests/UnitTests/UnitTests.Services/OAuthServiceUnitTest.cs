@@ -77,7 +77,6 @@ public class OAuthServiceUnitTests
         Assert.Equal(expectedUser.Username, actualUser.Username);
         Assert.Equal(expectedUser.Email, actualUser.Email);
         Assert.True(actualUser.IsAdmin);
-        Assert.True(actualUser.IsAuthorized);
     }
 
     [Fact]
@@ -99,7 +98,6 @@ public class OAuthServiceUnitTests
         Assert.Equal(expectedUser.Username, actualUser.Username);
         Assert.Equal(expectedUser.Email, actualUser.Email);
         Assert.False(actualUser.IsAdmin);
-        Assert.True(actualUser.IsAuthorized);
     }
 
     [Fact]
@@ -119,51 +117,19 @@ public class OAuthServiceUnitTests
         await Assert.ThrowsAsync<UserNotFoundException>(Action);
     }
 
-    [Fact]
-    public async Task TestSignOut()
-    {
-        var users = CreateMockUsers();
-        var expectedUser = users[2];
-        expectedUser.IsAuthorized = true;
-
-        _mockUserRepository
-            .Setup(s => s.GetUserById(expectedUser.Id))
-            .ReturnsAsync(expectedUser);
-
-        await _oauthService.SignOutUser(expectedUser);
-        var user = _mockUserRepository.Object.GetUserById(expectedUser.Id).Result;
-
-        Assert.False(user!.IsAuthorized);
-    }
-
-    [Fact]
-    public async Task TestSignOutNonexistent()
-    {
-        var expectedUser = CreateMockUser();
-        var otherUser = CreateMockUser("another@email", "another_password");
-
-        _mockUserRepository
-            .Setup(s => s.GetUserById(otherUser.Id))
-            .ReturnsAsync(otherUser);
-
-        async Task Action() => await _oauthService.SignOutUser(expectedUser);
-
-        await Assert.ThrowsAsync<UserNotFoundException>(Action);
-    }
-
     private static User CreateMockUser(string email = "email", string passwd = "password")
     {
-        return new(Guid.NewGuid(), Guid.Empty, "usrname", email, PasswordHasher.HashPassword(passwd), false, false);
+        return new(Guid.NewGuid(), Guid.Empty, "usrname", email, PasswordHasher.HashPassword(passwd), false);
     }
 
     private static List<User> CreateMockUsers()
     {
         return
         [
-            new(Guid.NewGuid(), Guid.Empty, "user1", "u1@mail.ru", PasswordHasher.HashPassword("passwd1"), true, false),
-            new(Guid.NewGuid(), Guid.Empty, "user2", "u2@mail.ru", PasswordHasher.HashPassword("passwd2"), false, false),
-            new(Guid.NewGuid(), Guid.Empty, "user3", "u3@mail.ru", PasswordHasher.HashPassword("passwd3"), false, true),
-            new(Guid.NewGuid(), Guid.Empty, "user4", "u4@mail.ru", PasswordHasher.HashPassword("passwd4"), true, true)
+            new(Guid.NewGuid(), Guid.Empty, "user1", "u1@mail.ru", PasswordHasher.HashPassword("passwd1"), true),
+            new(Guid.NewGuid(), Guid.Empty, "user2", "u2@mail.ru", PasswordHasher.HashPassword("passwd2"), false),
+            new(Guid.NewGuid(), Guid.Empty, "user3", "u3@mail.ru", PasswordHasher.HashPassword("passwd3"), false),
+            new(Guid.NewGuid(), Guid.Empty, "user4", "u4@mail.ru", PasswordHasher.HashPassword("passwd4"), true)
         ];
     }
 }
