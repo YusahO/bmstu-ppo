@@ -1,54 +1,65 @@
 using MewingPad.Common.Entities;
 using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
+using MewingPad.Utils.AudioManager;
 
 namespace MewingPad.Services.AudiotrackService;
 
 public class AudiotrackService(IAudiotrackRepository audiotrackRepository) : IAudiotrackService
 {
-    private readonly IAudiotrackRepository _audiofileRepository = audiotrackRepository;
+    private readonly IAudiotrackRepository _audiotrackRepository = audiotrackRepository;
 
-    public async Task CreateAudiotrack(Audiotrack audiofile)
+    public async Task CreateAudiotrack(Audiotrack audiotrack)
     {
-        if (await _audiofileRepository.GetAudiotrackById(audiofile.Id) is not null)
+        if (await _audiotrackRepository.GetAudiotrackById(audiotrack.Id) is not null)
         {
-            throw new AudiotrackExistsException(audiofile.Id);
+            throw new AudiotrackExistsException(audiotrack.Id);
         }
-        await _audiofileRepository.AddAudiotrack(audiofile);
+        await _audiotrackRepository.AddAudiotrack(audiotrack);
+        await AudioManager.CreateFileAsync(audiotrack.Filepath);
     }
 
-    public async Task<Audiotrack> UpdateAudiotrack(Audiotrack audiofile)
+    public async Task<Audiotrack> UpdateAudiotrack(Audiotrack audiotrack)
     {
-        if (await _audiofileRepository.GetAudiotrackById(audiofile.Id) is null)
+        var oldAudiotrack = await _audiotrackRepository.GetAudiotrackById(audiotrack.Id)
+                            ?? throw new AudiotrackNotFoundException(audiotrack.Id);
+        if (oldAudiotrack.Filepath != audiotrack.Filepath)
         {
-            throw new AudiotrackNotFoundException(audiofile.Id);
+            await AudioManager.UpdateFileAsync(oldAudiotrack.Filepath, audiotrack.Filepath);
         }
-        return await _audiofileRepository.UpdateAudiotrack(audiofile);
+        return await _audiotrackRepository.UpdateAudiotrack(audiotrack);
     }
 
     public async Task DeleteAudiotrack(Guid audiotrackId)
     {
-        if (await _audiofileRepository.GetAudiotrackById(audiotrackId) is null)
-        {
-            throw new AudiotrackNotFoundException(audiotrackId);
-        }
-        await _audiofileRepository.DeleteAudiotrack(audiotrackId);
+        var audiotrack = await _audiotrackRepository.GetAudiotrackById(audiotrackId)
+                         ?? throw new AudiotrackNotFoundException(audiotrackId);
+        await AudioManager.DeleteFileAsync(audiotrack.Filepath);
+        await _audiotrackRepository.DeleteAudiotrack(audiotrackId);
     }
 
     public async Task<Audiotrack> GetAudiotrackById(Guid audiotrackId)
     {
-        var audiofile = await _audiofileRepository.GetAudiotrackById(audiotrackId)
+        var audiotrack = await _audiotrackRepository.GetAudiotrackById(audiotrackId)
                               ?? throw new AudiotrackNotFoundException(audiotrackId);
-        return audiofile;
+        return audiotrack;
     }
 
     public Task<List<Audiotrack>> GetAllAudiotracks()
     {
-        return _audiofileRepository.GetAllAudiotracks();
+        return _audiotrackRepository.GetAllAudiotracks();
     }
 
     public Task<List<Audiotrack>> GetAudiotracksByTitle(string title)
     {
-        return _audiofileRepository.GetAudiotracksByTitle(title);
+        return _audiotrackRepository.GetAudiotracksByTitle(title);
+    }
+
+    public async Task DownloadAudiotrack(string srcpath, string savepath)
+    {
+        if (!await AudioManager.GetFileAsync(srcpath, savepath))
+        {
+            throw new Exception($"{srcpath} does not exist");
+        }
     }
 }

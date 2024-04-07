@@ -1,5 +1,4 @@
 using System.Globalization;
-using MewingPad.Utils.AudioManager;
 using MewingPad.TechnicalUI.BaseMenu;
 using MewingPad.TechnicalUI.CommonCommands.AudiotrackCommands;
 using MewingPad.Common.Entities;
@@ -49,21 +48,12 @@ public class ChangeAudiotrackCommand : Command
 
         audio.Title = title == "" ? audio.Title : title!;
         audio.Duration = duration == 0 ? audio.Duration : duration;
-        if (filepath != "")
-        {
-            if (!await AudioManager.UpdateFileAsync(audio.Filepath, filepath!))
-            {
-                Console.WriteLine("\n[!] Не удалось обновить файл\n");
-                return;
-            }
-            audio.Filepath = filepath!;
-        }
 
         await context.AudiotrackService.UpdateAudiotrack(audio);
         await ChangeAudiotrackTags(audio.Id, context);
     }
 
-    private async Task ChangeAudiotrackTags(Guid audiotrackId, Context context)
+    private static async Task ChangeAudiotrackTags(Guid audiotrackId, Context context)
     {
         var tags = await context.TagService.GetAllTags();
         if (tags.Count == 0)

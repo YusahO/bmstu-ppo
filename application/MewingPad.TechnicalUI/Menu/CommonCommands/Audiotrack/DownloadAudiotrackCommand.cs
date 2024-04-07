@@ -1,6 +1,5 @@
 
 using MewingPad.Common.Entities;
-using MewingPad.Utils.AudioManager;
 using MewingPad.TechnicalUI.BaseMenu;
 
 namespace MewingPad.TechnicalUI.CommonCommands.AudiotrackCommands;
@@ -32,9 +31,14 @@ public class DownloadAudiotrackCommand : Command
             return;
         }
 
-        if (!await AudioManager.GetFileAsync(audiotracks[choice - 1].Filepath, "/home/daria/Загрузки"))
+        try
         {
-            Console.WriteLine($"[!] Не удалось скачать файл");
+            await context.AudiotrackService.DownloadAudiotrack(audiotracks[choice - 1].Filepath, "/home/daria/Загрузки");
+            Console.WriteLine($"Аудиофайл сохранен в директории \"/home/daria/Загрузки\"");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"\n[!] {ex.Message}\n");
         }
     }
 }

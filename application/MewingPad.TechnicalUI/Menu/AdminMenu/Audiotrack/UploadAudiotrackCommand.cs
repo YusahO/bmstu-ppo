@@ -1,7 +1,6 @@
 using System.Globalization;
 using MewingPad.Common.Entities;
 using MewingPad.TechnicalUI.BaseMenu;
-using MewingPad.Utils.AudioManager;
 
 namespace MewingPad.TechnicalUI.AdminMenu.AudiotrackCommands;
 
@@ -44,20 +43,22 @@ public class UploadAudiotrackCommand : Command
             return;
         }
 
-        if (!await AudioManager.CreateFileAsync(filepath!))
-        {
-            Console.WriteLine("[!] Не удалось загрузить файл");
-            return;
-        }
-
-        var audio = new Common.Entities.Audiotrack(
+        var audio = new Audiotrack(
             Guid.NewGuid(),
             title!,
             (float)duration!,
             context.CurrentUser!.Id,
             Path.GetFileName(filepath!));
 
-        await context.AudiotrackService.CreateAudiotrack(audio);
+        try
+        {
+            await context.AudiotrackService.CreateAudiotrack(audio);
+            Console.WriteLine("Аудиотрек загружен");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"\n[!] {ex.Message}\n");
+        }
     }
 }
 

@@ -5,6 +5,7 @@
     <ProjectReference Include="..\..\Common\MewingPad.Common.Exceptions\MewingPad.Common.Exceptions.csproj" />
     <ProjectReference Include="..\..\Common\MewingPad.Common.IRepositories\MewingPad.Common.IRepositories.csproj" />
     <ProjectReference Include="..\..\Common\MewingPad.Common.IServices\MewingPad.Common.IServices.csproj" />
+    <ProjectReference Include="..\..\Utils\MewingPad.Utils.AudioManager\MewingPad.Utils.AudioManager.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

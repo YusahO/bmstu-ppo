@@ -38,7 +38,6 @@
     <ProjectReference Include="..\Services\MewingPad.Services.ReportService\MewingPad.Services.ReportService.csproj" />
     <ProjectReference Include="..\Services\MewingPad.Services.ScoreService\MewingPad.Services.ScoreService.csproj" />
     <ProjectReference Include="..\Services\MewingPad.Services.TagService\MewingPad.Services.TagService.csproj" />
-    <ProjectReference Include="..\Utils\MewingPad.Utils.AudioManager\MewingPad.Utils.AudioManager.csproj" />
   </ItemGroup>
 
 
