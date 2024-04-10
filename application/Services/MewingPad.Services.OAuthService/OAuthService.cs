@@ -6,15 +6,19 @@ using Serilog;
 
 namespace MewingPad.Services.OAuthService;
 
-public class OAuthService(IUserRepository repository) : IOAuthService
+public class OAuthService(IUserRepository userRepository,
+                          IPlaylistRepository playlistRepository) : IOAuthService
 {
-    private readonly IUserRepository _userRepository = repository
+    private readonly IUserRepository _userRepository = userRepository
                                                        ?? throw new ArgumentNullException();
+    private readonly IPlaylistRepository _playlistRepository = playlistRepository
+                                                               ?? throw new ArgumentNullException();
     private readonly ILogger _logger = Log.ForContext<OAuthService>();
 
     public async Task RegisterUser(User user)
     {
-        _logger.Information("Entering RegisterUser method");
+        _logger.Verbose("Entering RegisterUser method");
+
         var foundUser = await _userRepository.GetUserByEmail(user.Email);
         if (foundUser is not null)
         {
@@ -23,12 +27,13 @@ public class OAuthService(IUserRepository repository) : IOAuthService
         }
         user.PasswordHashed = PasswordHasher.HashPassword(user.PasswordHashed);
         await _userRepository.AddUser(user);
-        _logger.Information("Exiting RegisterUser method");
+        await _playlistRepository.AddPlaylist(new(Guid.NewGuid(), "Favourites", user.Id));
+        _logger.Verbose("Exiting RegisterUser method");
     }
 
     public async Task<User> SignInUser(string email, string password)
     {
-        _logger.Information("Entering SignInUser method");
+        _logger.Verbose("Entering SignInUser method");
         var user = await _userRepository.GetUserByEmail(email);
         if (user is null)
         {
@@ -41,7 +46,7 @@ public class OAuthService(IUserRepository repository) : IOAuthService
             _logger.Error($"Incorrect password for user \"{email}\"");
             throw new UserCredentialsException($"Incorrect password for user with login \"{email}\"");
         }
-        _logger.Information("Exiting SignInUser method");
+        _logger.Verbose("Exiting SignInUser method");
         return user;
     }
 }

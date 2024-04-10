@@ -15,7 +15,7 @@ public class ViewAllAudiotracksCommand : Command
         var audiotracks = await context.AudiotrackService.GetAllAudiotracks();
         if (audiotracks.Count == 0)
         {
-            Console.WriteLine("Список аудиофайлов пуст");
+            Console.WriteLine("Список аудиотреков пуст");
         }
         else
         {

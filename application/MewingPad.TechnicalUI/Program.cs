@@ -17,6 +17,7 @@ using MewingPad.TechnicalUI.BaseMenu;
 using MewingPad.TechnicalUI.GuestMenu;
 using MewingPad.TechnicalUI.AdminMenu;
 using Serilog;
+using MewingPad.Utils.AudioManager;
 
 namespace MewingPad.TechnicalUI;
 
@@ -61,6 +62,7 @@ internal static class Program
             services.AddScoped<ITagAudiotrackRepository, TagAudiotrackRepository>();
 
             services.AddScoped<Context>();
+            services.AddScoped<AudioManager>();
 
             services.AddScoped<UserService>();
             services.AddScoped<OAuthService>();

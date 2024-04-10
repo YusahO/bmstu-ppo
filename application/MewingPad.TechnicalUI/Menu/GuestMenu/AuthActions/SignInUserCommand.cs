@@ -1,9 +1,11 @@
 using MewingPad.TechnicalUI.BaseMenu;
+using Serilog;
 
 namespace MewingPad.TechnicalUI.GuestMenu.AuthActions;
 
 public class SignInUserCommand : Command
 {
+    private readonly ILogger _logger = Log.ForContext<SignInUserCommand>();
     public override string? Description()
     {
         return "Авторизоваться";
@@ -15,6 +17,7 @@ public class SignInUserCommand : Command
 
         Console.Write("Введите адрес электронной почты: ");
         var email = Console.ReadLine();
+
 
         Console.Write("Введите пароль: ");
         var password = Console.ReadLine();

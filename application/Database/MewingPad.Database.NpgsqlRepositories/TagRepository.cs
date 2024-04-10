@@ -15,7 +15,7 @@ public class TagRepository(MewingPadDbContext context) : ITagRepository
 
     public async Task AddTag(Tag tag)
     {
-        _logger.Information("Entering AddTag method");
+        _logger.Verbose("Entering AddTag method");
 
         try
         {
@@ -29,12 +29,12 @@ public class TagRepository(MewingPadDbContext context) : ITagRepository
             throw;
         }
 
-        _logger.Information("Exiting AddTag method");
+        _logger.Verbose("Exiting AddTag method");
     }
 
     public async Task DeleteTag(Guid tagId)
     {
-        _logger.Information("Entering DeleteTag method");
+        _logger.Verbose("Entering DeleteTag method");
 
         var tagDbModel = await _context.Tags.FindAsync(tagId);
         try
@@ -48,12 +48,12 @@ public class TagRepository(MewingPadDbContext context) : ITagRepository
             throw;
         }
 
-        _logger.Information("Exiting DeleteTag method");
+        _logger.Verbose("Exiting DeleteTag method");
     }
 
     public async Task<List<Tag>> GetAllTags()
     {
-        _logger.Information("Entering GetAllTags method");
+        _logger.Verbose("Entering GetAllTags method");
 
         var tags = await _context.Tags
             .Select(t => TagConverter.DbToCoreModel(t))
@@ -63,13 +63,13 @@ public class TagRepository(MewingPadDbContext context) : ITagRepository
             _logger.Warning("Database has no entries of Tag");
         }
         
-        _logger.Information("Exiting GetAllTags method");
+        _logger.Verbose("Exiting GetAllTags method");
         return tags;
     }
 
     public async Task<Tag?> GetTagById(Guid tagId)
     {
-        _logger.Information("Entering GetTagById method");
+        _logger.Verbose("Entering GetTagById method");
 
         var tagDbModel = await _context.Tags.FindAsync(tagId);
         if (tagDbModel is null)
@@ -78,13 +78,13 @@ public class TagRepository(MewingPadDbContext context) : ITagRepository
         }
         var tag = TagConverter.DbToCoreModel(tagDbModel);
 
-        _logger.Information("Exiting GetTagById method");
+        _logger.Verbose("Exiting GetTagById method");
         return tag;
     }
 
     public async Task<Tag> UpdateTag(Tag tag)
     {
-        _logger.Information("Entering UpdateTag method");
+        _logger.Verbose("Entering UpdateTag method");
 
         var tagDbModel = await _context.Tags.FindAsync(tag.Id);
 
@@ -93,7 +93,8 @@ public class TagRepository(MewingPadDbContext context) : ITagRepository
         tagDbModel!.Name = tag.Name;
 
         await _context.SaveChangesAsync();
-        _logger.Information("Entering UpdateTag method");
+        _logger.Information($"Updated tag (Id = {tag.Id})");
+        _logger.Verbose("Exiting UpdateTag method");
         return tag;
     }
 }

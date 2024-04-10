@@ -1,11 +1,12 @@
-
 using MewingPad.Common.Entities;
 using MewingPad.TechnicalUI.BaseMenu;
+using Serilog;
 
 namespace MewingPad.TechnicalUI.CommonCommands.AudiotrackCommands;
 
 public class AddScoreCommand : Command
 {
+    private readonly ILogger _logger = Log.ForContext<AddScoreCommand>();
     public override string? Description()
     {
         return "Поставить оценку";
@@ -19,14 +20,21 @@ public class AddScoreCommand : Command
         {
             return;
         }
+
         Console.Write("Введите номер аудиотрека: ");
-        if (!int.TryParse(Console.ReadLine(), out int choice))
+
+        var inpCheck = int.TryParse(Console.ReadLine(), out int choice);
+        _logger.Information($"User input audiotrack number \"{choice}\"");
+
+        if (!inpCheck)
         {
+            _logger.Error("User input is invalid");
             Console.WriteLine("[!] Введенное значение имеет некорректный формат");
             return;
         }
         if (0 >= choice || choice > audiotracks.Count)
         {
+            _logger.Error($"User input is out of range [1, {audiotracks.Count}]");
             Console.WriteLine($"[!] Аудиотрека с номером {choice} не существует");
             return;
         }
@@ -36,24 +44,28 @@ public class AddScoreCommand : Command
             .Find(s => s.AudiotrackId == audiotrackId);
 
         Console.Write("Введите оценку (0 - 5): ");
-        if (int.TryParse(Console.ReadLine(), out int value))
+
+        inpCheck = int.TryParse(Console.ReadLine(), out int value);
+        _logger.Information($"User input score value \"{value}\"");
+
+        if (!inpCheck)
         {
-            if (score is null)
-            {
-                score = new Score(audiotracks[choice - 1].Id, context.CurrentUser!.Id, value);
-                await context.ScoreService.CreateScore(score);
-                Console.WriteLine("Оценка сохранена");
-            }
-            else
-            {
-                score.SetValue(value);
-                await context.ScoreService.UpdateScore(score);
-                Console.WriteLine("Оценка обновлена");
-            }
+            _logger.Error("User input is invalid");
+            Console.WriteLine("[!] Введено недопустимое значение оценки");
+            return;
+        }
+
+        if (score is null)
+        {
+            score = new Score(audiotracks[choice - 1].Id, context.CurrentUser!.Id, value);
+            await context.ScoreService.CreateScore(score);
+            Console.WriteLine("Оценка сохранена");
         }
         else
         {
-            Console.WriteLine("[!] Введено недопустимое значение оценки");
+            score.SetValue(value);
+            await context.ScoreService.UpdateScore(score);
+            Console.WriteLine("Оценка обновлена");
         }
     }
 }

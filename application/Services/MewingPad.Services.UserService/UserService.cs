@@ -14,7 +14,7 @@ public class UserService(IUserRepository repository) : IUserService
 
     public async Task<User> ChangeUserPermissions(Guid userId, bool isAdmin)
     {
-        _logger.Information("Entering ChangeUserPermissions method");
+        _logger.Verbose("Entering ChangeUserPermissions method");
 
         var user = await _userRepository.GetUserById(userId);
         if (user is null)
@@ -25,23 +25,23 @@ public class UserService(IUserRepository repository) : IUserService
         user.IsAdmin = isAdmin;
         await _userRepository.UpdateUser(user);
 
-        _logger.Information("Exiting ChangeUserPermissions method");
+        _logger.Verbose("Exiting ChangeUserPermissions method");
         return user;
     }
 
     public async Task<List<User>> GetAllUsers()
     {
-        _logger.Information("Entering GetAllUsers method");
+        _logger.Verbose("Entering GetAllUsers method");
 
         var users = await _userRepository.GetAllUsers();
 
-        _logger.Information("Exiting GetAllUsers method");
+        _logger.Verbose("Exiting GetAllUsers method");
         return users;
     }
 
     public async Task<User> GetUserById(Guid userId)
     {
-        _logger.Information("Entering GetUserById method");
+        _logger.Verbose("Entering GetUserById method");
 
         var user = await _userRepository.GetUserById(userId);
         if (user is null)
@@ -50,7 +50,7 @@ public class UserService(IUserRepository repository) : IUserService
             throw new UserNotFoundException(userId);
         }
 
-        _logger.Information("Exiting GetUserById method");
+        _logger.Verbose("Exiting GetUserById method");
         return user;
     }
 }

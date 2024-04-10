@@ -16,6 +16,7 @@ public class ViewAllReportsCommand : Command
         if (reports.Count == 0)
         {
             Console.WriteLine("Список жалоб пуст");
+            return;
         }
         else
         {

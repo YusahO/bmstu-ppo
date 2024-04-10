@@ -15,7 +15,7 @@ public class TagAudiotrackRepository(MewingPadDbContext context) : ITagAudiotrac
 
     public async Task DeleteByTag(Guid tagId)
     {
-        _logger.Information("Entering DeleteByTag method");
+        _logger.Verbose("Entering DeleteByTag method");
 
         var pairs = await _context.TagsAudiotracks
             .Where(ta => ta.TagId == tagId)
@@ -32,7 +32,7 @@ public class TagAudiotrackRepository(MewingPadDbContext context) : ITagAudiotrac
             await _context.SaveChangesAsync();
             foreach (var p in pairs)
             {
-                _logger.Information($"Deleted {{ TagId =  {p.TagId}, AudiotrackId = {p.AudiotrackId}}} from database");
+                _logger.Information($"Deleted {{ TagId = {p.TagId}, AudiotrackId = {p.AudiotrackId}}} from database");
             }
         }
         catch (Exception ex)
@@ -41,12 +41,12 @@ public class TagAudiotrackRepository(MewingPadDbContext context) : ITagAudiotrac
             throw;
         }
 
-        _logger.Information("Exiting DeleteByTag method");
+        _logger.Verbose("Exiting DeleteByTag method");
     }
 
     public async Task DeleteByAudiotrack(Guid audiotrackId)
     {
-        _logger.Information("Entering DeleteByTag method");
+        _logger.Verbose("Entering DeleteByTag method");
 
         var pairs = await _context.TagsAudiotracks
             .Where(ta => ta.TagId == audiotrackId)
@@ -63,7 +63,7 @@ public class TagAudiotrackRepository(MewingPadDbContext context) : ITagAudiotrac
             await _context.SaveChangesAsync();
             foreach (var p in pairs)
             {
-                _logger.Information($"Deleted {{ TagId =  {p.TagId}, AudiotrackId = {p.AudiotrackId}}} from database");
+                _logger.Information($"Deleted {{ TagId = {p.TagId}, AudiotrackId = {p.AudiotrackId}}} from database");
             }
         }
         catch (Exception ex)
@@ -72,12 +72,12 @@ public class TagAudiotrackRepository(MewingPadDbContext context) : ITagAudiotrac
             throw;
         }
 
-        _logger.Information("Exiting DeleteByTag method");
+        _logger.Verbose("Exiting DeleteByTag method");
     }
 
     public async Task AssignTagToAudiotrack(Guid audiotrackId, Guid tagId)
     {
-        _logger.Information("Entering AssignTagToAudiotrack method");
+        _logger.Verbose("Entering AssignTagToAudiotrack method");
 
         try
         {
@@ -91,12 +91,12 @@ public class TagAudiotrackRepository(MewingPadDbContext context) : ITagAudiotrac
             throw;
         }
 
-        _logger.Information("Exiting AssignTagToAudiotrack method");
+        _logger.Verbose("Exiting AssignTagToAudiotrack method");
     }
 
     public async Task<List<Audiotrack>> GetAudiotracksWithTags(List<Guid> tagIds)
     {
-        _logger.Information("Entering GetAudiotracksWithTags method");
+        _logger.Verbose("Entering GetAudiotracksWithTags method");
 
         var audiotracks = await _context.TagsAudiotracks
             .Where(ta => tagIds.Contains(ta.TagId))
@@ -108,13 +108,13 @@ public class TagAudiotrackRepository(MewingPadDbContext context) : ITagAudiotrac
             _logger.Warning("No audiotracks with tags {@Tags} found in database", tagIds);
         }
 
-        _logger.Information("Exiting GetAudiotracksWithTags method");
+        _logger.Verbose("Exiting GetAudiotracksWithTags method");
         return audiotracks!;
     }
 
     public async Task<List<Tag>> GetAudiotrackTags(Guid audiotrackId)
     {
-        _logger.Information("Entering GetAudiotrackTags method");
+        _logger.Verbose("Entering GetAudiotrackTags method");
 
         var tags = await _context.TagsAudiotracks
             .Where(ta => ta.AudiotrackId == audiotrackId)
@@ -126,13 +126,13 @@ public class TagAudiotrackRepository(MewingPadDbContext context) : ITagAudiotrac
             _logger.Warning($"Audiotrack (Id = {audiotrackId}) has no tags");
         }
 
-        _logger.Information("Exiting GetAudiotrackTags method");
+        _logger.Verbose("Exiting GetAudiotrackTags method");
         return tags!;
     }
 
     public async Task RemoveTagFromAudiotrack(Guid audiotrackId, Guid tagId)
     {
-        _logger.Information("Entering RemoveTagFromAudiotrack method");
+        _logger.Verbose("Entering RemoveTagFromAudiotrack method");
 
         try
         {
@@ -146,7 +146,7 @@ public class TagAudiotrackRepository(MewingPadDbContext context) : ITagAudiotrac
             throw;
         }
 
-        _logger.Information("Exiting RemoveTagFromAudiotrack method");
+        _logger.Verbose("Exiting RemoveTagFromAudiotrack method");
 
     }
 }

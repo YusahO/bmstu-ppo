@@ -1,30 +1,49 @@
-﻿namespace MewingPad.Utils.AudioManager;
+﻿using Serilog;
+using Microsoft.Extensions.Configuration;
+
+namespace MewingPad.Utils.AudioManager;
 
 public class AudioManager
 {
-    private static readonly HttpClient _client = new() { BaseAddress = new Uri("http://178.140.95.215:9877/") };
+    private readonly HttpClient _client;
+    private readonly ILogger _logger = Log.ForContext<AudioManager>();
+    private readonly IConfiguration _config;
 
-    public static async Task<bool> GetFileAsync(string srcpath, string savepath)
+    public AudioManager(IConfiguration config)
     {
+        _config = config;
+        _client = new HttpClient { BaseAddress = new Uri(config["ApiSettings:AudioServerAddress"]!) };
+    }
+
+    public async Task<bool> GetFileAsync(string srcpath, string savepath)
+    {
+        _logger.Verbose("Entering GetFileAsync method");
+
         try
         {
-            using (var stream = await _client.GetStreamAsync($"audiofiles/{srcpath}"))
-            using (var fileStream = new FileStream(Path.Combine(savepath, srcpath), FileMode.Create, FileAccess.Write, FileShare.Read))
-            {
-                await stream.CopyToAsync(fileStream);
-            }
-            Console.WriteLine($"File downloaded to: {savepath}");
+            using var stream = await _client.GetStreamAsync($"audiofiles/{srcpath}");
+            using var fileStream = new FileStream(
+                Path.Combine(savepath, srcpath),
+                FileMode.Create,
+                FileAccess.Write,
+                FileShare.Read);
+            await stream.CopyToAsync(fileStream);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error downloading: {ex.Message}");
+            _logger.Error("Exception occurred", ex);
             return false;
         }
+
+        _logger.Information($"File '{srcpath}' saved to '{savepath}'");
+        _logger.Verbose("Exiting GetFileAsync method");
         return true;
     }
 
-    public static async Task<bool> CreateFileAsync(string filepath)
+    public async Task<bool> CreateFileAsync(string filepath)
     {
+        _logger.Verbose("Entering CreateFileAsync method");
+
         try
         {
             using var fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read);
@@ -36,45 +55,53 @@ public class AudioManager
             using var response = await _client.PostAsync("audiofiles", content);
             if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine("File uploaded successfully");
+                _logger.Information($"File '{filepath}' uploaded successfully");
             }
             else
             {
-                Console.WriteLine($"Failed to upload file. Status: {response.StatusCode}");
+                _logger.Error($"Failed to upload file '{filepath}'. Status: {response.StatusCode}");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error uploading: {ex.Message}");
+            _logger.Error(ex, "Error creating file: {NewPath}. Reason: {ErrorMessage}", filepath, ex.Message);
             return false;
         }
+
+        _logger.Verbose("Exiting CreateFileAsync method");
         return true;
     }
 
-    public static async Task<bool> DeleteFileAsync(string filepath)
+    public async Task<bool> DeleteFileAsync(string filepath)
     {
+        _logger.Verbose("Entering DeleteFileAsync method");
+
         try
         {
             HttpResponseMessage response = await _client.DeleteAsync($"audiofiles/{filepath}");
             if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine($"File '{filepath}' deleted successfully");
+                _logger.Information($"File '{filepath}' deleted successfully");
             }
             else
             {
-                Console.WriteLine($"Failed to delete file '{filepath}'. Status: {response.StatusCode}");
+                _logger.Error($"Failed to delete file '{filepath}'. Status: {response.StatusCode}");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error deleting file: {ex.Message}");
+            _logger.Error("Exception occurred", ex);
             return false;
         }
+
+        _logger.Verbose("Exiting DeleteFileAsync method");
         return true;
     }
 
-    public static async Task<bool> UpdateFileAsync(string filepath, string newFilepath)
+    public async Task<bool> UpdateFileAsync(string filepath, string newFilepath)
     {
+        _logger.Verbose("Entering UpdateFileAsync method");
+
         try
         {
             var newFilename = Path.GetFileName(newFilepath);
@@ -87,18 +114,20 @@ public class AudioManager
             HttpResponseMessage response = await _client.PutAsync($"audiofiles/{newFilename}", content);
             if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine($"File '{newFilename}' updated successfully");
+                _logger.Information($"File '{newFilename}' updated successfully");
             }
             else
             {
-                Console.WriteLine($"Failed to update file '{newFilename}'. Status: {response.StatusCode}");
+                _logger.Error($"Failed to update file '{newFilename}'. Status: {response.StatusCode}");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error updating file: {ex.Message}");
+            _logger.Error("Exception occurred", ex);
             return false;
         }
+
+        _logger.Verbose("Exiting UpdateFileAsync method");
         return true;
     }
 }

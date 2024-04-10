@@ -1,10 +1,12 @@
 using MewingPad.Common.Entities;
 using MewingPad.TechnicalUI.BaseMenu;
+using Serilog;
 
 namespace MewingPad.TechnicalUI.GuestMenu.AuthActions;
 
 public class RegisterUserCommand : Command
 {
+    private readonly ILogger _logger = Log.ForContext<SignInUserCommand>();
     public override string? Description()
     {
         return "Зарегистрироваться";
@@ -20,10 +22,14 @@ public class RegisterUserCommand : Command
         do
         {
             Console.Write("Введите имя пользователя: ");
+
             username = Console.ReadLine();
+            _logger.Information($"User input username \"{username}\"");
+
             if (username is null || username.Length < 3)
             {
                 isIncorrect = true;
+                _logger.Warning("User input is invalid");
                 Console.WriteLine("[!] Имя пользователя должно содержать более 2 символов");
             }
             else
@@ -35,10 +41,14 @@ public class RegisterUserCommand : Command
         do
         {
             Console.Write("Введите пароль: ");
+
             password = Console.ReadLine();
+            _logger.Information($"User input password");
+
             if (password is null || password.Length < 3)
             {
                 isIncorrect = true;
+                _logger.Warning("User input is invalid");
                 Console.WriteLine("[!] Пароль должен содержать 8 символов и более");
             }
             else
@@ -52,6 +62,7 @@ public class RegisterUserCommand : Command
             Console.Write("-> Подтвердите пароль: ");
             passwordVerify = Console.ReadLine();
         } while (password != passwordVerify);
+        _logger.Information($"User successfully verified password");
 
         do
         {
@@ -69,6 +80,7 @@ public class RegisterUserCommand : Command
         } while (isIncorrect);
 
         bool makeAdmin = context.CurrentUser is not null && context.CurrentUser.IsAdmin;
+        _logger.Information($"User is administrator");
 
         try
         {

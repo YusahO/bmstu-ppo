@@ -1,10 +1,12 @@
 using MewingPad.Common.Entities;
 using MewingPad.TechnicalUI.BaseMenu;
+using Serilog;
 
 namespace MewingPad.TechnicalUI.CommonCommands.PlaylistCommands;
 
 public class CreatePlaylistCommand : Command
 {
+    private readonly ILogger _logger = Log.ForContext<CreatePlaylistCommand>();
     public override string? Description()
     {
         return "Создать";
@@ -21,10 +23,14 @@ public class CreatePlaylistCommand : Command
         do
         {
             Console.Write("Введите название плейлиста: ");
+
             title = Console.ReadLine();
+            _logger.Information($"User input playlist title \"{title}\"");
+
             isInvalid = title is null || playlists.Exists(p => p.Title == title);
             if (isInvalid)
             {
+                _logger.Warning($"User already has playlist with name \"{title}\"");
                 Console.WriteLine("[!] Плейлист с таким названием уже существует");
             }
         } while (isInvalid);

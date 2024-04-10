@@ -15,7 +15,7 @@ public class ReportRepository(MewingPadDbContext context) : IReportRepository
 
     public async Task AddReport(Report report)
     {
-        _logger.Information("Entering AddReport method");
+        _logger.Verbose("Entering AddReport method");
 
         try
         {
@@ -29,12 +29,12 @@ public class ReportRepository(MewingPadDbContext context) : IReportRepository
             throw;
         }
 
-        _logger.Information("Exiting AddReport method");
+        _logger.Verbose("Exiting AddReport method");
     }
 
     public async Task<List<Report>> GetAllReports()
     {
-        _logger.Information("Entering GetAllReports method");
+        _logger.Verbose("Entering GetAllReports method");
         
         var reports = await _context.Reports
             .Select(r => ReportConverter.DbToCoreModel(r))
@@ -44,13 +44,13 @@ public class ReportRepository(MewingPadDbContext context) : IReportRepository
             _logger.Warning("Database contains no entries of Report");
         }
 
-        _logger.Information("Exiting GetAllReports method");
+        _logger.Verbose("Exiting GetAllReports method");
         return reports;
     }
 
     public async Task<Report?> GetReportById(Guid reportId)
     {
-        _logger.Information("Entering GetReportById method");
+        _logger.Verbose("Entering GetReportById method");
 
         var reportDbModel = await _context.Reports.FindAsync(reportId);
         if (reportDbModel is null)
@@ -59,13 +59,13 @@ public class ReportRepository(MewingPadDbContext context) : IReportRepository
         }
         var report = ReportConverter.DbToCoreModel(reportDbModel);
 
-        _logger.Information("Exiting GetReportById method");
+        _logger.Verbose("Exiting GetReportById method");
         return report;
     }
 
     public async Task<Report> UpdateReport(Report report)
     {
-        _logger.Information("Entering UpdateReport method");
+        _logger.Verbose("Entering UpdateReport method");
 
         var reportDbModel = await _context.Reports.FindAsync(report.Id);
 
@@ -76,7 +76,7 @@ public class ReportRepository(MewingPadDbContext context) : IReportRepository
 
         await _context.SaveChangesAsync();
         _logger.Information($"Report (Id = {report.Id}) updated");
-        _logger.Information("Exiting UpdateReport method");
+        _logger.Verbose("Exiting UpdateReport method");
         return report;
     }
 }

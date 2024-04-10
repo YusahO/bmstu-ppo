@@ -15,7 +15,7 @@ public class ScoreRepository(MewingPadDbContext context) : IScoreRepository
 
     public async Task AddScore(Score score)
     {
-        _logger.Information("Entering AddScore method");
+        _logger.Verbose("Entering AddScore method");
 
         try
         {
@@ -29,12 +29,12 @@ public class ScoreRepository(MewingPadDbContext context) : IScoreRepository
             throw;
         }
 
-        _logger.Information("Exiting AddScore method");
+        _logger.Verbose("Exiting AddScore method");
     }
 
     public async Task DeleteScore(Guid authorId, Guid audiotrackId)
     {
-        _logger.Information("Entering DeleteScore method");
+        _logger.Verbose("Entering DeleteScore method");
 
         try
         {
@@ -49,12 +49,12 @@ public class ScoreRepository(MewingPadDbContext context) : IScoreRepository
             throw;
         }
 
-        _logger.Information("Exiting DeleteScore method");
+        _logger.Verbose("Exiting DeleteScore method");
     }
 
     public async Task<List<Score>> GetAllScores()
     {
-        _logger.Information("Entering GetAllScores method");
+        _logger.Verbose("Entering GetAllScores method");
 
         var scores = await _context.Scores
             .Select(s => ScoreConverter.DbToCoreModel(s))
@@ -64,13 +64,13 @@ public class ScoreRepository(MewingPadDbContext context) : IScoreRepository
             _logger.Warning("Database has no entries of Score");
         }
 
-        _logger.Information("Exiting GetAllScores method");
+        _logger.Verbose("Exiting GetAllScores method");
         return scores;
     }
 
     public async Task<List<Score>> GetAudiotrackScores(Guid audiotrackId)
     {
-        _logger.Information("Entering GetAudiotrackScores method");
+        _logger.Verbose("Entering GetAudiotrackScores method");
 
         var scores = await _context.Scores
             .Where(s => s.AudiotrackId == audiotrackId)
@@ -81,13 +81,13 @@ public class ScoreRepository(MewingPadDbContext context) : IScoreRepository
             _logger.Warning($"Audiotrack (Id = {audiotrackId}) has no scores");
         }
 
-        _logger.Information("Exiting GetAudiotrackScores method");
+        _logger.Verbose("Exiting GetAudiotrackScores method");
         return scores!;
     }
 
     public async Task<Score?> GetScoreByPrimaryKey(Guid authorId, Guid audiotrackId)
     {
-        _logger.Information("Entering GetScoreByPrimaryKey method");
+        _logger.Verbose("Entering GetScoreByPrimaryKey method");
 
         var scoreDbModel = await _context.Scores.FindAsync([authorId, audiotrackId]);
         if (scoreDbModel is null)
@@ -96,13 +96,13 @@ public class ScoreRepository(MewingPadDbContext context) : IScoreRepository
         }
         var score = ScoreConverter.DbToCoreModel(scoreDbModel);
 
-        _logger.Information("Exiting GetScoreByPrimaryKey method");
+        _logger.Verbose("Exiting GetScoreByPrimaryKey method");
         return score;
     }
 
     public async Task<Score> UpdateScore(Score score)
     {
-        _logger.Information("Entering UpdateScore method");
+        _logger.Verbose("Entering UpdateScore method");
 
         var scoreDbModel = await _context.Scores.FindAsync([score.AuthorId, score.AudiotrackId]);
 
@@ -112,7 +112,7 @@ public class ScoreRepository(MewingPadDbContext context) : IScoreRepository
 
         await _context.SaveChangesAsync();
         _logger.Information($"Score (AuthorId = {score.AuthorId}, AudiortrackId = {score.AudiotrackId}) updated");
-        _logger.Information("Exiting UpdateScore method");
+        _logger.Verbose("Exiting UpdateScore method");
         return score;
     }
 }

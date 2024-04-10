@@ -1,16 +1,19 @@
-using System.Globalization;
+using MewingPad.Common.Entities;
 using MewingPad.TechnicalUI.BaseMenu;
 using MewingPad.TechnicalUI.CommonCommands.AudiotrackCommands;
-using MewingPad.Common.Entities;
+using Serilog;
+using System.Globalization;
 
 namespace MewingPad.TechnicalUI.AdminMenu.AudiotrackCommands;
 
 public class ChangeAudiotrackCommand : Command
 {
+    private readonly ILogger _logger = Log.ForContext<ChangeAudiotrackCommand>();
     private readonly NumberFormatInfo _nfi = new()
     {
         NumberDecimalSeparator = ","
     };
+    
     public override string? Description()
     {
         return "Изменить";
@@ -24,18 +27,27 @@ public class ChangeAudiotrackCommand : Command
         {
             return;
         }
+
         Console.Write("Введите номер аудиотрека: ");
-        if (!int.TryParse(Console.ReadLine(), out int choice))
+
+        var inpCheck = int.TryParse(Console.ReadLine(), out int choice);
+        _logger.Information($"User input audiotrack number \"{choice}\"");
+
+        if (!inpCheck)
         {
+            _logger.Error("User input is invalid");
             Console.WriteLine("[!] Введенное значение имеет некорректный формат");
             return;
         }
         if (0 >= choice || choice > audiotracks.Count)
         {
+            _logger.Error($"User input is out of range [1, {audiotracks.Count}]");
             Console.WriteLine($"[!] Аудиотрека с номером {choice} не существует");
             return;
         }
+
         var audio = audiotracks[choice - 1];
+        _logger.Information("User selected audiotrack {@Audio}", audio);
 
         Console.Write("Введите новое название (пустой ввод -- оставить таким же): ");
         var title = Console.ReadLine();
@@ -48,12 +60,16 @@ public class ChangeAudiotrackCommand : Command
 
         audio.Title = title == "" ? audio.Title : title!;
         audio.Duration = duration == 0 ? audio.Duration : duration;
+        audio.Filepath = filepath != "" && audio.Filepath != filepath ? filepath! : audio.Filepath;
+
+        var audioLog = new { audio.Title, audio.Duration, audio.Filepath };
+        _logger.Information("New audiotrack data {@Audio}", audioLog);
 
         await context.AudiotrackService.UpdateAudiotrack(audio);
         await ChangeAudiotrackTags(audio.Id, context);
     }
 
-    private static async Task ChangeAudiotrackTags(Guid audiotrackId, Context context)
+    private async Task ChangeAudiotrackTags(Guid audiotrackId, Context context)
     {
         var tags = await context.TagService.GetAllTags();
         if (tags.Count == 0)
@@ -82,6 +98,8 @@ public class ChangeAudiotrackCommand : Command
                 newTagIds.Add(tags[choice - 1].Id);
             }
         }
+        _logger.Information("User selected tags {Tags}", newTagIds);
+
         var oldTagIds = (await context.TagService.GetAudiotrackTags(audiotrackId))
             .Select(t => t.Id)
             .ToHashSet();

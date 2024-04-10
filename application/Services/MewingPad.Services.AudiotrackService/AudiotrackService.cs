@@ -8,17 +8,21 @@ namespace MewingPad.Services.AudiotrackService;
 
 public class AudiotrackService(IAudiotrackRepository audiotrackRepository,
                                IPlaylistAudiotrackRepository playlistAudiotrackRepository,
-                               ITagAudiotrackRepository tagAudiotrackRepository) : IAudiotrackService
+                               ITagAudiotrackRepository tagAudiotrackRepository,
+                               AudioManager audioManager) : IAudiotrackService
 {
     private readonly IAudiotrackRepository _audiotrackRepository = audiotrackRepository;
     private readonly IPlaylistAudiotrackRepository _playlistAudiotrackRepository = playlistAudiotrackRepository;
     private readonly ITagAudiotrackRepository _tagAudiotrackRepository = tagAudiotrackRepository;
+    private readonly AudioManager _audioManager = audioManager;
     private readonly ILogger _logger = Log.ForContext<AudiotrackService>();
 
     public async Task CreateAudiotrack(Audiotrack audiotrack)
     {
-        _logger.Information("Entering CreateAudiotrack method");
+        _logger.Verbose("Entering CreateAudiotrack method");
 
+        string fullpath = audiotrack.Filepath;
+        audiotrack.Filepath = Path.GetFileName(audiotrack.Filepath);
         if (await _audiotrackRepository.GetAudiotrackById(audiotrack.Id) is not null)
         {
             _logger.Error("Audiotrack {@Audio} already exists",
@@ -30,17 +34,18 @@ public class AudiotrackService(IAudiotrackRepository audiotrackRepository,
         _logger.Information("Created audiotrack {@Audio} in database",
                             new { audiotrack.Id, audiotrack.Title });
 
-        if (!await AudioManager.CreateFileAsync(audiotrack.Filepath))
+        if (!await _audioManager.CreateFileAsync(fullpath))
         {
-            _logger.Error("Failed to upload audiotrack with path \"{audiotrack.Filepath}\"");
-            throw new AudiotrackServerUploadException("Failed to upload audiotrack with path \"{audiotrack.Filepath}\"");
+            _logger.Error($"Failed to upload audiotrack with path \"{fullpath}\"");
+            throw new AudiotrackServerUploadException($"Failed to upload audiotrack with path \"{fullpath}\"");
         }
-        _logger.Information("Exiting CreateAudiotrack method");
+        
+        _logger.Verbose("Exiting CreateAudiotrack method");
     }
 
     public async Task<Audiotrack> UpdateAudiotrack(Audiotrack audiotrack)
     {
-        _logger.Information("Entering UpdateAudiotrack method");
+        _logger.Verbose("Entering UpdateAudiotrack method");
 
         var oldAudiotrack = await _audiotrackRepository.GetAudiotrackById(audiotrack.Id);
         if (oldAudiotrack is null)
@@ -49,9 +54,11 @@ public class AudiotrackService(IAudiotrackRepository audiotrackRepository,
             throw new AudiotrackNotFoundException(audiotrack.Id);
         }
 
+        string fullpath = audiotrack.Filepath;
+        audiotrack.Filepath = Path.GetFileName(audiotrack.Filepath);
         if (oldAudiotrack.Filepath != audiotrack.Filepath)
         {
-            if (!await AudioManager.UpdateFileAsync(oldAudiotrack.Filepath, audiotrack.Filepath))
+            if (!await _audioManager.UpdateFileAsync(oldAudiotrack.Filepath, fullpath))
             {
                 _logger.Error(
                     $"Failed to update audiotrack (path = \"{oldAudiotrack.Filepath}\")" +
@@ -63,7 +70,7 @@ public class AudiotrackService(IAudiotrackRepository audiotrackRepository,
         }
 
         await _audiotrackRepository.UpdateAudiotrack(audiotrack);
-        _logger.Information("Exiting UpdateAudiotrack method");
+        _logger.Verbose("Exiting UpdateAudiotrack method");
         return audiotrack;
     }
 
@@ -78,7 +85,7 @@ public class AudiotrackService(IAudiotrackRepository audiotrackRepository,
             throw new AudiotrackNotFoundException(audiotrackId);
         }
 
-        if (!await AudioManager.DeleteFileAsync(audiotrack.Filepath))
+        if (!await _audioManager.DeleteFileAsync(audiotrack.Filepath))
         {
             _logger.Error($"Failed to delete audiotrack with path \"{audiotrack.Filepath}\"");
             throw new AudiotrackServerDeleteException($"Failed to delete audiotrack with path \"{audiotrack.Filepath}\"");
@@ -88,12 +95,12 @@ public class AudiotrackService(IAudiotrackRepository audiotrackRepository,
         await _playlistAudiotrackRepository.DeleteByAudiotrack(audiotrackId);
         await _audiotrackRepository.DeleteAudiotrack(audiotrackId);
 
-        _logger.Information("Exiting DeleteAudiotrack method");
+        _logger.Verbose("Exiting DeleteAudiotrack method");
     }
 
     public async Task<Audiotrack> GetAudiotrackById(Guid audiotrackId)
     {
-        _logger.Information("Entering GetAudiotrackById method");
+        _logger.Verbose("Entering GetAudiotrackById method");
 
         var audiotrack = await _audiotrackRepository.GetAudiotrackById(audiotrackId);
         if (audiotrack is null)
@@ -102,34 +109,46 @@ public class AudiotrackService(IAudiotrackRepository audiotrackRepository,
             throw new AudiotrackNotFoundException(audiotrackId);
         }
 
-        _logger.Information("Exiting GetAudiotrackById method");
+        _logger.Verbose("Exiting GetAudiotrackById method");
         return audiotrack;
     }
 
-    public Task<List<Audiotrack>> GetAllAudiotracks()
+    public async Task<List<Audiotrack>> GetAllAudiotracks()
     {
-        _logger.Information("Entering GetAllAudiotracks method");
-        var audios = _audiotrackRepository.GetAllAudiotracks();
-        _logger.Information("Exiting GetAllAudiotracks method");
+        _logger.Verbose("Entering GetAllAudiotracks method");
+
+        var audios = await _audiotrackRepository.GetAllAudiotracks();
+        if (audios.Count == 0)
+        {
+            _logger.Warning("Database has no entries of Audiotrack");
+        }
+
+        _logger.Verbose("Exiting  GetAllAudiotracks method");
         return audios;
     }
 
     public async Task<List<Audiotrack>> GetAudiotracksByTitle(string title)
     {
-        _logger.Information("Entering GetAudiotracksByTitle method");
+        _logger.Verbose("Entering GetAudiotracksByTitle method");
+
         var audios = await _audiotrackRepository.GetAudiotracksByTitle(title);
-        _logger.Information("Exiting GetAudiotracksByTitle method");
+        if (audios.Count == 0)
+        {
+            _logger.Warning($"No audiotracks found with title \"{title}\"");
+        }
+
+        _logger.Verbose("Exiting GetAudiotracksByTitle method");
         return audios;
     }
 
     public async Task DownloadAudiotrack(string srcpath, string savepath)
     {
-        _logger.Information("Entering DownloadAudiotrack method");
-        if (!await AudioManager.GetFileAsync(srcpath, savepath))
+        _logger.Verbose("Entering DownloadAudiotrack method");
+        if (!await _audioManager.GetFileAsync(srcpath, savepath))
         {
             _logger.Error($"Failed to get audiotrack (\"{srcpath}\") from server");
             throw new AudiotrackServerGetException($"{srcpath} does not exist");
         }
-        _logger.Information("Exiting DownloadAudiotrack method");
+        _logger.Verbose("Exiting  DownloadAudiotrack method");
     }
 }

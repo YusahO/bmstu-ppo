@@ -1,9 +1,11 @@
 using MewingPad.TechnicalUI.BaseMenu;
+using Serilog;
 
 namespace MewingPad.TechnicalUI.CommonCommands.Search;
 
 public class SearchByTagsCommand : Command
 {
+    private readonly ILogger _logger = Log.ForContext<SearchByTagsCommand>();
     public override string? Description()
     {
         return "По тегу";
@@ -21,20 +23,15 @@ public class SearchByTagsCommand : Command
         }
 
         Console.Write("Ввод: ");
-        List<Guid> chosedTagIds = [];
-        while (int.TryParse(Console.ReadLine(), out int chosenTag))
+        List<Guid> chosenTagIds = [];
+        while (int.TryParse(Console.ReadLine(), out int choice) &&
+               0 < choice && choice <= tags.Count)
         {
-            if (0 >= chosenTag || chosenTag > tags.Count)
-            {
-                Console.WriteLine($"[!] Тега с номером {chosenTag} не существует");
-            }
-            else
-            {
-                chosedTagIds.Add(tags[chosenTag - 1].Id);
-            }
+            chosenTagIds.Add(tags[choice - 1].Id);
         }
+        _logger.Information("User input tags to search by: {Tags}", chosenTagIds);
 
-        var audiotracks = await context.TagService.GetAudiotracksWithTags(chosedTagIds);
+        var audiotracks = await context.TagService.GetAudiotracksWithTags(chosenTagIds);
         if (audiotracks.Count == 0)
         {
             Console.WriteLine("\nНичего не найдено");

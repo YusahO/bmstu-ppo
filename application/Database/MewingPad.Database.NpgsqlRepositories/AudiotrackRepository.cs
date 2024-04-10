@@ -15,12 +15,13 @@ public class AudiotrackRepository(MewingPadDbContext context) : IAudiotrackRepos
 
     public async Task AddAudiotrack(Audiotrack audiotrack)
     {
-        _logger.Information("Entering AddAudiotrack method");
+        _logger.Verbose("Entering AddAudiotrack method");
 
         try
         {
             await _context.Audiotracks.AddAsync(AudiotrackConverter.CoreToDbModel(audiotrack));
             await _context.SaveChangesAsync();
+            _logger.Information($"Added audiotrack (Id = {audiotrack.Id}) to database");
         }
         catch (Exception ex)
         {
@@ -28,18 +29,19 @@ public class AudiotrackRepository(MewingPadDbContext context) : IAudiotrackRepos
             throw;
         }
 
-        _logger.Information("Exiting AddAudiotrack method");
+        _logger.Verbose("Exiting AddAudiotrack method");
     }
 
     public async Task DeleteAudiotrack(Guid audiotrackId)
     {
-        _logger.Information("Entering DeleteAudiotrack method");
+        _logger.Verbose("Entering DeleteAudiotrack method");
 
         try
         {
             var audiotrackDbModel = await _context.Audiotracks.FindAsync(audiotrackId);
             _context.Audiotracks.Remove(audiotrackDbModel!);
             await _context.SaveChangesAsync();
+            _logger.Information($"Deleted audiotrack (Id = {audiotrackId}) from database");
         }
         catch (Exception ex)
         {
@@ -47,28 +49,28 @@ public class AudiotrackRepository(MewingPadDbContext context) : IAudiotrackRepos
             throw;
         }
 
-        _logger.Information("Exiting DeleteAudiotrack method");
+        _logger.Verbose("Exiting DeleteAudiotrack method");
     }
 
     public async Task<List<Audiotrack>> GetAllAudiotracks()
     {
-        _logger.Information("Entering GetAllAudiotracks method");
+        _logger.Verbose("Entering GetAllAudiotracks method");
 
         var audios = await _context.Audiotracks
             .Select(a => AudiotrackConverter.DbToCoreModel(a))
             .ToListAsync();
         if (audios.Count == 0)
         {
-            _logger.Warning("Database contains no audiotracks information");
+            _logger.Warning("Database contains no entries of Audiotrack");
         }
 
-        _logger.Information("Exiting GetAllAudiotracks method");
+        _logger.Verbose("Exiting GetAllAudiotracks method");
         return audios;
     }
 
     public async Task<Audiotrack?> GetAudiotrackById(Guid audiotrackId)
     {
-        _logger.Information("Entering GetAudiotrackById method");
+        _logger.Verbose("Entering GetAudiotrackById method");
 
         var audiotrackDbModel = await _context.Audiotracks.FindAsync(audiotrackId);
         if (audiotrackDbModel is null)
@@ -77,13 +79,13 @@ public class AudiotrackRepository(MewingPadDbContext context) : IAudiotrackRepos
         }
         var audiotrack = AudiotrackConverter.DbToCoreModel(audiotrackDbModel);
 
-        _logger.Information("Exiting GetAudiotrackById method");
+        _logger.Verbose("Exiting GetAudiotrackById method");
         return audiotrack;
     }
 
     public async Task<List<Audiotrack>> GetAudiotracksByTitle(string title)
     {
-        _logger.Information("Entering GetAudiotracksByTitle method");
+        _logger.Verbose("Entering GetAudiotracksByTitle method");
 
         var audiotracks = await _context.Audiotracks
             .Where(a => a.Title == title)
@@ -94,13 +96,13 @@ public class AudiotrackRepository(MewingPadDbContext context) : IAudiotrackRepos
             _logger.Warning($"Database contains no audiotracks with title \"{title}\"");
         }
 
-        _logger.Information("Exiting GetAudiotracksByTitle method");
+        _logger.Verbose("Exiting GetAudiotracksByTitle method");
         return audiotracks!;
     }
 
     public async Task<Audiotrack> UpdateAudiotrack(Audiotrack audiotrack)
     {
-        _logger.Information("Entering UpdateAudiotrack method");
+        _logger.Verbose("Entering UpdateAudiotrack method");
 
         var audiotrackDbModel = await _context.Audiotracks.FindAsync(audiotrack.Id);
 
@@ -111,8 +113,8 @@ public class AudiotrackRepository(MewingPadDbContext context) : IAudiotrackRepos
         audiotrackDbModel!.Filepath = audiotrack.Filepath;
 
         await _context.SaveChangesAsync();
-
-        _logger.Information("Exiting UpdateAudiotrack method");
-        return AudiotrackConverter.DbToCoreModel(audiotrackDbModel)!;
+        _logger.Information($"Updated audiotrack (Id = {audiotrack.Id})");
+        _logger.Verbose("Exiting UpdateAudiotrack method");
+        return audiotrack;
     }
 }

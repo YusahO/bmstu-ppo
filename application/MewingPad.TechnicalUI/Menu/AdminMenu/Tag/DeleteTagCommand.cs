@@ -1,11 +1,12 @@
-
 using MewingPad.Common.Entities;
 using MewingPad.TechnicalUI.BaseMenu;
+using Serilog;
 
 namespace MewingPad.TechnicalUI.AdminMenu.TagCommands;
 
 public class DeleteTagCommand : Command
 {
+    private readonly ILogger _logger = Log.ForContext<DeleteTagCommand>();
     public override string? Description()
     {
         return "Удалить";
@@ -19,15 +20,21 @@ public class DeleteTagCommand : Command
         {
             return;
         }
+
         Console.Write("Введите номер тега: ");
-        if (!int.TryParse(Console.ReadLine(), out int choice))
+
+        var inpCheck = int.TryParse(Console.ReadLine(), out int choice);
+        _logger.Information($"User input tag number \"{choice}\"");
+
+        if (!inpCheck)
         {
             Console.WriteLine("[!] Введенное значение имеет некорректный формат");
             return;
         }
         if (0 >= choice || choice > tags.Count)
         {
-            Console.WriteLine($"[!] Аудиотрека с номером {choice} не существует");
+            _logger.Error($"User input is out of range [1, {tags.Count}]");
+            Console.WriteLine($"[!] Тега с номером {choice} не существует");
             return;
         }
 
