@@ -54,27 +54,56 @@ public class PlaylistRepository(MewingPadDbContext context) : IPlaylistRepositor
 
     public async Task<List<Playlist>> GetAllPlaylists()
     {
-        return await _context.Playlists
+        _logger.Information("Entering GetAllPlaylists method");
+
+        var playlists = await _context.Playlists
             .Select(p => PlaylistConverter.DbToCoreModel(p)!)
             .ToListAsync();
+        if (playlists.Count == 0)
+        {
+            _logger.Warning("Database contains no records of Playlist");
+        }
+        
+        _logger.Information("Exiting GetAllPlaylists method");
+        return playlists;
     }
 
     public async Task<Playlist?> GetPlaylistById(Guid playlistId)
     {
+        _logger.Information("Entering GetPlaylistById method");
+
         var playlistDbModel = await _context.Playlists.FindAsync(playlistId);
-        return PlaylistConverter.DbToCoreModel(playlistDbModel);
+        if (playlistDbModel is null)
+        {
+            _logger.Warning($"Playlist (Id = {playlistId}) not found in database");
+        }
+        var playlist = PlaylistConverter.DbToCoreModel(playlistDbModel);
+
+        _logger.Information("Exiting GetPlaylistById method");
+        return playlist;
     }
 
     public async Task<List<Playlist>> GetUserPlaylists(Guid userId)
     {
-        return await _context.Playlists
+        _logger.Information("Entering GetUserPlaylists method");
+
+        var playlists = await _context.Playlists
             .Where(p => p.UserId == userId)
             .Select(p => PlaylistConverter.DbToCoreModel(p))
             .ToListAsync();
+        if (playlists.Count == 0)
+        {
+            _logger.Warning($"User (Id = {userId}) has no playlists");
+        }
+        
+        _logger.Information("Exiting GetUserPlaylists method");
+        return playlists;
     }
 
     public async Task<Playlist> UpdatePlaylist(Playlist playlist)
     {
+        _logger.Information("Entering UpdatePlaylist method");
+
         var playlistDbModel = await _context.Playlists.FindAsync(playlist.Id);
 
         playlistDbModel!.Id = playlist.Id;
@@ -82,6 +111,8 @@ public class PlaylistRepository(MewingPadDbContext context) : IPlaylistRepositor
         playlistDbModel!.UserId = playlist.UserId;
 
         await _context.SaveChangesAsync();
-        return PlaylistConverter.DbToCoreModel(playlistDbModel);
+        _logger.Information($"Playlist (Id = {playlist.Id}) updated");
+        _logger.Information("Exiting UpdatePlaylist method");
+        return playlist;
     }
 }

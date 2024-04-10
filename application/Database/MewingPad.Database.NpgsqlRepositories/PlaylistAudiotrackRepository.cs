@@ -22,7 +22,7 @@ public class PlaylistAudiotrackRepository(MewingPadDbContext context) : IPlaylis
             .ToListAsync();
         if (pairs.Count == 0)
         {
-            _logger.Warning($"Playlist (Id = {playlistId}) not found in database");
+            _logger.Warning($"Playlist (Id = {playlistId}) has no audiotracks");
             return;
         }
 
