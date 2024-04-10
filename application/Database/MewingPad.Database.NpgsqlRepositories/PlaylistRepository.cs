@@ -1,9 +1,9 @@
-using Microsoft.EntityFrameworkCore;
-
 using MewingPad.Common.Entities;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.Context;
 using MewingPad.Database.Models.Converters;
+using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace MewingPad.Database.NpgsqlRepositories;
 
@@ -11,50 +11,45 @@ public class PlaylistRepository(MewingPadDbContext context) : IPlaylistRepositor
 {
     private readonly MewingPadDbContext _context = context;
 
-    public async Task AddAudiotrackToPlaylist(Guid playlistId, Guid audiofileId)
-    {
-        bool hasAudiofile = await _context.PlaylistsAudiotracks
-            .AnyAsync(pa => pa.PlaylistId == playlistId && pa.AudiotrackId == audiofileId);
-
-        if (!hasAudiofile)
-        {
-            await _context.PlaylistsAudiotracks
-                .AddAsync(new(playlistId, audiofileId));
-        }
-        await _context.SaveChangesAsync();
-    }
+    private readonly ILogger _logger = Log.ForContext<PlaylistRepository>();
 
     public async Task AddPlaylist(Playlist playlist)
     {
-        var playlistDbModel = PlaylistConverter.CoreToDbModel(playlist);
-        await _context.Playlists.AddAsync(playlistDbModel);
-        await _context.SaveChangesAsync();
-    }
+        _logger.Information("Entering AddPlaylist method");
 
-    public async Task<bool> IsAudiotrackInPlaylist(Guid playlistId, Guid audiotrackId)
-    {
-        return await _context.PlaylistsAudiotracks
-            .AnyAsync(pa => pa.AudiotrackId == audiotrackId && pa.PlaylistId == playlistId);
+        try
+        {
+            await _context.Playlists.AddAsync(PlaylistConverter.CoreToDbModel(playlist));
+            await _context.SaveChangesAsync();
+            _logger.Information($"Added playlist (Id = {playlist.Id}) to database");
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Exception occurred", ex);
+            throw;
+        }
+
+        _logger.Information("Exiting AddPlaylist method");
     }
 
     public async Task DeletePlaylist(Guid playlistId)
     {
-        var playlistDbModel = await _context.Playlists.FindAsync(playlistId);
-        var paToDelete = _context.PlaylistsAudiotracks
-            .Where(pa => pa.PlaylistId == playlistId);
-        _context.PlaylistsAudiotracks.RemoveRange(paToDelete);
-        _context.Playlists.Remove(playlistDbModel!);
-        await _context.SaveChangesAsync();
-    }
+        _logger.Information("Entering DeletePlaylist method");
 
-    public async Task<List<Audiotrack>> GetAllAudiotracksFromPlaylist(Guid playlistId)
-    {
-        var audiofiles = await _context.PlaylistsAudiotracks
-            .Where(pa => pa.PlaylistId == playlistId)
-            .Include(pa => pa.Audiotrack)
-            .Select(pa => AudiotrackConverter.DbToCoreModel(pa.Audiotrack))
-            .ToListAsync();
-        return audiofiles!;
+        try
+        {
+            var playlistDbModel = await _context.Playlists.FindAsync(playlistId);
+            _context.Playlists.Remove(playlistDbModel!);
+            await _context.SaveChangesAsync();
+            _logger.Information($"Deleted playlist (Id = {playlistId}) from database");
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Exception occurred", ex);
+            throw;
+        }
+
+        _logger.Information("Exiting DeletePlaylist method");
     }
 
     public async Task<List<Playlist>> GetAllPlaylists()
@@ -76,33 +71,6 @@ public class PlaylistRepository(MewingPadDbContext context) : IPlaylistRepositor
             .Where(p => p.UserId == userId)
             .Select(p => PlaylistConverter.DbToCoreModel(p))
             .ToListAsync();
-    }
-
-    public async Task RemoveAudiofileFromPlaylist(Guid playlistId, Guid audiofileId)
-    {
-        var audiofileDbModel = await _context.PlaylistsAudiotracks
-            .FirstOrDefaultAsync(pa => pa.PlaylistId == playlistId && pa.AudiotrackId == audiofileId);
-
-        if (audiofileDbModel is not null)
-        {
-            _context.PlaylistsAudiotracks.Remove(audiofileDbModel);
-        }
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task RemoveAudiofilesFromPlaylistBulk(Guid playlistId, List<Guid> audiofileIds)
-    {
-        foreach (var audiofileId in audiofileIds)
-        {
-            var audiofileDbModel = await _context.PlaylistsAudiotracks
-                .FirstOrDefaultAsync(pa => pa.PlaylistId == playlistId && pa.AudiotrackId == audiofileId);
-
-            if (audiofileDbModel is not null)
-            {
-                _context.PlaylistsAudiotracks.Remove(audiofileDbModel);
-            }
-        }
-        await _context.SaveChangesAsync();
     }
 
     public async Task<Playlist> UpdatePlaylist(Playlist playlist)

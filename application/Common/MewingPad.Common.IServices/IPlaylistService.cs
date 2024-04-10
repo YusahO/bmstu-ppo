@@ -4,13 +4,13 @@ namespace MewingPad.Services.PlaylistService;
 public interface IPlaylistService
 {
     Task CreatePlaylist(Playlist playlist);
-    Task<Playlist> UpdateTitle(Guid playlistId, string title);
+    Task<Playlist> UpdatePlaylistTitle(Guid playlistId, string title);
     Task DeletePlaylist(Guid playlistId);
     Task<Playlist> GetPlaylistById(Guid playlistId);
     Task<List<Playlist>>  GetUserPlaylists(Guid userId);
     Task<Playlist> GetUserFavouritesPlaylist(Guid userId);
     Task<List<Audiotrack>> GetAllAudiotracksFromPlaylist(Guid playlistId);
-    Task AddAudiofileToPlaylist(Guid playlistId, Guid audiofileId);
-    Task RemoveAudiofileFromPlaylist(Guid playlistId, Guid audiofileId);
-    Task RemoveAudiofilesFromPlaylist(Guid playlistId, List<Guid> audiofileIds);
+    Task AddAudiotrackToPlaylist(Guid playlistId, Guid audiotrackId);
+    Task RemoveAudiotrackFromPlaylist(Guid playlistId, Guid audiotrackId);
+    Task RemoveAudiotracksFromPlaylist(Guid playlistId, List<Guid> audiotrackIds);
 }

@@ -18,6 +18,10 @@ public class GuestMenuBuilder : MenuBuilder
         [
             new SignInUserCommand()
         ]));
+        menu.AddLabel(new("Просмотреть все аудиотреки",
+        [
+            new ViewAllAudiotracksCommand()
+        ]));
         menu.AddLabel(new("Поиск аудиотреков",
         [
             new SearchByTitleCommand(),

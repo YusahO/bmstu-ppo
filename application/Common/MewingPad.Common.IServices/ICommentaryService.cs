@@ -8,5 +8,5 @@ public interface ICommentaryService
     Task<Commentary> UpdateCommentary(Commentary commentary);
     Task DeleteCommentary(Guid commentaryId);
     Task<Commentary> GetCommentaryById(Guid commentaryId);
-    Task<List<Commentary>> GetAudiofileCommentaries(Guid audiofileId);
+    Task<List<Commentary>> GetAudiotrackCommentaries(Guid audiotrackId);
 }

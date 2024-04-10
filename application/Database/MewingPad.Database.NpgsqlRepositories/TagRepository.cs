@@ -16,19 +16,16 @@ public class TagRepository(MewingPadDbContext context) : ITagRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task AssignTagToAudiotrack(Guid audiotrackId, Guid tagId)
-    {
-        await _context.TagsAudiotracks.AddAsync(new(tagId, audiotrackId));
-        await _context.SaveChangesAsync();
-    }
+    // public async Task AssignTagToAudiotrack(Guid audiotrackId, Guid tagId)
+    // {
+    //     await _context.TagsAudiotracks.AddAsync(new(tagId, audiotrackId));
+    //     await _context.SaveChangesAsync();
+    // }
 
     public async Task DeleteTag(Guid tagId)
     {
         var tagDbModel = await _context.Tags.FindAsync(tagId);
-        var taToDelete = _context.TagsAudiotracks.Where(ta => ta.TagId == tagId);
-
         _context.Tags.Remove(tagDbModel!);
-        _context.TagsAudiotracks.RemoveRange(taToDelete);
         await _context.SaveChangesAsync();
     }
 
@@ -39,36 +36,30 @@ public class TagRepository(MewingPadDbContext context) : ITagRepository
             .ToListAsync();
     }
 
-    public async Task<List<Audiotrack>> GetAudiotracksWithTags(List<Guid> tagIds)
-    {
-        var audiotracks = await _context.TagsAudiotracks
-            .Where(ta => tagIds.Contains(ta.TagId))
-            .Include(ta => ta.Audiotrack)
-            .Select(ta => AudiotrackConverter.DbToCoreModel(ta.Audiotrack))
-            .ToListAsync();
-        return audiotracks!;
-    }
+    // public async Task<List<Audiotrack>> GetAudiotracksWithTags(List<Guid> tagIds)
+    // {
+    //     var audiotracks = await _context.TagsAudiotracks
+    //         .Where(ta => tagIds.Contains(ta.TagId))
+    //         .Include(ta => ta.Audiotrack)
+    //         .Select(ta => AudiotrackConverter.DbToCoreModel(ta.Audiotrack))
+    //         .ToListAsync();
+    //     return audiotracks!;
+    // }
 
-    public async Task<List<Tag>> GetAudiotrackTags(Guid audiotrackId)
-    {
-        var tags = await _context.TagsAudiotracks
-            .Where(ta => ta.AudiotrackId == audiotrackId)
-            .Include(ta => ta.Tag)
-            .Select(ta => TagConverter.DbToCoreModel(ta.Tag))
-            .ToListAsync();
-        return tags!;
-    }
+    // public async Task<List<Tag>> GetAudiotrackTags(Guid audiotrackId)
+    // {
+    //     var tags = await _context.TagsAudiotracks
+    //         .Where(ta => ta.AudiotrackId == audiotrackId)
+    //         .Include(ta => ta.Tag)
+    //         .Select(ta => TagConverter.DbToCoreModel(ta.Tag))
+    //         .ToListAsync();
+    //     return tags!;
+    // }
 
     public async Task<Tag?> GetTagById(Guid tagId)
     {
         var tagDbModel = await _context.Tags.FindAsync(tagId);
         return TagConverter.DbToCoreModel(tagDbModel);
-    }
-
-    public async Task RemoveTagFromAudiotrack(Guid audiotrackId, Guid tagId)
-    {
-        _context.TagsAudiotracks.Remove(new(tagId, audiotrackId));
-        await _context.SaveChangesAsync();
     }
 
     public async Task<Tag> UpdateTag(Tag tag)

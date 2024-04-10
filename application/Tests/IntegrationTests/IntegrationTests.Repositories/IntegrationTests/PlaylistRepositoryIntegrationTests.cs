@@ -91,7 +91,7 @@ public class PlaylistRepositoryIntegrationTests : IDisposable
         await _dbFixture.InsertAudiotracks(audiofiles);
         await _dbFixture.InsertPlaylistsAudiotracks(pairs);
 
-        await _playlistRepository.RemoveAudiofileFromPlaylist(expectedPlaylist.Id, expectedAudiofile.Id);
+        await _playlistRepository.RemoveAudiotrackFromPlaylist(expectedPlaylist.Id, expectedAudiofile.Id);
 
         var actualAudiofiles = await _dbFixture.GetAllAudiotracksFromPlaylist(expectedPlaylist.Id);
 
@@ -115,7 +115,7 @@ public class PlaylistRepositoryIntegrationTests : IDisposable
         await _dbFixture.InsertAudiotracks(audiofiles);
         await _dbFixture.InsertPlaylistsAudiotracks(pairs);
 
-        await _playlistRepository.RemoveAudiofilesFromPlaylistBulk(expectedPlaylist.Id, expectedAudiofileIds);
+        await _playlistRepository.RemoveAudiotracksFromPlaylistBulk(expectedPlaylist.Id, expectedAudiofileIds);
 
         var actualAudiofiles = await _dbFixture.GetAllAudiotracksFromPlaylist(expectedPlaylist.Id);
 

@@ -99,17 +99,19 @@ MewingPad
 
 # 11\. Тип приложения
 
-Web MPA
+Web SPA
 
 # 12\. Технологический стек
 
 - Backend: C#
-- Frontend: HTML + CSS
+- Frontend: React
 - DB: PostgreSQL
 
 # 13\. Верхнеуровневое разбиение на компоненты
 
-![alt text](images/high_level.png "")
+![alt text](images/3_comp.png "")
+
+![alt text](images/components.png "")
 
 # 14\. Диаграмма классов
 

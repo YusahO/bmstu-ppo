@@ -44,7 +44,7 @@ public class RemoveAudiotracksFromPlaylistCommand : Command
                 choiceIds.Add(audios[choice - 1].Id);
             }
 
-            await context.PlaylistService.RemoveAudiofilesFromPlaylist(playlistId, choiceIds);
+            await context.PlaylistService.RemoveAudiotracksFromPlaylist(playlistId, choiceIds);
             Console.WriteLine("Аудиотрек(и) удален(ы) из плейлиста");
         }
     }

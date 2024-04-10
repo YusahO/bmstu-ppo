@@ -56,7 +56,7 @@ public class PlaylistServiceUnitTest
         _mockPlaylistRepository.Setup(s => s.UpdatePlaylist(expectedPlaylist))
                                .ReturnsAsync(expectedPlaylist);
 
-        var actualPlaylist = await _playlistService.UpdateTitle(expectedPlaylist.Id, expectedPlaylist.Title);
+        var actualPlaylist = await _playlistService.UpdatePlaylistTitle(expectedPlaylist.Id, expectedPlaylist.Title);
 
         Assert.Equal(expectedPlaylist.Title, actualPlaylist.Title);
     }
@@ -67,7 +67,7 @@ public class PlaylistServiceUnitTest
         _mockPlaylistRepository.Setup(s => s.GetPlaylistById(It.IsAny<Guid>()))
                                .ReturnsAsync(default(Playlist)!);
 
-        async Task Action() => await _playlistService.UpdateTitle(Guid.Empty, "new title");
+        async Task Action() => await _playlistService.UpdatePlaylistTitle(Guid.Empty, "new title");
 
         await Assert.ThrowsAsync<PlaylistNotFoundException>(Action);
     }

@@ -31,7 +31,7 @@ public class EditCommentaryCommand : Command
             return;
         }
 
-        var comms = (await context.CommentaryService.GetAudiofileCommentaries(audiotracks[choice - 1].Id))
+        var comms = (await context.CommentaryService.GetAudiotrackCommentaries(audiotracks[choice - 1].Id))
             .FindAll(c => c.AuthorId == context.CurrentUser!.Id);
         if (comms.Count == 0)
         {

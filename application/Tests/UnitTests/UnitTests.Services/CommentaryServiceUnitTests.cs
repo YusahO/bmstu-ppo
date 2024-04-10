@@ -110,7 +110,7 @@ public class CommentaryServiceUnitTest
         _mockCommentaryRepository.Setup(s => s.GetAudiotrackCommentaries(audiofile.Id))
                                  .ReturnsAsync(expectedComms);
 
-        var actualComms = await _commentaryService.GetAudiofileCommentaries(audiofile.Id);
+        var actualComms = await _commentaryService.GetAudiotrackCommentaries(audiofile.Id);
 
         Assert.Equal(expectedComms, actualComms);
     }
@@ -121,7 +121,7 @@ public class CommentaryServiceUnitTest
         _mockAudiotrackRepository.Setup(s => s.GetAudiotrackById(It.IsAny<Guid>()))
                                 .ReturnsAsync(default(Audiotrack)!);
 
-        Task Action() => _commentaryService.GetAudiofileCommentaries(Guid.Empty);
+        Task Action() => _commentaryService.GetAudiotrackCommentaries(Guid.Empty);
 
         await Assert.ThrowsAsync<AudiotrackNotFoundException>(Action);
     }

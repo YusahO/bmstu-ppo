@@ -42,7 +42,7 @@ public class RenamePlaylistCommand : Command
         } while (isInvalid);
 
         var playlistId = playlists[choice].Id;
-        await context.PlaylistService.UpdateTitle(playlistId, title!);
+        await context.PlaylistService.UpdatePlaylistTitle(playlistId, title!);
         Console.WriteLine("Плейлист переименован");
     }
 }

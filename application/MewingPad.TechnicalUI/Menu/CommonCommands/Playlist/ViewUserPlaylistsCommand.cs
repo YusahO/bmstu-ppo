@@ -18,9 +18,9 @@ public class ViewUserPlaylistsCommand : Command
                               || (bool)context.UserObject!;
         int istart = printFavourites ? 0 : 1;
 
-        for (int i = istart; i < playlists.Count; ++i)
+        for (int i = istart, cntr = 1; i < playlists.Count; ++i, ++cntr)
         {
-            Console.WriteLine($"{i}. {playlists[i].Title}");
+            Console.WriteLine($"{cntr}. {playlists[i].Title}");
         }
         context.UserObject = playlists;
     }

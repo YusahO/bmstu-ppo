@@ -46,7 +46,7 @@ public class AddAudiotrackToPlaylistCommand : Command
                 return;
             }
 
-            await context.PlaylistService.AddAudiofileToPlaylist(playlistId, audios[choice - 1].Id);
+            await context.PlaylistService.AddAudiotrackToPlaylist(playlistId, audios[choice - 1].Id);
             Console.WriteLine("Аудиотрек добавлен в плейлист");
         }
     }

@@ -31,7 +31,7 @@ public class ViewAudiotrackCommentariesCommand : Command
             return;
         }
 
-        var comms = await context.CommentaryService.GetAudiofileCommentaries(audiotracks[choice - 1].Id);
+        var comms = await context.CommentaryService.GetAudiotrackCommentaries(audiotracks[choice - 1].Id);
         if (comms.Count == 0)
         {
             Console.WriteLine("Список комментариев пуст");

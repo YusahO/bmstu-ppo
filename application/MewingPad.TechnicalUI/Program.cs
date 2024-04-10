@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MewingPad.Database.Context;
 using Microsoft.EntityFrameworkCore;
+using MewingPad.Database.Context;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.NpgsqlRepositories;
 using MewingPad.Services.UserService;
@@ -16,6 +16,7 @@ using MewingPad.Services.CommentaryService;
 using MewingPad.TechnicalUI.BaseMenu;
 using MewingPad.TechnicalUI.GuestMenu;
 using MewingPad.TechnicalUI.AdminMenu;
+using Serilog;
 
 namespace MewingPad.TechnicalUI;
 
@@ -24,7 +25,13 @@ internal static class Program
     [STAThread]
     static async Task Main()
     {
-        IConfiguration config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+        IConfiguration config = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(config)
+            .CreateLogger();
 
         var builder = new HostBuilder().ConfigureServices((hostContext, services) =>
         {
@@ -50,6 +57,8 @@ internal static class Program
             services.AddScoped<IScoreRepository, ScoreRepository>();
             services.AddScoped<ICommentaryRepository, CommentaryRepository>();
             services.AddScoped<IReportRepository, ReportRepository>();
+            services.AddScoped<IPlaylistAudiotrackRepository, PlaylistAudiotrackRepository>();
+            services.AddScoped<ITagAudiotrackRepository, TagAudiotrackRepository>();
 
             services.AddScoped<Context>();
 

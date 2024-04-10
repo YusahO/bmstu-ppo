@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using MewingPad.TechnicalUI.BaseMenu;
+using Serilog.Context;
 
 namespace MewingPad.TechnicalUI;
 
@@ -27,11 +28,15 @@ internal class Startup(IConfiguration config,
             }
             else if (!_context.CurrentUser.IsAdmin)
             {
+                LogContext.PushProperty("UserId", _context.CurrentUser.Id);
+
                 Console.WriteLine($"Статус пользователя: Авторизованный ({_context.CurrentUser.Username})");
                 choice = await _authorizedMenu.Execute(_context);
             }
             else
             {
+                LogContext.PushProperty("UserId", _context.CurrentUser.Id);
+
                 Console.WriteLine($"Статус пользователя: Администратор ({_context.CurrentUser.Username})");
                 choice = await _adminMenu.Execute(_context);
             }
