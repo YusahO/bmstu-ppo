@@ -51,19 +51,19 @@ public class ChangeAudiotrackCommand : Command
 
         Console.Write("Введите новое название (пустой ввод -- оставить таким же): ");
         var title = Console.ReadLine();
+        _logger.Information($"User input new audiotrack title \"{title}\"");
 
         Console.Write("Введите новую длительность (пустой ввод -- оставить такой же): ");
         float.TryParse(Console.ReadLine(), NumberStyles.Any, _nfi, out float duration);
+        _logger.Information($"User input new audiotrack duration \"{title}\"");
 
         Console.Write("Введите новый путь к файлу (пустой ввод -- оставить таким же): ");
         var filepath = Console.ReadLine();
+        _logger.Information($"User input new audiotrack filepath \"{title}\"");
 
         audio.Title = title == "" ? audio.Title : title!;
         audio.Duration = duration == 0 ? audio.Duration : duration;
         audio.Filepath = filepath != "" && audio.Filepath != filepath ? filepath! : audio.Filepath;
-
-        var audioLog = new { audio.Title, audio.Duration, audio.Filepath };
-        _logger.Information("New audiotrack data {@Audio}", audioLog);
 
         await context.AudiotrackService.UpdateAudiotrack(audio);
         await ChangeAudiotrackTags(audio.Id, context);

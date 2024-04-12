@@ -1,4 +1,5 @@
 using MewingPad.Common.Entities;
+using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.Context;
 using MewingPad.Database.Models.Converters;
@@ -15,106 +16,121 @@ public class AudiotrackRepository(MewingPadDbContext context) : IAudiotrackRepos
 
     public async Task AddAudiotrack(Audiotrack audiotrack)
     {
-        _logger.Verbose("Entering AddAudiotrack method");
+        _logger.Verbose("Entering AddAudiotrack");
 
         try
         {
             await _context.Audiotracks.AddAsync(AudiotrackConverter.CoreToDbModel(audiotrack));
             await _context.SaveChangesAsync();
-            _logger.Information($"Added audiotrack (Id = {audiotrack.Id}) to database");
         }
         catch (Exception ex)
         {
-            _logger.Error("Exception occurred", ex);
-            throw;
+            throw new RepositoryException(ex.Message, ex.InnerException);
         }
 
-        _logger.Verbose("Exiting AddAudiotrack method");
+        _logger.Verbose("Exiting AddAudiotrack");
     }
 
     public async Task DeleteAudiotrack(Guid audiotrackId)
     {
-        _logger.Verbose("Entering DeleteAudiotrack method");
+        _logger.Verbose("Entering DeleteAudiotrack");
 
         try
         {
             var audiotrackDbModel = await _context.Audiotracks.FindAsync(audiotrackId);
             _context.Audiotracks.Remove(audiotrackDbModel!);
             await _context.SaveChangesAsync();
-            _logger.Information($"Deleted audiotrack (Id = {audiotrackId}) from database");
         }
         catch (Exception ex)
         {
-            _logger.Error("Exception occurred", ex);
-            throw;
+            throw new RepositoryException(ex.Message, ex.InnerException);
         }
 
-        _logger.Verbose("Exiting DeleteAudiotrack method");
+        _logger.Verbose("Exiting DeleteAudiotrack");
     }
 
     public async Task<List<Audiotrack>> GetAllAudiotracks()
     {
-        _logger.Verbose("Entering GetAllAudiotracks method");
+        _logger.Verbose("Entering GetAllAudiotracks");
 
-        var audios = await _context.Audiotracks
-            .Select(a => AudiotrackConverter.DbToCoreModel(a))
-            .ToListAsync();
-        if (audios.Count == 0)
+        List<Audiotrack> audios;
+        try
         {
-            _logger.Warning("Database contains no entries of Audiotrack");
+            audios = await _context.Audiotracks
+                    .Select(a => AudiotrackConverter.DbToCoreModel(a))
+                    .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
         }
 
-        _logger.Verbose("Exiting GetAllAudiotracks method");
+        _logger.Verbose("Exiting GetAllAudiotracks");
         return audios;
     }
 
     public async Task<Audiotrack?> GetAudiotrackById(Guid audiotrackId)
     {
-        _logger.Verbose("Entering GetAudiotrackById method");
+        _logger.Verbose("Entering GetAudiotrackById");
 
-        var audiotrackDbModel = await _context.Audiotracks.FindAsync(audiotrackId);
-        if (audiotrackDbModel is null)
+        Audiotrack? audiotrack;
+        try
         {
-            _logger.Warning($"Audiotrack (Id = {audiotrackId}) not found in database");
+            var audiotrackDbModel = await _context.Audiotracks.FindAsync(audiotrackId);
+            audiotrack = AudiotrackConverter.DbToCoreModel(audiotrackDbModel);
         }
-        var audiotrack = AudiotrackConverter.DbToCoreModel(audiotrackDbModel);
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
+        }
 
-        _logger.Verbose("Exiting GetAudiotrackById method");
+        _logger.Verbose("Exiting GetAudiotrackById");
         return audiotrack;
     }
 
     public async Task<List<Audiotrack>> GetAudiotracksByTitle(string title)
     {
-        _logger.Verbose("Entering GetAudiotracksByTitle method");
+        _logger.Verbose("Entering GetAudiotracksByTitle");
 
-        var audiotracks = await _context.Audiotracks
-            .Where(a => a.Title == title)
-            .Select(a => AudiotrackConverter.DbToCoreModel(a))
-            .ToListAsync();
-        if (audiotracks.Count == 0)
+        List<Audiotrack> audiotracks;
+        try
         {
-            _logger.Warning($"Database contains no audiotracks with title \"{title}\"");
+            audiotracks = await _context.Audiotracks
+                    .Where(a => a.Title == title)
+                    .Select(a => AudiotrackConverter.DbToCoreModel(a))
+                    .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
         }
 
-        _logger.Verbose("Exiting GetAudiotracksByTitle method");
+        _logger.Verbose("Exiting GetAudiotracksByTitle");
         return audiotracks!;
     }
 
     public async Task<Audiotrack> UpdateAudiotrack(Audiotrack audiotrack)
     {
-        _logger.Verbose("Entering UpdateAudiotrack method");
+        _logger.Verbose("Entering UpdateAudiotrack");
 
-        var audiotrackDbModel = await _context.Audiotracks.FindAsync(audiotrack.Id);
+        try
+        {
+            var audiotrackDbModel = await _context.Audiotracks.FindAsync(audiotrack.Id);
 
-        audiotrackDbModel!.Id = audiotrack.Id;
-        audiotrackDbModel!.AuthorId = audiotrack.AuthorId;
-        audiotrackDbModel!.Title = audiotrack.Title;
-        audiotrackDbModel!.Duration = audiotrack.Duration;
-        audiotrackDbModel!.Filepath = audiotrack.Filepath;
+            audiotrackDbModel!.Id = audiotrack.Id;
+            audiotrackDbModel!.AuthorId = audiotrack.AuthorId;
+            audiotrackDbModel!.Title = audiotrack.Title;
+            audiotrackDbModel!.Duration = audiotrack.Duration;
+            audiotrackDbModel!.Filepath = audiotrack.Filepath;
 
-        await _context.SaveChangesAsync();
-        _logger.Information($"Updated audiotrack (Id = {audiotrack.Id})");
-        _logger.Verbose("Exiting UpdateAudiotrack method");
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
+        }
+
+        _logger.Verbose("Exiting UpdateAudiotrack");
         return audiotrack;
     }
 }

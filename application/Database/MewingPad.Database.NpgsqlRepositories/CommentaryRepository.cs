@@ -1,4 +1,6 @@
+using System.Data.SqlClient;
 using MewingPad.Common.Entities;
+using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.Context;
 using MewingPad.Database.Models.Converters;
@@ -15,89 +17,100 @@ public class CommentaryRepository(MewingPadDbContext context) : ICommentaryRepos
 
     public async Task AddCommentary(Commentary commentary)
     {
-        _logger.Verbose("Entering AddCommentary method");
+        _logger.Verbose("Entering AddCommentary");
 
         try
         {
             await _context.Commentaries.AddAsync(CommentaryConverter.CoreToDbModel(commentary)!);
             await _context.SaveChangesAsync();
-            _logger.Information($"Added commentary (Id = {commentary.Id}) to database");
         }
         catch (Exception ex)
         {
-            _logger.Error("Exception occurred", ex);
-            throw;
+            throw new RepositoryException(ex.Message, ex.InnerException);
         }
 
-        _logger.Verbose("Exiting AddCommentary method");
+        _logger.Verbose("Exiting AddCommentary");
     }
 
     public async Task DeleteCommentary(Guid commentaryId)
     {
-        _logger.Verbose("Entering DeleteCommentary method");
+        _logger.Verbose("Entering DeleteCommentary");
 
         try
         {
             var commentaryDbModel = await _context.Commentaries.FindAsync(commentaryId);
             _context.Commentaries.Remove(commentaryDbModel!);
             await _context.SaveChangesAsync();
-            _logger.Information($"Deleted commentary (Id = {commentaryId}) from database");
         }
         catch (Exception ex)
         {
-            _logger.Error("Exception occurred", ex);
-            throw;
+            throw new RepositoryException(ex.Message, ex.InnerException);
         }
 
-        _logger.Verbose("Exiting DeleteCommentary method");
+        _logger.Verbose("Exiting DeleteCommentary");
     }
 
     public async Task<List<Commentary>> GetAudiotrackCommentaries(Guid audiotrackId)
     {
-        _logger.Verbose("Entering GetAudiotrackCommentaries method");
+        _logger.Verbose("Entering GetAudiotrackCommentaries");
 
-        var commentaries = await _context.Commentaries
-            .Where(c => c.AudiotrackId == audiotrackId)
-            .Select(c => CommentaryConverter.DbToCoreModel(c))
-            .ToListAsync();
-        if (commentaries.Count == 0)
+        List<Commentary> commentaries;
+        try
         {
-            _logger.Warning($"Database contains no commentaries for audiotrack with id {audiotrackId}");
+            commentaries = await _context.Commentaries
+                    .Where(c => c.AudiotrackId == audiotrackId)
+                    .Select(c => CommentaryConverter.DbToCoreModel(c))
+                    .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
         }
 
-        _logger.Verbose("Exiting GetAudiotrackCommentaries method");
+        _logger.Verbose("Exiting GetAudiotrackCommentaries");
         return commentaries;
     }
 
     public async Task<Commentary?> GetCommentaryById(Guid commentaryId)
     {
-        _logger.Verbose("Entering GetCommentaryById method");
+        _logger.Verbose("Entering GetCommentaryById");
 
-        var commentaryDbModel = await _context.Commentaries.FindAsync(commentaryId);
-        if (commentaryDbModel is null)
+        Commentary? commentary;
+        try
         {
-            _logger.Warning($"Commentary (Id = {commentaryId}) not found in database");
+            var commentaryDbModel = await _context.Commentaries.FindAsync(commentaryId);
+            commentary = CommentaryConverter.DbToCoreModel(commentaryDbModel);
         }
-        var commentary = CommentaryConverter.DbToCoreModel(commentaryDbModel);
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
+        }
 
-        _logger.Verbose("Exiting GetCommentaryById method");
+        _logger.Verbose("Exiting GetCommentaryById");
         return commentary;
     }
 
     public async Task<Commentary> UpdateCommentary(Commentary commentary)
     {
-        _logger.Verbose("Entering UpdateCommentary method");
+        _logger.Verbose("Entering UpdateCommentary");
 
-        var commentaryDbModel = await _context.Commentaries.FindAsync(commentary.Id);
+        try
+        {
+            var commentaryDbModel = await _context.Commentaries.FindAsync(commentary.Id);
 
-        commentaryDbModel!.Id = commentary.Id;
-        commentaryDbModel!.AuthorId = commentary.AuthorId;
-        commentaryDbModel!.AudiotrackId = commentary.AudiotrackId;
-        commentaryDbModel!.Text = commentary.Text;
+            commentaryDbModel!.Id = commentary.Id;
+            commentaryDbModel!.AuthorId = commentary.AuthorId;
+            commentaryDbModel!.AudiotrackId = commentary.AudiotrackId;
+            commentaryDbModel!.Text = commentary.Text;
 
-        await _context.SaveChangesAsync();
-        _logger.Information($"Updated commentary (Id = {commentary.Id})");
-        _logger.Verbose("Exiting UpdateCommentary method");
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
+        }
+
+        _logger.Verbose("Exiting UpdateCommentary");
         return commentary;
     }
 }

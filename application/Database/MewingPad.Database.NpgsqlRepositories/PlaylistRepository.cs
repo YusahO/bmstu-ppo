@@ -1,4 +1,6 @@
+using System.Data.SqlClient;
 using MewingPad.Common.Entities;
+using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.Context;
 using MewingPad.Database.Models.Converters;
@@ -15,33 +17,30 @@ public class PlaylistRepository(MewingPadDbContext context) : IPlaylistRepositor
 
     public async Task AddPlaylist(Playlist playlist)
     {
-        _logger.Verbose("Entering AddPlaylist method");
+        _logger.Verbose("Entering AddPlaylist");
 
         try
         {
             await _context.Playlists.AddAsync(PlaylistConverter.CoreToDbModel(playlist));
             await _context.SaveChangesAsync();
-            _logger.Information($"Added playlist (Id = {playlist.Id}) to database");
         }
         catch (Exception ex)
         {
-            _logger.Error("Exception occurred", ex);
-            throw;
+            throw new RepositoryException(ex.Message, ex.InnerException);
         }
 
-        _logger.Verbose("Exiting AddPlaylist method");
+        _logger.Verbose("Exiting AddPlaylist");
     }
 
     public async Task DeletePlaylist(Guid playlistId)
     {
-        _logger.Verbose("Entering DeletePlaylist method");
+        _logger.Verbose("Entering DeletePlaylist");
 
         try
         {
             var playlistDbModel = await _context.Playlists.FindAsync(playlistId);
             _context.Playlists.Remove(playlistDbModel!);
             await _context.SaveChangesAsync();
-            _logger.Information($"Deleted playlist (Id = {playlistId}) from database");
         }
         catch (Exception ex)
         {
@@ -49,70 +48,90 @@ public class PlaylistRepository(MewingPadDbContext context) : IPlaylistRepositor
             throw;
         }
 
-        _logger.Verbose("Exiting DeletePlaylist method");
+        _logger.Verbose("Exiting DeletePlaylist");
     }
 
     public async Task<List<Playlist>> GetAllPlaylists()
     {
-        _logger.Verbose("Entering GetAllPlaylists method");
+        _logger.Verbose("Entering GetAllPlaylists");
 
-        var playlists = await _context.Playlists
-            .Select(p => PlaylistConverter.DbToCoreModel(p)!)
-            .ToListAsync();
-        if (playlists.Count == 0)
+        List<Playlist> playlists;
+        try
         {
-            _logger.Warning("Database contains no records of Playlist");
+            playlists = await _context.Playlists
+                    .Select(p => PlaylistConverter.DbToCoreModel(p)!)
+                    .ToListAsync();
         }
-        
-        _logger.Verbose("Exiting GetAllPlaylists method");
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
+        }
+
+        _logger.Verbose("Exiting GetAllPlaylists");
         return playlists;
     }
 
     public async Task<Playlist?> GetPlaylistById(Guid playlistId)
     {
-        _logger.Verbose("Entering GetPlaylistById method");
+        _logger.Verbose("Entering GetPlaylistById");
 
-        var playlistDbModel = await _context.Playlists.FindAsync(playlistId);
-        if (playlistDbModel is null)
+        Playlist? playlist;
+        try
         {
-            _logger.Warning($"Playlist (Id = {playlistId}) not found in database");
+            var playlistDbModel = await _context.Playlists.FindAsync(playlistId);
+            playlist = PlaylistConverter.DbToCoreModel(playlistDbModel);
         }
-        var playlist = PlaylistConverter.DbToCoreModel(playlistDbModel);
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
+        }
 
-        _logger.Verbose("Exiting GetPlaylistById method");
+        _logger.Verbose("Exiting GetPlaylistById");
         return playlist;
     }
 
     public async Task<List<Playlist>> GetUserPlaylists(Guid userId)
     {
-        _logger.Verbose("Entering GetUserPlaylists method");
+        _logger.Verbose("Entering GetUserPlaylists");
 
-        var playlists = await _context.Playlists
-            .Where(p => p.UserId == userId)
-            .Select(p => PlaylistConverter.DbToCoreModel(p))
-            .ToListAsync();
-        if (playlists.Count == 0)
+        List<Playlist> playlists;
+
+        try
         {
-            _logger.Warning($"User (Id = {userId}) has no playlists");
+            playlists = await _context.Playlists
+                   .Where(p => p.UserId == userId)
+                   .Select(p => PlaylistConverter.DbToCoreModel(p))
+                   .ToListAsync();
         }
-        
-        _logger.Verbose("Exiting GetUserPlaylists method");
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
+        }
+
+        _logger.Verbose("Exiting GetUserPlaylists");
         return playlists;
     }
 
     public async Task<Playlist> UpdatePlaylist(Playlist playlist)
     {
-        _logger.Verbose("Entering UpdatePlaylist method");
+        _logger.Verbose("Entering UpdatePlaylist");
 
-        var playlistDbModel = await _context.Playlists.FindAsync(playlist.Id);
+        try
+        {
+            var playlistDbModel = await _context.Playlists.FindAsync(playlist.Id);
 
-        playlistDbModel!.Id = playlist.Id;
-        playlistDbModel!.Title = playlist.Title;
-        playlistDbModel!.UserId = playlist.UserId;
+            playlistDbModel!.Id = playlist.Id;
+            playlistDbModel!.Title = playlist.Title;
+            playlistDbModel!.UserId = playlist.UserId;
 
-        await _context.SaveChangesAsync();
-        _logger.Information($"Playlist (Id = {playlist.Id}) updated");
-        _logger.Verbose("Exiting UpdatePlaylist method");
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
+        }
+
+        _logger.Verbose("Exiting UpdatePlaylist");
         return playlist;
     }
 }

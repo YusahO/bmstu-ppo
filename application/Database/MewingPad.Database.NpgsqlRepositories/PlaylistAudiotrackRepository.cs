@@ -1,4 +1,6 @@
+using System.Data.SqlClient;
 using MewingPad.Common.Entities;
+using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.Context;
 using MewingPad.Database.Models.Converters;
@@ -15,126 +17,112 @@ public class PlaylistAudiotrackRepository(MewingPadDbContext context) : IPlaylis
 
     public async Task DeleteByPlaylist(Guid playlistId)
     {
-        _logger.Verbose("Entering DeleteByPlaylist method");
-
-        var pairs = await _context.PlaylistsAudiotracks
-            .Where(pa => pa.PlaylistId == playlistId)
-            .ToListAsync();
-        if (pairs.Count == 0)
-        {
-            _logger.Warning($"Playlist (Id = {playlistId}) has no audiotracks");
-            return;
-        }
+        _logger.Verbose("Entering DeleteByPlaylist");
 
         try
         {
+            var pairs = await _context.PlaylistsAudiotracks
+                .Where(pa => pa.PlaylistId == playlistId)
+                .ToListAsync();
+            if (pairs.Count == 0)
+            {
+                return;
+            }
             _context.RemoveRange(pairs);
             await _context.SaveChangesAsync();
-            foreach (var p in pairs)
-            {
-                _logger.Information($"Deleted {{ PlaylistId = {p.PlaylistId}, AudiotrackId = {p.AudiotrackId}}} from database");
-            }
         }
         catch (Exception ex)
         {
-            _logger.Error("Exception occurred", ex);
-            throw;
+            throw new RepositoryException(ex.Message, ex.InnerException);
         }
 
-        _logger.Verbose("Exiting DeleteByPlaylist method");
+        _logger.Verbose("Exiting DeleteByPlaylist");
     }
 
     public async Task DeleteByAudiotrack(Guid audiotrackId)
     {
-        _logger.Verbose("Entering DeleteByAudiotrack method");
-
-        var pairs = await _context.PlaylistsAudiotracks
-            .Where(pa => pa.AudiotrackId == audiotrackId)
-            .ToListAsync();
-        if (pairs.Count == 0)
-        {
-            _logger.Warning($"Audiotrack (Id = {audiotrackId}) not found in any playlist");
-            return;
-        }
+        _logger.Verbose("Entering DeleteByAudiotrack");
 
         try
         {
+            var pairs = await _context.PlaylistsAudiotracks
+                .Where(pa => pa.AudiotrackId == audiotrackId)
+                .ToListAsync();
+            if (pairs.Count == 0)
+            {
+                return;
+            }
             _context.RemoveRange(pairs);
             await _context.SaveChangesAsync();
-            foreach (var p in pairs)
-            {
-                _logger.Information($"Deleted {{ PlaylistId = {p.PlaylistId}, AudiotrackId = {p.AudiotrackId}}} from database");
-            }
         }
         catch (Exception ex)
         {
-            _logger.Error("Exception occurred", ex);
-            throw;
+            throw new RepositoryException(ex.Message, ex.InnerException);
         }
 
-        _logger.Verbose("Exiting DeleteByAudiotrack method");
+        _logger.Verbose("Exiting DeleteByAudiotrack");
     }
 
     public async Task AddAudiotrackToPlaylist(Guid playlistId, Guid audiotrackId)
     {
-        _logger.Verbose("Entering AddAudiotrackToPlaylist method");
+        _logger.Verbose("Entering AddAudiotrackToPlaylist");
 
         try
         {
             await _context.PlaylistsAudiotracks
                     .AddAsync(new(playlistId, audiotrackId));
             await _context.SaveChangesAsync();
-            _logger.Information($"Added audiotrack (Id = {audiotrackId}) to playlist (Id = {playlistId})");
         }
         catch (Exception ex)
         {
-            _logger.Error("Exception occurred", ex);
-            throw;
+            throw new RepositoryException(ex.Message, ex.InnerException);
         }
 
-        _logger.Verbose("Exiting AddAudiotrackToPlaylist method");
+        _logger.Verbose("Exiting AddAudiotrackToPlaylist");
     }
 
     public async Task<List<Audiotrack>> GetAllAudiotracksFromPlaylist(Guid playlistId)
     {
-        _logger.Verbose("Entering GetAllAudiotracksFromPlaylist method");
+        _logger.Verbose("Entering GetAllAudiotracksFromPlaylist");
 
-        var audiotracks = await _context.PlaylistsAudiotracks
-            .Where(pa => pa.PlaylistId == playlistId)
-            .Include(pa => pa.Audiotrack)
-            .Select(pa => AudiotrackConverter.DbToCoreModel(pa.Audiotrack))
-            .ToListAsync();
-        if (audiotracks.Count == 0)
+        List<Audiotrack> audiotracks;
+        try
         {
-            _logger.Warning($"Database contains no audiotracks in playlist with id {playlistId}");
+            audiotracks = await _context.PlaylistsAudiotracks
+                    .Where(pa => pa.PlaylistId == playlistId)
+                    .Include(pa => pa.Audiotrack)
+                    .Select(pa => AudiotrackConverter.DbToCoreModel(pa.Audiotrack))
+                    .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
         }
 
-        _logger.Verbose("Exiting GetAllAudiotracksFromPlaylist method");
+        _logger.Verbose("Exiting GetAllAudiotracksFromPlaylist");
         return audiotracks!;
     }
 
     public async Task RemoveAudiotrackFromPlaylist(Guid playlistId, Guid audiotrackId)
     {
-        _logger.Verbose("Entering RemoveAudiotrackFromPlaylist method");
+        _logger.Verbose("Entering RemoveAudiotrackFromPlaylist");
 
         try
         {
             _context.PlaylistsAudiotracks.Remove(new(playlistId, audiotrackId));
             await _context.SaveChangesAsync();
-            _logger.Information($"Removed audiotrack (Id = {audiotrackId}) from playlist (Id = {playlistId})");
         }
         catch (Exception ex)
         {
-            _logger.Error("Exception occurred", ex);
-            throw;
+            throw new RepositoryException(ex.Message, ex.InnerException);
         }
 
-        _logger.Verbose("Exiting RemoveAudiotrackFromPlaylist method");
+        _logger.Verbose("Exiting RemoveAudiotrackFromPlaylist");
     }
 
     public async Task RemoveAudiotracksFromPlaylist(Guid playlistId, List<Guid> audiotrackIds)
     {
-        _logger.Verbose("Entering RemoveAudiotracksFromPlaylist method");
+        _logger.Verbose("Entering RemoveAudiotracksFromPlaylist");
 
         try
         {
@@ -148,36 +136,34 @@ public class PlaylistAudiotrackRepository(MewingPadDbContext context) : IPlaylis
                 {
                     _context.PlaylistsAudiotracks.Remove(paDbModel);
                 }
-                else
-                {
-                    _logger.Warning($"Audiotrack (Id = {aid}) not found in playlist (Id = {playlistId})");
-                }
             }
-
             await _context.SaveChangesAsync();
-            foreach (var aid in audiotrackIds)
-            {
-                _logger.Information($"Removed audiotrack (Id = {aid}) from playlist (Id = {playlistId})");
-            }
         }
         catch (Exception ex)
         {
-            _logger.Error("Exception occurred", ex);
-            throw;
+            throw new RepositoryException(ex.Message, ex.InnerException);
         }
 
-        _logger.Verbose("Exiting RemoveAudiotracksFromPlaylist method");
+        _logger.Verbose("Exiting RemoveAudiotracksFromPlaylist");
     }
 
     public async Task<bool> IsAudiotrackInPlaylist(Guid audiotrackId, Guid playlistId)
     {
-        _logger.Verbose("Entering IsAudiotrackInPlaylist method");
+        _logger.Verbose("Entering IsAudiotrackInPlaylist");
 
-        var inPlaylist = await _context.PlaylistsAudiotracks
-            .AnyAsync(pa => pa.AudiotrackId == audiotrackId &&
-                            pa.PlaylistId == playlistId);
-        
-        _logger.Verbose("Exiting IsAudiotrackInPlaylist method");
+        bool inPlaylist;
+        try
+        {
+             inPlaylist = await _context.PlaylistsAudiotracks
+                    .AnyAsync(pa => pa.AudiotrackId == audiotrackId &&
+                                    pa.PlaylistId == playlistId);
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
+        }
+
+        _logger.Verbose("Exiting IsAudiotrackInPlaylist");
         return inPlaylist;
     }
 }

@@ -1,4 +1,5 @@
 using MewingPad.Common.Entities;
+using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.Context;
 using MewingPad.Database.Models.Converters;
@@ -15,68 +16,82 @@ public class ReportRepository(MewingPadDbContext context) : IReportRepository
 
     public async Task AddReport(Report report)
     {
-        _logger.Verbose("Entering AddReport method");
+        _logger.Verbose("Entering AddReport");
 
         try
         {
             await _context.Reports.AddAsync(ReportConverter.CoreToDbModel(report));
             await _context.SaveChangesAsync();
-            _logger.Information("Added report ({@Report}) to database", report);
         }
         catch (Exception ex)
         {
-            _logger.Error("Exception occurred", ex);
-            throw;
+            throw new RepositoryException(ex.Message, ex.InnerException);
         }
 
-        _logger.Verbose("Exiting AddReport method");
+        _logger.Verbose("Exiting AddReport");
     }
 
     public async Task<List<Report>> GetAllReports()
     {
-        _logger.Verbose("Entering GetAllReports method");
-        
-        var reports = await _context.Reports
-            .Select(r => ReportConverter.DbToCoreModel(r))
-            .ToListAsync();
-        if (reports.Count == 0)
+        _logger.Verbose("Entering GetAllReports");
+
+        List<Report> reports;
+        try
         {
-            _logger.Warning("Database contains no entries of Report");
+            reports = await _context.Reports
+                    .Select(r => ReportConverter.DbToCoreModel(r))
+                    .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
         }
 
-        _logger.Verbose("Exiting GetAllReports method");
+        _logger.Verbose("Exiting GetAllReports");
         return reports;
     }
 
     public async Task<Report?> GetReportById(Guid reportId)
     {
-        _logger.Verbose("Entering GetReportById method");
+        _logger.Verbose("Entering GetReportById");
 
-        var reportDbModel = await _context.Reports.FindAsync(reportId);
-        if (reportDbModel is null)
+        Report? report;
+
+        try
         {
-            _logger.Warning($"Report (Id = {reportDbModel}) not found in database");
+            var reportDbModel = await _context.Reports.FindAsync(reportId);
+            report = ReportConverter.DbToCoreModel(reportDbModel);
         }
-        var report = ReportConverter.DbToCoreModel(reportDbModel);
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
+        }
 
-        _logger.Verbose("Exiting GetReportById method");
+        _logger.Verbose("Exiting GetReportById");
         return report;
     }
 
     public async Task<Report> UpdateReport(Report report)
     {
-        _logger.Verbose("Entering UpdateReport method");
+        _logger.Verbose("Entering UpdateReport");
 
-        var reportDbModel = await _context.Reports.FindAsync(report.Id);
+        try
+        {
+            var reportDbModel = await _context.Reports.FindAsync(report.Id);
 
-        reportDbModel!.AuthorId = report.AuthorId;
-        reportDbModel!.AudiotrackId = report.AudiotrackId;
-        reportDbModel!.Text = report.Text;
-        reportDbModel!.Status = report.Status;
+            reportDbModel!.AuthorId = report.AuthorId;
+            reportDbModel!.AudiotrackId = report.AudiotrackId;
+            reportDbModel!.Text = report.Text;
+            reportDbModel!.Status = report.Status;
 
-        await _context.SaveChangesAsync();
-        _logger.Information($"Report (Id = {report.Id}) updated");
-        _logger.Verbose("Exiting UpdateReport method");
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
+        }
+
+        _logger.Verbose("Exiting UpdateReport");
         return report;
     }
 }

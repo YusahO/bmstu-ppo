@@ -14,7 +14,7 @@ public class ReportService(IReportRepository reportRepository) : IReportService
 
     public async Task CreateReport(Report report)
     {
-        _logger.Verbose("Entering CreateReport method");
+        _logger.Verbose("Entering CreateReport({@Report})", report);
 
         if (await _reportRepository.GetReportById(report.Id) is not null)
         {
@@ -22,13 +22,14 @@ public class ReportService(IReportRepository reportRepository) : IReportService
             throw new ReportExistsException(report.Id);
         }
         await _reportRepository.AddReport(report);
+        _logger.Information($"Report (Id = {report.Id}) added");
 
-        _logger.Verbose("Exiting CreateReport method");
+        _logger.Verbose("Exiting CreateReport");
     }
 
     public async Task<Report> UpdateReportStatus(Guid reportId, ReportStatus status)
     {
-        _logger.Verbose("Entering UpdateReportStatus method");
+        _logger.Verbose($"Entering UpdateReportStatus({reportId}, {status})");
 
         var report = await _reportRepository.GetReportById(reportId);
         if (report is null)
@@ -38,14 +39,15 @@ public class ReportService(IReportRepository reportRepository) : IReportService
         }
         report.Status = status;
         await _reportRepository.UpdateReport(report);
+        _logger.Information($"Report (Id = {report.Id}) deleted");
 
-        _logger.Verbose("Exiting UpdateReportStatus method");
+        _logger.Verbose("Exiting UpdateReportStatus");
         return report;
     }
 
     public async Task<Report> GetReportById(Guid reportId)
     {
-        _logger.Verbose("Entering GetReportById method");
+        _logger.Verbose($"Entering GetReportById({reportId})");
 
         var report = await _reportRepository.GetReportById(reportId);
         if (report is null)
@@ -54,15 +56,15 @@ public class ReportService(IReportRepository reportRepository) : IReportService
             throw new ReportNotFoundException(reportId);
         }
 
-        _logger.Verbose("Exiting GetReportById method");
+        _logger.Verbose("Exiting GetReportById");
         return report;
     }
 
     public async Task<List<Report>> GetAllReports()
     {
-        _logger.Verbose("Entering GetAllReports method");
+        _logger.Verbose("Entering GetAllReports");
         var reports = await _reportRepository.GetAllReports();
-        _logger.Verbose("Exiting GetAllReports method");
+        _logger.Verbose("Exiting GetAllReports");
         return reports;
     }
 }

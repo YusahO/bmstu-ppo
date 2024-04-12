@@ -3,7 +3,7 @@ using MewingPad.Database.Models;
 
 namespace MewingPad.Database.Context;
 
-public class MewingPadDbContext : DbContext
+public class MewingPadDbContext(DbContextOptions<MewingPadDbContext> options) : DbContext(options)
 {
     public DbSet<UserDbModel> Users { get; set; }
     public DbSet<PlaylistDbModel> Playlists { get; set; }
@@ -15,10 +15,6 @@ public class MewingPadDbContext : DbContext
 
     public DbSet<PlaylistAudiotrackDbModel> PlaylistsAudiotracks { get; set; }
     public DbSet<TagAudiotrackDbModel> TagsAudiotracks { get; set; }
-
-    public MewingPadDbContext(DbContextOptions<MewingPadDbContext> options) : base(options)
-    {
-    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

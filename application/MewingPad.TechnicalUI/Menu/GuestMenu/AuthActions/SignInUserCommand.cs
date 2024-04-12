@@ -17,13 +17,15 @@ public class SignInUserCommand : Command
 
         Console.Write("Введите адрес электронной почты: ");
         var email = Console.ReadLine();
-
+        _logger.Information($"User input email \"{email}\"");
 
         Console.Write("Введите пароль: ");
         var password = Console.ReadLine();
+        _logger.Information("User input password");
 
         if (email is null && password is null)
         {
+            _logger.Information("User input is invalid");
             Console.WriteLine("[!] Неверный ввод\n");
             return;
         }

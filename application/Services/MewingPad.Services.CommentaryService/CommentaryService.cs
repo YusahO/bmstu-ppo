@@ -14,7 +14,7 @@ public class CommentaryService(ICommentaryRepository commentaryRepository,
 
     public async Task CreateCommentary(Commentary commentary)
     {
-        _logger.Verbose("Entering CreateCommentary method");
+        _logger.Verbose("Entering CreateCommentary({@Commentary})");
 
         if (await _commentaryRepository.GetCommentaryById(commentary.Id) is not null)
         {
@@ -22,12 +22,13 @@ public class CommentaryService(ICommentaryRepository commentaryRepository,
             throw new CommentaryExistsException(commentary.Id);
         }
         await _commentaryRepository.AddCommentary(commentary);
-        _logger.Verbose("Exiting CreateCommentary method");
+        _logger.Information($"Commentary (Id = {commentary.Id}) added");
+        _logger.Verbose("Exiting CreateCommentary");
     }
 
     public async Task DeleteCommentary(Guid commentaryId)
     {
-        _logger.Verbose("Entering DeleteCommentary method");
+        _logger.Verbose($"Entering DeleteCommentary({commentaryId})");
 
         if (await _commentaryRepository.GetCommentaryById(commentaryId) is null)
         {
@@ -36,12 +37,13 @@ public class CommentaryService(ICommentaryRepository commentaryRepository,
         }
 
         await _commentaryRepository.DeleteCommentary(commentaryId);
+        _logger.Information($"Commentary (Id = {commentaryId}) deleted");
         _logger.Verbose("Exiting DeleteCommentary method");
     }
 
     public async Task<List<Commentary>> GetAudiotrackCommentaries(Guid audiotrackId)
     {
-        _logger.Verbose("Entering GetAudiotrackCommentaries method");
+        _logger.Verbose($"Entering GetAudiotrackCommentaries({audiotrackId})");
 
         if (await _audiofileRepository.GetAudiotrackById(audiotrackId) is null)
         {
@@ -50,14 +52,13 @@ public class CommentaryService(ICommentaryRepository commentaryRepository,
         }
 
         var commentaries = await _commentaryRepository.GetAudiotrackCommentaries(audiotrackId);
-
-        _logger.Verbose("Exiting GetAudiotrackCommentaries method");
+        _logger.Verbose("Exiting GetAudiotrackCommentaries");
         return commentaries;
     }
 
     public async Task<Commentary> GetCommentaryById(Guid commentaryId)
     {
-        _logger.Verbose("Entering GetCommentaryById method");
+        _logger.Verbose($"Entering GetCommentaryById({commentaryId})");
 
         Commentary? commentary;
         if ((commentary = await _commentaryRepository.GetCommentaryById(commentaryId)) is null)
@@ -66,13 +67,13 @@ public class CommentaryService(ICommentaryRepository commentaryRepository,
             throw new CommentaryNotFoundException(commentaryId);
         }
 
-        _logger.Verbose("Exiting GetCommentaryById method");
+        _logger.Verbose("Exiting GetCommentaryById");
         return commentary;
     }
 
     public async Task<Commentary> UpdateCommentary(Commentary commentary)
     {
-        _logger.Verbose("Entering UpdateCommentary method");
+        _logger.Verbose("Entering UpdateCommentary({@Commentary})", commentary);
 
         if (await _commentaryRepository.GetCommentaryById(commentary.Id) is null)
         {
@@ -81,8 +82,8 @@ public class CommentaryService(ICommentaryRepository commentaryRepository,
         }
 
         await _commentaryRepository.UpdateCommentary(commentary);
-
-        _logger.Verbose("Exiting UpdateCommentary method");
+        _logger.Information($"Commentary (Id = {commentary.Id}) updated");
+        _logger.Verbose("Exiting UpdateCommentary");
         return commentary;
     }
 }

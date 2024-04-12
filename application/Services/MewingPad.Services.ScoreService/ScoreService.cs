@@ -15,7 +15,7 @@ public class ScoreService(IScoreRepository scoreRepository,
 
     public async Task CreateScore(Score score)
     {
-        _logger.Verbose("Entering CreateScore method");
+        _logger.Verbose("Entering CreateScore({@Score})", score);
 
         if (await _scoreRepository.GetScoreByPrimaryKey(score.AuthorId, score.AudiotrackId) is not null)
         {
@@ -23,13 +23,14 @@ public class ScoreService(IScoreRepository scoreRepository,
             throw new ScoreExistsException(score.AuthorId, score.AudiotrackId);
         }
         await _scoreRepository.AddScore(score);
+        _logger.Information($"Score (AuthorId = {score.AuthorId}, AudiotrackId = {score.AudiotrackId}) added");
 
-        _logger.Verbose("Exiting CreateScore method");
+        _logger.Verbose("Exiting CreateScore");
     }
 
     public async Task<Score> GetScoreByPrimaryKey(Guid authorId, Guid audiotrackId)
     {
-        _logger.Verbose("Entering GetScoreByPrimaryKey method");
+        _logger.Verbose($"Entering GetScoreByPrimaryKey({authorId}, {audiotrackId})");
 
         var score = await _scoreRepository.GetScoreByPrimaryKey(authorId, audiotrackId);
         if (score is null)
@@ -38,13 +39,13 @@ public class ScoreService(IScoreRepository scoreRepository,
             throw new ScoreNotFoundException(authorId, audiotrackId);
         }
 
-        _logger.Verbose("Exiting GetScoreByPrimaryKey method");
+        _logger.Verbose("Exiting GetScoreByPrimaryKey");
         return score;
     }
 
     public async Task<Score> UpdateScore(Score score)
     {
-        _logger.Verbose("Entering UpdateScore method");
+        _logger.Verbose("Entering UpdateScore({@Score})", score);
 
         if (await _scoreRepository.GetScoreByPrimaryKey(score.AuthorId, score.AudiotrackId) is null)
         {
@@ -52,14 +53,15 @@ public class ScoreService(IScoreRepository scoreRepository,
             throw new ScoreNotFoundException(score.AuthorId, score.AudiotrackId);
         }
         await _scoreRepository.UpdateScore(score);
+        _logger.Information($"Score (AuthorId = {score.AuthorId}, AudiotrackId = {score.AudiotrackId}) updated");
 
-        _logger.Verbose("Exiting UpdateScore method");
+        _logger.Verbose("Exiting UpdateScore");
         return score;
     }
 
     public async Task<List<Score>> GetAudiotrackScores(Guid audiotrackId)
     {
-        _logger.Verbose("Entering GetAudiotrackScores method");
+        _logger.Verbose($"Entering GetAudiotrackScores({audiotrackId})");
 
         if (await _audiotrackRepository.GetAudiotrackById(audiotrackId) is null)
         {
@@ -68,7 +70,7 @@ public class ScoreService(IScoreRepository scoreRepository,
         }
         var scores = await _scoreRepository.GetAudiotrackScores(audiotrackId);
 
-         _logger.Verbose("Exiting GetAudiotrackScores method");
+        _logger.Verbose("Exiting GetAudiotrackScores method");
         return scores;
     }
 }

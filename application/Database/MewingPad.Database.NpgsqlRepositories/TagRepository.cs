@@ -1,4 +1,5 @@
 using MewingPad.Common.Entities;
+using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.Context;
 using MewingPad.Database.Models.Converters;
@@ -15,86 +16,98 @@ public class TagRepository(MewingPadDbContext context) : ITagRepository
 
     public async Task AddTag(Tag tag)
     {
-        _logger.Verbose("Entering AddTag method");
+        _logger.Verbose("Entering AddTag");
 
         try
         {
             await _context.Tags.AddAsync(TagConverter.CoreToDbModel(tag)!);
             await _context.SaveChangesAsync();
-            _logger.Information($"Added tag (Id = {tag.Id}) to database");
         }
         catch (Exception ex)
         {
-            _logger.Error("Exception occured", ex);
-            throw;
+            throw new RepositoryException(ex.Message, ex.InnerException);
         }
 
-        _logger.Verbose("Exiting AddTag method");
+        _logger.Verbose("Exiting AddTag");
     }
 
     public async Task DeleteTag(Guid tagId)
     {
-        _logger.Verbose("Entering DeleteTag method");
+        _logger.Verbose("Entering DeleteTag");
 
-        var tagDbModel = await _context.Tags.FindAsync(tagId);
         try
         {
+            var tagDbModel = await _context.Tags.FindAsync(tagId);
             _context.Tags.Remove(tagDbModel!);
             await _context.SaveChangesAsync();
         }
         catch (Exception ex)
         {
-            _logger.Error("Exception occured", ex);
-            throw;
+            throw new RepositoryException(ex.Message, ex.InnerException);
         }
 
-        _logger.Verbose("Exiting DeleteTag method");
+        _logger.Verbose("Exiting DeleteTag");
     }
 
     public async Task<List<Tag>> GetAllTags()
     {
-        _logger.Verbose("Entering GetAllTags method");
+        _logger.Verbose("Entering GetAllTags");
 
-        var tags = await _context.Tags
-            .Select(t => TagConverter.DbToCoreModel(t))
-            .ToListAsync();
-        if (tags.Count == 0)
+        List<Tag> tags;
+        try
         {
-            _logger.Warning("Database has no entries of Tag");
+            tags = await _context.Tags
+                    .Select(t => TagConverter.DbToCoreModel(t))
+                    .ToListAsync();
         }
-        
-        _logger.Verbose("Exiting GetAllTags method");
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
+        }
+
+        _logger.Verbose("Exiting GetAllTags");
         return tags;
     }
 
     public async Task<Tag?> GetTagById(Guid tagId)
     {
-        _logger.Verbose("Entering GetTagById method");
+        _logger.Verbose("Entering GetTagById");
 
-        var tagDbModel = await _context.Tags.FindAsync(tagId);
-        if (tagDbModel is null)
+        Tag? tag;
+        try
         {
-            _logger.Warning($"Tag (Id = {tagId}) not found in database");
+            var tagDbModel = await _context.Tags.FindAsync(tagId);
+            tag = TagConverter.DbToCoreModel(tagDbModel);
         }
-        var tag = TagConverter.DbToCoreModel(tagDbModel);
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
+        }
 
-        _logger.Verbose("Exiting GetTagById method");
+        _logger.Verbose("Exiting GetTagById");
         return tag;
     }
 
     public async Task<Tag> UpdateTag(Tag tag)
     {
-        _logger.Verbose("Entering UpdateTag method");
+        _logger.Verbose("Entering UpdateTag");
 
-        var tagDbModel = await _context.Tags.FindAsync(tag.Id);
+        try
+        {
+            var tagDbModel = await _context.Tags.FindAsync(tag.Id);
 
-        tagDbModel!.Id = tag.Id;
-        tagDbModel!.AuthorId = tag.AuthorId;
-        tagDbModel!.Name = tag.Name;
+            tagDbModel!.Id = tag.Id;
+            tagDbModel!.AuthorId = tag.AuthorId;
+            tagDbModel!.Name = tag.Name;
 
-        await _context.SaveChangesAsync();
-        _logger.Information($"Updated tag (Id = {tag.Id})");
-        _logger.Verbose("Exiting UpdateTag method");
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
+        }
+
+        _logger.Verbose("Exiting UpdateTag");
         return tag;
     }
 }

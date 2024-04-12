@@ -23,19 +23,22 @@ public class PlaylistService(IPlaylistRepository playlistRepository,
 
     public async Task CreatePlaylist(Playlist playlist)
     {
-        _logger.Verbose("Entering CreatePlaylist method");
+        _logger.Verbose("Entering CreatePlaylist({@Playlist})", playlist);
 
         if (await _playlistRepository.GetPlaylistById(playlist.Id) is not null)
         {
+            _logger.Error($"Playlist (Id = {playlist.Id}) already exists");
             throw new PlaylistExistsException(playlist.Id);
         }
         await _playlistRepository.AddPlaylist(playlist);
+        _logger.Information($"Playlist (Id = {playlist.Id}) added");
+
         _logger.Verbose("Exiting CreatePlaylist method");
     }
 
     public async Task<Playlist> UpdatePlaylistTitle(Guid playlistId, string title)
     {
-        _logger.Verbose("Entering UpdatePlaylistTitle method");
+        _logger.Verbose($"Entering UpdatePlaylistTitle({playlistId}, {title})");
 
         var playlist = await _playlistRepository.GetPlaylistById(playlistId);
         if (playlist is null)
@@ -46,13 +49,14 @@ public class PlaylistService(IPlaylistRepository playlistRepository,
         playlist.Title = title;
 
         await _playlistRepository.UpdatePlaylist(playlist);
-        _logger.Verbose("Exiting UpdatePlaylistTitle method");
+        _logger.Information($"Playlist (Id = {playlist.Id}) updated");
+        _logger.Verbose("Exiting UpdatePlaylistTitle");
         return playlist;
     }
 
     public async Task DeletePlaylist(Guid playlistId)
     {
-        _logger.Verbose("Entering DeletePlaylist method");
+        _logger.Verbose($"Entering DeletePlaylist({playlistId})");
 
         if (await _playlistRepository.GetPlaylistById(playlistId) is null)
         {
@@ -62,13 +66,14 @@ public class PlaylistService(IPlaylistRepository playlistRepository,
 
         await _playlistAudiotrackRepository.DeleteByPlaylist(playlistId);
         await _playlistRepository.DeletePlaylist(playlistId);
+        _logger.Information($"Playlist (Id = {playlistId}) deleted");
 
-        _logger.Verbose("Exiting DeletePlaylist method");
+        _logger.Verbose("Exiting DeletePlaylist");
     }
 
     public async Task AddAudiotrackToPlaylist(Guid playlistId, Guid audiotrackId)
     {
-        _logger.Verbose("Entering AddAudiotrackToPlaylist method");
+        _logger.Verbose($"Entering AddAudiotrackToPlaylist({playlistId}, {audiotrackId})");
 
         if (await _playlistRepository.GetPlaylistById(playlistId) is null)
         {
@@ -87,14 +92,14 @@ public class PlaylistService(IPlaylistRepository playlistRepository,
             throw new AudiotrackExistsInPlaylistException(playlistId, audiotrackId);
         }
         await _playlistAudiotrackRepository.AddAudiotrackToPlaylist(playlistId, audiotrackId);
+        _logger.Information($"Audiotrack ({audiotrackId}) added to playlist (Id = {playlistId})");
 
-
-        _logger.Verbose("Exiting AddAudiotrackToPlaylist method");
+        _logger.Verbose("Exiting AddAudiotrackToPlaylist");
     }
 
     public async Task RemoveAudiotrackFromPlaylist(Guid playlistId, Guid audiotrackId)
     {
-        _logger.Verbose("Entering RemoveAudiotrackFromPlaylist method");
+        _logger.Verbose($"Entering RemoveAudiotrackFromPlaylist({playlistId}, {audiotrackId})");
 
         if (await _playlistRepository.GetPlaylistById(playlistId) is null)
         {
@@ -112,13 +117,14 @@ public class PlaylistService(IPlaylistRepository playlistRepository,
             throw new AudiotrackNotFoundInPlaylistException(playlistId, audiotrackId);
         }
         await _playlistAudiotrackRepository.RemoveAudiotrackFromPlaylist(playlistId, audiotrackId);
+        _logger.Information($"Audiotrack ({audiotrackId}) removed from playlist (Id = {playlistId})");
 
-        _logger.Verbose("Exiting RemoveAudiotrackFromPlaylist method");
+        _logger.Verbose("Exiting RemoveAudiotrackFromPlaylist");
     }
 
     public async Task RemoveAudiotracksFromPlaylist(Guid playlistId, List<Guid> audiotrackIds)
     {
-        _logger.Verbose("Entering RemoveAudiotracksFromPlaylist method");
+        _logger.Verbose("Entering RemoveAudiotracksFromPlaylist({@PlaylistId}, {@Audios})", playlistId, audiotrackIds);
 
         if (await _playlistRepository.GetPlaylistById(playlistId) is null)
         {
@@ -139,12 +145,13 @@ public class PlaylistService(IPlaylistRepository playlistRepository,
             }
         }
         await _playlistAudiotrackRepository.RemoveAudiotracksFromPlaylist(playlistId, audiotrackIds);
-        _logger.Verbose("Exiting RemoveAudiotracksFromPlaylist method");
+        _logger.Information("Removed audiotracks {@Audios} from playlist (Id = {@PlaylistId})", audiotrackIds, playlistId);
+        _logger.Verbose("Exiting RemoveAudiotracksFromPlaylist");
     }
 
     public async Task<Playlist> GetUserFavouritesPlaylist(Guid userId)
     {
-        _logger.Verbose("Entering GetUserFavouritesPlaylist method");
+        _logger.Verbose($"Entering GetUserFavouritesPlaylist({userId})");
 
         var user = await _userRepository.GetUserById(userId);
         if (user is null)
@@ -159,13 +166,13 @@ public class PlaylistService(IPlaylistRepository playlistRepository,
             _logger.Error($"Favourites playlist (Id = {user.FavouritesId}) not found");
             throw new PlaylistNotFoundException(user.FavouritesId);
         }
-        _logger.Verbose("Exiting GetUserFavouritesPlaylist method");
+        _logger.Verbose("Exiting GetUserFavouritesPlaylist");
         return playlist!;
     }
 
     public async Task<List<Audiotrack>> GetAllAudiotracksFromPlaylist(Guid playlistId)
     {
-        _logger.Verbose("Entering GetAllAudiotracksFromPlaylist method");
+        _logger.Verbose($"Entering GetAllAudiotracksFromPlaylist({playlistId})");
 
         if (await _playlistRepository.GetPlaylistById(playlistId) is null)
         {
@@ -173,13 +180,13 @@ public class PlaylistService(IPlaylistRepository playlistRepository,
             throw new PlaylistNotFoundException(playlistId);
         }
         var audios = await _playlistAudiotrackRepository.GetAllAudiotracksFromPlaylist(playlistId);
-        _logger.Verbose("Exiting GetAllAudiotracksFromPlaylist method");
+        _logger.Verbose("Exiting GetAllAudiotracksFromPlaylist");
         return audios;
     }
 
     public async Task<Playlist> GetPlaylistById(Guid playlistId)
     {
-        _logger.Verbose("Entering GetPlaylistById method");
+        _logger.Verbose($"Entering GetPlaylistById({playlistId})");
 
         var playlist = await _playlistRepository.GetPlaylistById(playlistId);
         if (playlist is null)
@@ -187,13 +194,13 @@ public class PlaylistService(IPlaylistRepository playlistRepository,
             _logger.Error($"Playlist (Id = {playlistId}) not found");
             throw new PlaylistNotFoundException(playlistId);
         }
-        _logger.Verbose("Exiting GetPlaylistById method");
+        _logger.Verbose("Exiting GetPlaylistById");
         return playlist;
     }
 
     public async Task<List<Playlist>> GetUserPlaylists(Guid userId)
     {
-        _logger.Verbose("Entering GetUserPlaylists method");
+        _logger.Verbose($"Entering GetUserPlaylists({userId})");
 
         if (await _userRepository.GetUserById(userId) is null)
         {
@@ -202,7 +209,7 @@ public class PlaylistService(IPlaylistRepository playlistRepository,
         }
         var playlists = await _playlistRepository.GetUserPlaylists(userId);
 
-        _logger.Verbose("Exiting GetUserPlaylists method");
+        _logger.Verbose("Exiting GetUserPlaylists");
         return playlists;
     }
 }

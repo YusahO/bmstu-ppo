@@ -1,9 +1,12 @@
+using Serilog;
+
 namespace MewingPad.TechnicalUI.BaseMenu;
 
 public class MenuLabel(string announce, List<Command> commands)
 {
-    string _announce = announce;
-    List<Command> _commands = commands;
+    private readonly ILogger _logger = Log.ForContext<MenuLabel>();
+    readonly string _announce = announce;
+    readonly List<Command> _commands = commands;
 
     public void Print()
     {
@@ -39,17 +42,25 @@ public class MenuLabel(string announce, List<Command> commands)
         {
             Console.WriteLine($"{iitem++}. {c.Description()}");
         }
+        
         Console.Write("Ввод: ");
-        if (!int.TryParse(Console.ReadLine(), out int no))
+
+        var inpCheck = int.TryParse(Console.ReadLine(), out int no);
+        _logger.Information($"User input option \"{no}\"");
+
+        if (!inpCheck)
         {
-            Console.WriteLine("[!] Error");
+            _logger.Error("User input is invalid");
+            Console.WriteLine("[!] Некорректный ввод");
             return;
         }
-        if (0 >= no || no > _commands.Count)
+        if (0 > no || no > _commands.Count)
         {
-            Console.WriteLine("[!] Error");
+            _logger.Error($"User input option is out of range [1, {_commands.Count}]");
+            Console.WriteLine($"[!] Опции под номером {no} не существует");
             return;
         }
+
         await _commands[no - 1].Execute(context);
     }
 }

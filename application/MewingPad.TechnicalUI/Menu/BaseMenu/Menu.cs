@@ -1,8 +1,11 @@
+using Serilog;
+
 namespace MewingPad.TechnicalUI.BaseMenu;
 
 public class Menu
 {
-    List<MenuLabel> _labels = [];
+    private readonly ILogger _logger = Log.ForContext<Menu>();
+    readonly List<MenuLabel> _labels = [];
 
     public void AddLabel(MenuLabel label)
     {
@@ -18,10 +21,16 @@ public class Menu
             l.Print();
         }
         Console.WriteLine("[0] Выход");
+
         Console.Write("Ввод: ");
-        if (!int.TryParse(Console.ReadLine(), out int no))
+
+        var inpCheck = int.TryParse(Console.ReadLine(), out int no);
+        _logger.Information($"User input option \"{no}\"");
+
+        if (!inpCheck)
         {
-            Console.WriteLine("[!] Error");
+            _logger.Error("User input is invalid");
+            Console.WriteLine("[!] Некорректный ввод");
             return -1;
         }
 
@@ -31,7 +40,8 @@ public class Menu
         }
         if (0 > no || no > _labels.Count)
         {
-            Console.WriteLine("[!] Error");
+            _logger.Error($"User input option is out of range [1, {_labels.Count}]");
+            Console.WriteLine($"[!] Опции под номером {no} не существует");
             return -1;
         }
         await _labels[no - 1].Execute(context);

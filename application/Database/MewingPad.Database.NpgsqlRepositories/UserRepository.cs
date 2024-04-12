@@ -4,6 +4,7 @@ using MewingPad.Common.IRepositories;
 using MewingPad.Database.Context;
 using MewingPad.Database.Models.Converters;
 using Serilog;
+using MewingPad.Common.Exceptions;
 
 namespace MewingPad.Database.NpgsqlRepositories;
 
@@ -15,7 +16,7 @@ public class UserRepository(MewingPadDbContext context) : IUserRepository
 
     public async Task AddUser(User user)
     {
-        _logger.Verbose("Entering AddUser method");
+        _logger.Verbose("Entering AddUser");
 
         try
         {
@@ -24,92 +25,114 @@ public class UserRepository(MewingPadDbContext context) : IUserRepository
         }
         catch (Exception ex)
         {
-            _logger.Error("Exception occurred", ex);
-            throw;
+            throw new RepositoryException(ex.Message, ex.InnerException);
         }
 
-        _logger.Verbose("Exiting AddUser method");
+        _logger.Verbose("Exiting AddUser");
     }
 
     public async Task<List<User>> GetAdmins()
     {
-        _logger.Verbose("Entering GetAdmins method");
-        
-        var admins = await _context.Users
-            .Where(u => u.IsAdmin == true)
-            .Select(u => UserConverter.DbToCoreModel(u))
-            .ToListAsync();
-        if (admins.Count == 0)
+        _logger.Verbose("Entering GetAdmins");
+
+        List<User> admins;
+        try
         {
-            _logger.Warning("No admins found in database");
+            admins = await _context.Users
+                    .Where(u => u.IsAdmin == true)
+                    .Select(u => UserConverter.DbToCoreModel(u))
+                    .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
         }
 
-        _logger.Verbose("Exiting GetAdmins method");
+        _logger.Verbose("Exiting GetAdmins");
         return admins;
     }
 
     public async Task<List<User>> GetAllUsers()
     {
-        _logger.Verbose("Entering GetAllUsers method");
+        _logger.Verbose("Entering GetAllUsers");
 
-        var users = await _context.Users
-            .Select(u => UserConverter.DbToCoreModel(u))
-            .ToListAsync();
-        if (users.Count == 0)
+        List<User> users;
+        try
         {
-            _logger.Warning("Database has no entries of User");
+            users = await _context.Users
+                    .Select(u => UserConverter.DbToCoreModel(u))
+                    .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
         }
 
-        _logger.Verbose("Exiting GetAllUsers method");
+        _logger.Verbose("Exiting GetAllUsers");
         return users;
     }
 
     public async Task<User?> GetUserByEmail(string email)
     {
-        _logger.Verbose("Entering GetUserByEmail method");
+        _logger.Verbose("Entering GetUserByEmail");
 
-        var userDbModel = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-        if (userDbModel is null)
+        User? user;
+        try
         {
-            _logger.Warning($"User (Email = {email}) not found in database");
+            var userDbModel = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            user = UserConverter.DbToCoreModel(userDbModel);
         }
-        var user = UserConverter.DbToCoreModel(userDbModel);
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
+        }
 
-        _logger.Verbose("Exiting GetUserByEmail method");
+        _logger.Verbose("Exiting GetUserByEmail");
         return user;
     }
 
     public async Task<User?> GetUserById(Guid userId)
     {
-        _logger.Verbose("Entering GetUserById method");
+        _logger.Verbose("Entering GetUserById");
 
-        var userDbModel = await _context.Users.FindAsync(userId);
-        if (userDbModel is null)
+        User? user;
+        try
         {
-            _logger.Warning($"User (Id = {userId}) not found in database");
+            var userDbModel = await _context.Users.FindAsync(userId);
+            user = UserConverter.DbToCoreModel(userDbModel);
         }
-        var user = UserConverter.DbToCoreModel(userDbModel);
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
+        }
 
-        _logger.Verbose("Exiting GetUserById method");
+        _logger.Verbose("Exiting GetUserById");
         return user;
     }
 
     public async Task<User> UpdateUser(User user)
     {
-        _logger.Verbose("Entering UpdateUser method");
+        _logger.Verbose("Entering UpdateUser");
 
-        var userDbModel = await _context.Users.FindAsync(user.Id);
+        try
+        {
+            var userDbModel = await _context.Users.FindAsync(user.Id);
 
-        userDbModel!.Id = user.Id;
-        userDbModel!.FavouritesId = user.FavouritesId;
-        userDbModel!.Username = user.Username;
-        userDbModel!.PasswordHashed = user.PasswordHashed;
-        userDbModel!.Email = user.Email;
-        userDbModel!.IsAdmin = user.IsAdmin;
+            userDbModel!.Id = user.Id;
+            userDbModel!.FavouritesId = user.FavouritesId;
+            userDbModel!.Username = user.Username;
+            userDbModel!.PasswordHashed = user.PasswordHashed;
+            userDbModel!.Email = user.Email;
+            userDbModel!.IsAdmin = user.IsAdmin;
 
-        await _context.SaveChangesAsync();
-        _logger.Information($"Updated User (Id = {user.Id})");
-        _logger.Verbose("Exiting UpdateUser method");
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
+        }
+
+        _logger.Verbose("Exiting UpdateUser");
         return user;
     }
 }

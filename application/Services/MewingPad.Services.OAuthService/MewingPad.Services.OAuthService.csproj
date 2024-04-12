@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="microsoft.extensions.configuration" Version="8.0.0" />
     <PackageReference Include="serilog" Version="3.1.1" />
   </ItemGroup>
 
