@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 
-namespace MewingPad.Common.DTOs;
+namespace MewingPad.UI.DTOs;
 
 [JsonObject]
-public class UserDto(Guid userId,
+public class UserDto(Guid id,
                      Guid favouritesId,
                      string username,
                      string email,
@@ -11,7 +11,7 @@ public class UserDto(Guid userId,
                      bool isAdmin = false)
 {
     [JsonProperty("userId")]
-    public Guid Id { get; set; } = userId;
+    public Guid Id { get; set; } = id;
 
     [JsonProperty("favouritesId")]
     public Guid FavouritesId { get; set; } = favouritesId;

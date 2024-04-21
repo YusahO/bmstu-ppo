@@ -44,7 +44,4 @@
     <ProjectReference Include="..\Services\MewingPad.Services.ScoreService\MewingPad.Services.ScoreService.csproj" />
     <ProjectReference Include="..\Services\MewingPad.Services.TagService\MewingPad.Services.TagService.csproj" />
   </ItemGroup>
-
-
-
 </Project>

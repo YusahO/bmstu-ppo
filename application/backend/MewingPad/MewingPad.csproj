@@ -7,8 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="8.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.OpenApi" Version="1.6.14" />
     <PackageReference Include="serilog" Version="3.1.1" />
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
@@ -18,6 +23,17 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Common\MewingPad.Common.IServices\MewingPad.Common.IServices.csproj" />
+    <ProjectReference Include="..\Services\MewingPad.Services.UserService\MewingPad.Services.UserService.csproj" />
+    <ProjectReference Include="..\Services\MewingPad.Services.AudiotrackService\MewingPad.Services.AudiotrackService.csproj" />
+    <ProjectReference Include="..\WebUI\MewingPad.UI.DTOs\MewingPad.UI.DTOs.csproj" />
+    <ProjectReference Include="..\WebUI\MewingPad.UI.DTOs.Converters\MewingPad.UI.DTOs.Converters.csproj" />
+    <ProjectReference Include="..\Common\MewingPad.Common.IRepositories\MewingPad.Common.IRepositories.csproj" />
+    <ProjectReference Include="..\Database\MewingPad.Database.Context\MewingPad.Database.Context.csproj" />
+    <ProjectReference Include="..\Database\MewingPad.Database.NpgsqlRepositories\MewingPad.Database.NpgsqlRepositories.csproj" />
   </ItemGroup>
 
 </Project>
