@@ -1,0 +1,12 @@
+.grid-container {
+  padding-left: 80px;
+  display: grid;
+  grid-template-columns: auto;
+  grid-gap: 10px;
+}
+
+.grid-item {
+  padding: 20px;
+  text-align: center;
+  background-color: #f2f2f200;
+}
