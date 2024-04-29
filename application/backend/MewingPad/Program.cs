@@ -6,6 +6,12 @@ using Serilog;
 using Microsoft.EntityFrameworkCore;
 using MewingPad.Services.AudiotrackService;
 using MewingPad.Utils.AudioManager;
+using MewingPad.Services.ScoreService;
+using MewingPad.Services.TagService;
+using MewingPad.Services.OAuthService;
+using MewingPad.Services.PlaylistService;
+using MewingPad.Services.CommentaryService;
+using MewingPad.Services.ReportService;
 
 internal class Program
 {
@@ -50,9 +56,20 @@ internal class Program
             builder.Services.AddScoped<IAudiotrackRepository, AudiotrackRepository>();
             builder.Services.AddScoped<IPlaylistAudiotrackRepository, PlaylistAudiotrackRepository>();
             builder.Services.AddScoped<ITagAudiotrackRepository, TagAudiotrackRepository>();
+            builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
+            builder.Services.AddScoped<ITagRepository, TagRepository>();
+            builder.Services.AddScoped<IScoreRepository, ScoreRepository>();
+            builder.Services.AddScoped<ICommentaryRepository, CommentaryRepository>();
+            builder.Services.AddScoped<IReportRepository, ReportRepository>();
 
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IOAuthService, OAuthService>();
             builder.Services.AddScoped<IAudiotrackService, AudiotrackService>();
+            builder.Services.AddScoped<IPlaylistService, PlaylistService>();
+            builder.Services.AddScoped<ITagService, TagService>();
+            builder.Services.AddScoped<IScoreService, ScoreService>();
+            builder.Services.AddScoped<ICommentaryService, CommentaryService>();
+            builder.Services.AddScoped<IReportService, ReportService>();
 
             var app = builder.Build();
             if (app.Environment.IsDevelopment())

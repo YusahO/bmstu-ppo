@@ -1,12 +1,11 @@
 .grid-container {
-  padding-left: 80px;
   display: grid;
-  grid-template-columns: auto;
-  grid-gap: 10px;
+  grid-template-columns: 600px 600px 600px;
+  padding: 50px;
+  grid-gap: 20px;
 }
 
 .grid-item {
-  padding: 20px;
   text-align: center;
   background-color: #f2f2f200;
 }

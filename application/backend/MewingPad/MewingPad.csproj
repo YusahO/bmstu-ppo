@@ -29,6 +29,12 @@
     <ProjectReference Include="..\Common\MewingPad.Common.IServices\MewingPad.Common.IServices.csproj" />
     <ProjectReference Include="..\Services\MewingPad.Services.UserService\MewingPad.Services.UserService.csproj" />
     <ProjectReference Include="..\Services\MewingPad.Services.AudiotrackService\MewingPad.Services.AudiotrackService.csproj" />
+    <ProjectReference Include="..\Services\MewingPad.Services.PlaylistService\MewingPad.Services.PlaylistService.csproj" />
+    <ProjectReference Include="..\Services\MewingPad.Services.ScoreService\MewingPad.Services.ScoreService.csproj" />
+    <ProjectReference Include="..\Services\MewingPad.Services.CommentaryService\MewingPad.Services.CommentaryService.csproj" />
+    <ProjectReference Include="..\Services\MewingPad.Services.ReportService\MewingPad.Services.ReportService.csproj" />
+    <ProjectReference Include="..\Services\MewingPad.Services.TagService\MewingPad.Services.TagService.csproj" />
+    <ProjectReference Include="..\Services\MewingPad.Services.OAuthService\MewingPad.Services.OAuthService.csproj" />
     <ProjectReference Include="..\WebUI\MewingPad.UI.DTOs\MewingPad.UI.DTOs.csproj" />
     <ProjectReference Include="..\WebUI\MewingPad.UI.DTOs.Converters\MewingPad.UI.DTOs.Converters.csproj" />
     <ProjectReference Include="..\Common\MewingPad.Common.IRepositories\MewingPad.Common.IRepositories.csproj" />

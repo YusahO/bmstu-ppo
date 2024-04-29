@@ -40,6 +40,23 @@ public class AudioManager
         return true;
     }
 
+    public async Task<Stream?> GetFileStreamAsync(string srcpath)
+    {
+        _logger.Verbose("Entering GetFileStreamAsync method");
+        Stream stream;
+        try
+        {
+            stream = await _client.GetStreamAsync($"audiotracks/{srcpath}");
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Exception occurred: {Message}", ex);
+            return null;
+        }
+        _logger.Verbose("Exiting GetFileStreamAsync method");
+        return stream;
+    }
+
     public async Task<bool> CreateFileAsync(string filepath)
     {
         _logger.Verbose("Entering CreateFileAsync method");

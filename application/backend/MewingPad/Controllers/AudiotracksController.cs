@@ -14,7 +14,7 @@ public class AudiotracksController(IAudiotrackService audiotrackService) : Contr
     private readonly Serilog.ILogger _logger = Log.ForContext<AudiotracksController>();
     
     [HttpGet]
-    public async Task<IActionResult> GetAllAudioTracks()
+    public async Task<IActionResult> GetAllAudiotracks()
     {
         try
         {
@@ -22,6 +22,22 @@ public class AudiotracksController(IAudiotrackService audiotrackService) : Contr
                               select AudiotrackConverter.CoreModelToDto(audiotrack);
             // log
             return Ok(audiotracks);
+        }
+        catch (Exception ex)
+        {   
+            // log
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [HttpGet("{filename}")]
+    public async Task<IActionResult> GetAudiotrackFile(string filename)
+    {
+        try
+        {
+            var audioStream = await _audiotrackService.GetAudiotrackFileStream(filename);
+            // log
+            return File(audioStream, "application/octet-stream");
         }
         catch (Exception ex)
         {   

@@ -1,49 +1,105 @@
-.audio-player-component {
-  background-color: white;
-  width: 25%;
-  max-width: 600px;
-  margin: 1em auto;
-  padding-bottom: 2em;
-  border: 0.1px solid black;
-  border-radius: 10px;
-}
-
-.musicCover {
-  border-radius: 10%;
-}
-
-.playButton {
-  background: none;
-  border: none;
-  align-items: center;
-  justify-content: center;
-}
-
-.subTitle {
-  margin-top: -1em;
-  color: #4f4f4f;
-}
-
-.time {
-  margin: 0 auto;
-  width: 80%;
+.audio-player {
   display: flex;
-  justify-content: space-between;
-  color: #828282;
-  font-size: smaller;
+  flex-direction: column;
+  position: relative;
+  
+  padding: 10px;
+  border-radius: 20px;
+  background-color: rgba(43, 43, 43, 1);
+
+  overflow: hidden;
 }
 
-.timeline {
-  width: 80%;
-  background-color: #27ae60;
+.audio-player::before {
+  content: '';
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  transform: translate(-50%, -50%);
+  background: radial-gradient(rgb(25, 132, 255), transparent, transparent);
+  width: 400px;
+  height: 400px;
+  opacity: 0;
+  transition: 0.5s, top 0s, left 0s;
 }
 
-input[type="range"] {
-  background-color: #27ae60;
+.audio-player:hover::before {
+  opacity: 1;
 }
 
-@media (max-width: 900px) {
-  .component {
-    width: 50%;
-  }
+.audio-player::after {
+  z-index: 0;
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 18px;
+  background-color: rgba(43, 43, 43, 0.9);
+}
+
+.audio-player-functional {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+#audio-title-label {
+  z-index: 1;
+  text-align: left;
+  font-size: 24px;
+  font-weight: bold;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+#waveform {
+  z-index: 1;
+  flex: 1 1 auto;
+}
+
+#audio-duration-label {
+  z-index: 1;
+  text-align: left;
+
+  flex: 0 0 auto;
+}
+
+/* .options {
+  background-color: transparent;
+}
+
+#audio-download-button {
+  width: 65px;
+  height: 65px;
+  z-index: 1;
+  background: url(../../assets/download.svg);
+} */
+
+.controls {
+  z-index: 1;
+  position: relative;
+}
+
+.controls button {
+  position: relative;
+  margin: 1px;
+  border: transparent;
+  width: 50px;
+  height: 50px;
+  background-color: rgb(25, 132, 255);
+  border-radius: 100px;
+}
+
+.controls button:hover {
+  filter: brightness(75%);
+}
+
+.controls svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  fill: rgb(255, 255, 255);
 }

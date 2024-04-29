@@ -169,4 +169,19 @@ public class AudiotrackService(IAudiotrackRepository audiotrackRepository,
         }
         _logger.Verbose("Exiting DownloadAudiotrack");
     }
+
+    public async Task<Stream> GetAudiotrackFileStream(string srcpath)
+    {
+        _logger.Verbose($"Entering GetAudiotrackFileStream({srcpath})");
+
+        var stream = await _audioManager.GetFileStreamAsync(srcpath);
+        if (stream is null)
+        {
+            _logger.Error($"Failed to get audiotrack (\"{srcpath}\") from server");
+            throw new AudiotrackServerGetException($"{srcpath} does not exist");
+        }
+
+        _logger.Verbose("Exiting GetAudiotrackFileStream");
+        return stream;
+    }
 }
