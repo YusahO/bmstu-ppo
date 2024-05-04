@@ -13,6 +13,7 @@ function Audiotracks() {
         data.map((audiotrack) => {
           audiosList.push({
             ...Audiotrack,
+            id: audiotrack.id,
             title: audiotrack.title,
             filepath: audiotrack.filepath
           });

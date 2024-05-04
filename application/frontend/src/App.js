@@ -1,18 +1,42 @@
-import React from 'react';
-// import logo from './logo.svg';
-import {BrowserRouter, Route, Routes} from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Audiotracks from './components/audiotrack/Audiotracks';
 import Layout from "./pages/Layout";
 
+import AuthService from './AuthService';
+import Login from './components/auth/Login.jsx';
+
 function App() {
+
+  const [currentUser, setCurrentUser] = useState(undefined);
+
+  useEffect(() => {
+    const user = AuthService.getCurrentUser();
+    if (user) {
+      setCurrentUser(user);
+    }
+  }, []);
+
+  const handleLogin = (username, password) => {
+    AuthService.login(username, password).then((user) => {
+      setCurrentUser(user);
+    });
+  };
+
+  // const handleLogout = () => {
+  //   AuthService.logout();
+  //   setCurrentUser(undefined);
+  // };
+
   return (
     <BrowserRouter>
       <div>
         <Routes>
-        <Route path="/" element={<Layout />} >
-          <Route path="/audiotracks" element={<Audiotracks />} />
-        </Route>
+          <Route path="/" element={<Layout />} >
+            <Route path="/audiotracks" element={<Audiotracks />} />
+            <Route path="/login" element={<Login onLogin={handleLogin} />} />
+          </Route>
         </Routes>
       </div>
     </BrowserRouter>

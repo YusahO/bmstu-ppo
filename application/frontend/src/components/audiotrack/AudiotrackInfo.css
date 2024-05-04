@@ -8,7 +8,6 @@
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(12px);
-  /* display:none; */
 }
 
 #audiotrack-info-content {
@@ -25,9 +24,9 @@
 
 #audiotrack-info-close {
   position: relative;
-  border: 0;
-  top: -25%;
+  top: -40px;
   left: 99%;
+  border: 0;
   width: 50px;
   height: 50px;
   border-radius: 50%;

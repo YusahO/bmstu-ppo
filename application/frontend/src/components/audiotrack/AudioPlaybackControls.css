@@ -1,7 +1,8 @@
-.audio-player {
+/* .audio-player {
+  display: flex;
   flex-direction: column;
   position: relative;
-
+  
   padding: 10px;
   border-radius: 20px;
   background-color: rgba(43, 43, 43, 1);
@@ -33,15 +34,50 @@
   inset: 2px;
   border-radius: 18px;
   background-color: rgba(43, 43, 43, 0.9);
+} */
+
+.audio-playback-controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
 }
 
-#audio-title-label {
+#waveform {
+  z-index: 1;
+  flex: 1 1 auto;
+}
+
+#audio-duration-label {
   z-index: 1;
   text-align: left;
-  font-size: 24px;
-  font-weight: bold;
 
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
+  flex: 0 0 auto;
+}
+
+.controls {
+  z-index: 1;
+  position: relative;
+}
+
+.controls button {
+  position: relative;
+  margin: 1px;
+  border: transparent;
+  width: 50px;
+  height: 50px;
+  background-color: rgb(25, 132, 255);
+  border-radius: 100px;
+}
+
+.controls button:hover {
+  filter: brightness(75%);
+}
+
+.controls svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  fill: rgb(255, 255, 255);
 }

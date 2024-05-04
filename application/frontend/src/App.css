@@ -32,7 +32,20 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
+}
+
+button {
+  border: 0;
+  background-color: #0178ff;
+  color: white;
+  font-size: large;
+  padding: 10px;
+}
+
+button:hover {
+  filter: brightness(75%);
 }

@@ -33,14 +33,12 @@ const AllAudiotrackGrid = ({ audiotracks }) => {
   return (
     <>
       <div>
-        {activeAudio !== null && <AudiotrackInfo audiotrackParam={activeAudio} />}
+        {activeAudio !== null && <AudiotrackInfo audiotrackParam={activeAudio} onClose={() => setActiveAudio(null)} />}
       </div>
       <div className="grid-container">
         {audiotracks.map((audiotrack, index) => (
-          <div key={index} className="grid-item" onDoubleClick={() => {
-            setActiveAudio(audiotrack);
-          }}>
-            <AudioPlayer audiotrackParam={audiotrack}></AudioPlayer>
+          <div key={index} className="audio-player" onDoubleClick={() => setActiveAudio(audiotrack)}>
+            <AudioPlayer audiotrack={audiotrack}></AudioPlayer>
           </div>
         ))}
       </div>

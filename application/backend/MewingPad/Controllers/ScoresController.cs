@@ -1,5 +1,7 @@
 using MewingPad.Services.ScoreService;
+using MewingPad.UI.DTOs;
 using MewingPad.UI.DTOs.Converters;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
@@ -26,6 +28,30 @@ public class ScoresController(IScoreService scoreService) : ControllerBase
         catch (Exception ex)
         {
             // log
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [HttpPut]
+    [Authorize]
+    public async Task<IActionResult> UpdateScore([FromBody] ScoreDto score)
+    {
+        try
+        {
+            var scoreDto = scoreService.GetScoreByPrimaryKey(score.AuthorId, score.AudiotrackId);
+            if (scoreDto is null)
+            {
+                await _scoreService.CreateScore(ScoreConverter.DtoToCoreModel(score));
+                return Ok("Score created successfully");
+            }
+            else
+            {
+                await _scoreService.UpdateScore(ScoreConverter.DtoToCoreModel(score));
+                return Ok("Score updated successfully");
+            }
+        }
+        catch (Exception ex)
+        {
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }

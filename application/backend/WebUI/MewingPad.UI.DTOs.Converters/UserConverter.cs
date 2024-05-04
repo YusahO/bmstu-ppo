@@ -13,7 +13,7 @@ public static class UserConverter
                      favouritesId: model.FavouritesId,
                      username: model.Username,
                      email: model.Email,
-                     passwordHashed: model.PasswordHashed,
+                     passwordHashed: model.Password,
                      isAdmin: model.IsAdmin)
                : default;
     }
@@ -26,7 +26,7 @@ public static class UserConverter
                      favouritesId: model.FavouritesId,
                      username: model.Username,
                      email: model.Email,
-                     passwordHashed: model.PasswordHashed,
+                     password: model.PasswordHashed,
                      isAdmin: model.IsAdmin)
                : default;
     }

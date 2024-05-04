@@ -9,7 +9,7 @@ namespace MewingPad.Services.OAuthService;
 
 public class OAuthService(IConfiguration config,
                           IUserRepository userRepository,
-                          IPlaylistRepository playlistRepository) : IOAuthService
+                          IPlaylistRepository playlistRepository) : IOAuthService, IDisposable
 {
     private readonly IUserRepository _userRepository = userRepository
                                                        ?? throw new ArgumentNullException();
@@ -18,6 +18,8 @@ public class OAuthService(IConfiguration config,
     private readonly ILogger _logger = Log.ForContext<OAuthService>();
     private readonly IConfiguration _config = config;
     private readonly string _favouritesName = config["ApiSettings:FavouritesDefaultName"]!;
+
+    public void Dispose() {}
 
     public async Task RegisterUser(User user)
     {
@@ -50,14 +52,15 @@ public class OAuthService(IConfiguration config,
             _logger.Error($"User with email \"{email}\" not found");
             throw new UserNotFoundException($"User with email \"{email}\" not found");
         }
-        
+
         if (!PasswordHasher.VerifyPassword(password, user.PasswordHashed))
         {
             _logger.Error($"Incorrect password for user \"{email}\"");
             throw new UserCredentialsException($"Incorrect password for user with login \"{email}\"");
         }
-        
+
         _logger.Verbose("Exiting SignInUser method");
         return user;
     }
+
 }

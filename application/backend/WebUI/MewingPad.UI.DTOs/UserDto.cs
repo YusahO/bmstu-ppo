@@ -7,10 +7,10 @@ public class UserDto(Guid id,
                      Guid favouritesId,
                      string username,
                      string email,
-                     string passwordHashed,
+                     string password,
                      bool isAdmin = false)
 {
-    [JsonProperty("userId")]
+    [JsonProperty("id")]
     public Guid Id { get; set; } = id;
 
     [JsonProperty("favouritesId")]
@@ -23,7 +23,7 @@ public class UserDto(Guid id,
     public string Email { get; set; } = email;
 
     [JsonProperty("password")]
-    public string PasswordHashed { get; set; } = passwordHashed;
+    public string Password { get; set; } = password;
 
     [JsonProperty("password")]
     public bool IsAdmin { get; set; } = isAdmin;
