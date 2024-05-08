@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import SearchOptions from "./SearchOptions";
-import './SearchBar.css';
 
 const SearchBar = () => {
 

@@ -1,21 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Home from "./pages/Home.jsx";
 import './App.css';
 
 import AuthService from './AuthService';
-import Login from './components/auth/Login.jsx';
+import Authorization from './components/auth/Authorization.jsx';
 
 function App() {
-
-  const [currentUser, setCurrentUser] = useState(undefined);
-
-  useEffect(() => {
-    const user = AuthService.getCurrentUser();
-    if (user) {
-      setCurrentUser(user);
-    }
-  }, []);
 
   const handleLogin = (username, password) => {
     AuthService.login(username, password).then((user) => {
@@ -23,17 +15,24 @@ function App() {
     });
   };
 
-  const handleLogout = () => {
-    AuthService.logout();
-    setCurrentUser(undefined);
-  };
+  // const handleLogin = (username, password) => {
+  //   AuthService.login(username, password).then((user) => {
+  //     setCurrentUser(user);
+  //   });
+  // };
+
+  const RequireAuth = (elem) => {
+    const [cookie, getter, setter] = useCookies('RefreshToken');
+    return !!cookie.RefreshToken ? elem : <Navigate to='/auth' />
+  }
 
   return (
     <BrowserRouter>
       <div>
         <Routes>
-          <Route path="/" element={<Home currentUser={currentUser} />} />
-          <Route path="/login" element={<Login onLogin={handleLogin} />} />
+          <Route path="/" element={RequireAuth(<Home currentUser={currentUser} />)} />
+          <Route path="/auth" element={<Authorization />} />
+          <Route path="/playlists" element={RequireAuth(<Authorization onLogin={handleLogin} />)} />
         </Routes>
       </div>
     </BrowserRouter>

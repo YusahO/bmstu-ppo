@@ -1,8 +1,8 @@
-// import Select from 'react-select';
-
 import { useEffect, useState } from "react";
 import TagSelector from "../tag/TagSelector";
+
 import '../tag/TagContainer.css';
+import './SearchOptions.css';
 
 const SearchOptions = () => {
 
@@ -28,22 +28,13 @@ const SearchOptions = () => {
 			.then((data) => {
 				setAllTags(data);
 			})
+			.catch(error => console.log(error));
 
 		console.log(selectedTags);
 	}, [selectedTags]);
 
 	return (
-		<div style={{
-			backgroundColor: 'var(--color-primary)',
-
-			width: '30vw',
-			marginTop: '2px',
-			height: '500px',
-
-			position: 'fixed',
-			zIndex: '2',
-			padding: '0px 10px'
-		}}>
+		<div className="search-options">
 			<div className="tag-container">
 				{allTags.map(t => <TagSelector tag={t} onClick={() => onClickHandle(t)} />)}
 			</div>

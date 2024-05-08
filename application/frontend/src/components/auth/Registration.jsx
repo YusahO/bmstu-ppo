@@ -1,22 +1,26 @@
-import React, { useState } from 'react';
+import { useState } from "react";
 
-const Login = () => {
+import '../search/SearchOptions.css';
+
+const Registration = () => {
+
+	const [username, setUsername] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 
-	const handleLogin = (e) => {
+	function handleRegister(e) {
 		e.preventDefault();
-		fetch('http://localhost:9898/api/auth/login', {
+		fetch('http://localhost:9898/api/auth/register', {
 			method: 'POST',
 			mode: "cors",
 			headers: {
 				"Content-Type": "application/json; charset=utf-8",
 			},
-			body: JSON.stringify({ email: email, password: password }),
+			body: JSON.stringify({ username: username, email: email, password: password }),
 		})
 			.then((response) => {
 				if (!response.ok) {
-					throw new Error('Login failed');
+					throw new Error('Registration failed');
 				}
 				return response.json();
 			})
@@ -27,11 +31,17 @@ const Login = () => {
 				}
 				return data;
 			});
-	};
+	}
 
 	return (
-		<form onSubmit={handleLogin} className='form-container'>
-			<h3 className='form-label'>Вход</h3>
+		<form onSubmit={handleRegister} className='form-container'>
+			<h3 className='form-label'>Регистрация</h3>
+			<input
+				type="text"
+				placeholder="Имя пользователя"
+				value={username}
+				onChange={(e) => setUsername(e.target.value)}
+			/>
 			<input
 				type="text"
 				placeholder="Почта"
@@ -44,9 +54,9 @@ const Login = () => {
 				value={password}
 				onChange={(e) => setPassword(e.target.value)}
 			/>
-			<button type="submit">Войти</button>
+			<button type="submit">Зарегистрироваться</button>
 		</form>
 	);
 }
 
-export default Login;
+export default Registration;
