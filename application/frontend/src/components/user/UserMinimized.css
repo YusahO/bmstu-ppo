@@ -1,0 +1,5 @@
+.username-link {
+	text-decoration: none;
+	font-size: var(--font-size);
+	color: var(--accent-color1);
+}

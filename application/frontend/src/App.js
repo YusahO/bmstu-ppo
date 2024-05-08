@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Home from "./pages/Home.jsx";
 import './App.css';
-import Audiotracks from './components/audiotrack/Audiotracks';
-import Layout from "./pages/Layout";
 
 import AuthService from './AuthService';
 import Login from './components/auth/Login.jsx';
@@ -24,19 +23,17 @@ function App() {
     });
   };
 
-  // const handleLogout = () => {
-  //   AuthService.logout();
-  //   setCurrentUser(undefined);
-  // };
+  const handleLogout = () => {
+    AuthService.logout();
+    setCurrentUser(undefined);
+  };
 
   return (
     <BrowserRouter>
       <div>
         <Routes>
-          <Route path="/" element={<Layout />} >
-            <Route path="/audiotracks" element={<Audiotracks />} />
-            <Route path="/login" element={<Login onLogin={handleLogin} />} />
-          </Route>
+          <Route path="/" element={<Home currentUser={currentUser} />} />
+          <Route path="/login" element={<Login onLogin={handleLogin} />} />
         </Routes>
       </div>
     </BrowserRouter>

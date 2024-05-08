@@ -45,11 +45,9 @@ export default function AudioPlaybackControls({ audiotrackParam }) {
     responsive: true,
     height: 80,
     normalize: true,
-    backend: 'WebAudio',
     barWidth: 2,
     barGap: 3,
     fillParent: true,
-    minPxPerSec: 10,
   })
 
   const onPlayPause = () => {

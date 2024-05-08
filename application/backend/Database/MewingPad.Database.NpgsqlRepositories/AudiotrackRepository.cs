@@ -96,7 +96,7 @@ public class AudiotrackRepository(MewingPadDbContext context) : IAudiotrackRepos
         try
         {
             audiotracks = await _context.Audiotracks
-                    .Where(a => a.Title == title)
+                    .Where(a => a.Title.Contains(title))
                     .Select(a => AudiotrackConverter.DbToCoreModel(a))
                     .ToListAsync();
         }

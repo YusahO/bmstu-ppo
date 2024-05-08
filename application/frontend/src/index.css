@@ -1,6 +1,13 @@
+:root {
+  --color-primary: #222222;
+  --accent-color1: #0178ff;
+  --accent-color2: #ffffff;
+  --font-size: 16px;
+}
+
 body {
   margin: 0;
-  background-color: rgb(32, 29, 29);
+  background-color: var(--color-primary);
   color: white;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -12,4 +19,20 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+button {
+  border: 0;
+  background-color: var(--accent-color1);
+  color: white;
+  font-size: large;
+  padding: 10px;
+}
+
+button:hover {
+  filter: brightness(75%);
+}
+
+button:active {
+  filter: brightness(110%);
 }

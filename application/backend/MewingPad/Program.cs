@@ -2,7 +2,6 @@ using MewingPad.Common.IRepositories;
 using MewingPad.Database.Context;
 using MewingPad.Database.NpgsqlRepositories;
 using MewingPad.Services.UserService;
-using Serilog;
 using Microsoft.EntityFrameworkCore;
 using MewingPad.Services.AudiotrackService;
 using MewingPad.Utils.AudioManager;
@@ -15,9 +14,11 @@ using MewingPad.Services.ReportService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Serilog;
 using Microsoft.OpenApi.Models;
-using MewingPad.Database.Models;
-using Microsoft.AspNetCore.Identity;
+using System.IdentityModel.Tokens.Jwt;
+using MewingPad.Utils.Token;
+using System.Security.Cryptography;
 
 internal class Program
 {
@@ -76,26 +77,7 @@ internal class Program
                 });
             });
 
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowSpecificOrigin",
-                    builder =>
-                    {
-                        builder.WithOrigins("http://localhost:3000")
-                            .AllowAnyHeader()
-                            .AllowAnyMethod();
-                    });
-            });
-
-            builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
-
-            builder.Services.AddDbContext<MewingPadDbContext>(opt =>
-            {
-                opt.UseNpgsql(configuration.GetConnectionString("default"));
-            });
-
-            builder.Services.AddDefaultIdentity<UserDbModel>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddEntityFrameworkStores<MewingPadDbContext>();
+            builder.Services.AddCors();
 
             builder.Services.AddAuthentication(options =>
             {
@@ -103,22 +85,64 @@ internal class Program
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddJwtBearer(x =>
-            {
-                var secret = configuration["Jwt:Secret"]!;
-                var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
-
-                x.RequireHttpsMetadata = true;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
+                .AddJwtBearer(options =>
                 {
-                    ValidateIssuerSigningKey = true,
-                    ValidAudience = "http://localhost:3000",
-                    ValidIssuer = "http://localhost:9898",
-                    IssuerSigningKey = key,
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero
-                };
+                    options.RequireHttpsMetadata = true;
+                    options.SaveToken = true;
+                    options.TokenValidationParameters = new()
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = configuration["Jwt:Issuer"],
+                        ValidAudience = configuration["Jwt:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration["Jwt:Secret"]!))
+                    };
+                    // options.Events = new()
+                    // {
+                    //     OnMessageReceived = context =>
+                    //     {
+                    //         var accessToken = context.Request
+                    //             .Headers
+                    //             .Authorization
+                    //             .FirstOrDefault();
+
+                    //         if (string.IsNullOrEmpty(accessToken))
+                    //         {
+                    //             context.NoResult();
+                    //             return Task.CompletedTask;
+                    //         }
+
+                    //         if (accessToken.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                    //         {
+                    //             context.Token = accessToken["Bearer ".Length..].Trim();
+                    //         }
+                    //         context.Token = accessToken;
+
+                    //         if (TokenUtils.IsAccessTokenExpired(context.Token))
+                    //         {
+                    //             Console.WriteLine("Access token is expired");
+                    //             var refreshToken = context.Request.Cookies[configuration["CookieNames:RefreshToken"]!];
+                    //             if (refreshToken is null)
+                    //             {
+                    //                 context.Fail("Refresh token is expired");
+                    //                 return Task.CompletedTask;
+                    //             }
+                    //             context.Token = "Bearer " + TokenUtils.RegenerateAccessToken(context.Token);
+                    //         }
+
+                    //         return Task.CompletedTask;
+                    //     }
+                    // };
+                });
+            builder.Services.AddAuthorization();
+
+            builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+            builder.Services.AddDbContext<MewingPadDbContext>(opt =>
+            {
+                opt.UseNpgsql(configuration.GetConnectionString("default"));
             });
 
             builder.Services.AddSingleton<AudioManager>();
@@ -144,23 +168,30 @@ internal class Program
             var app = builder.Build();
             if (app.Environment.IsDevelopment())
             {
+                app.UseSwagger();
+                app.UseSwaggerUI();
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors("AllowSpecificOrigin");
-            app.UseSwagger();
-            app.UseSwaggerUI();
-            app.UseRouting();
+            app.UseCors(b => b.WithOrigins("http://localhost:3000")
+                              .AllowAnyHeader()
+                              .AllowAnyMethod()
+                              .AllowCredentials()
+                              .Build());
+
+            app.UseCookiePolicy();
+
             app.UseAuthentication();
             app.UseAuthorization();
+
             app.UseHttpsRedirection();
             app.MapControllers();
 
-            using (var scope = app.Services.CreateScope())
-            using (var db = scope.ServiceProvider.GetRequiredService<MewingPadDbContext>())
-            {
-                db.Database.Migrate();
-            }
+            // using (var scope = app.Services.CreateScope())
+            // using (var db = scope.ServiceProvider.GetRequiredService<MewingPadDbContext>())
+            // {
+            //     db.Database.Migrate();
+            // }
 
             app.Run();
         }

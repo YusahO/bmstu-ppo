@@ -1,6 +1,8 @@
 using MewingPad.Services.ScoreService;
 using MewingPad.UI.DTOs;
 using MewingPad.UI.DTOs.Converters;
+using MewingPad.Utils.Token;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
@@ -15,6 +17,7 @@ public class ScoresController(IScoreService scoreService) : ControllerBase
                                                    ?? throw new ArgumentNullException(nameof(scoreService));
     private readonly Serilog.ILogger _logger = Log.ForContext<ScoresController>();
 
+    [AllowAnonymous]
     [HttpGet("{audiotrackId:guid}")]
     public async Task<IActionResult> GetAllScores(Guid audiotrackId)
     {
@@ -32,14 +35,33 @@ public class ScoresController(IScoreService scoreService) : ControllerBase
         }
     }
 
+    [Authorize]
+    [HttpGet("{authorId:guid}/{audiotrackId:guid}")]
+    public async Task<IActionResult> GetScoreByPrimaryKey(Guid authorId, Guid audiotrackId)
+    {
+        try
+        {
+            var score = await _scoreService.GetScoreByPrimaryKey(authorId, audiotrackId);
+            // log
+            return Ok(ScoreConverter.CoreModelToDto(score));
+        }
+        catch (Exception ex)
+        {
+            // log
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
     [HttpPut]
     [Authorize]
     public async Task<IActionResult> UpdateScore([FromBody] ScoreDto score)
     {
         try
         {
-            var scoreDto = scoreService.GetScoreByPrimaryKey(score.AuthorId, score.AudiotrackId);
-            if (scoreDto is null)
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            score.AuthorId = Guid.Parse(TokenUtils.TryGetClaimOfType(accessToken!));
+
+            if ((await _scoreService.GetScoreByPrimaryKey(score.AuthorId, score.AudiotrackId)) is null)
             {
                 await _scoreService.CreateScore(ScoreConverter.DtoToCoreModel(score));
                 return Ok("Score created successfully");

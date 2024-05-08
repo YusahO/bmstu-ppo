@@ -1,5 +1,6 @@
 using MewingPad.Services.UserService;
 using MewingPad.UI.DTOs.Converters;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
@@ -9,9 +10,11 @@ namespace MewingPad.Controllers;
 [Route("api/[controller]")]
 public class UsersController(IUserService userService) : ControllerBase
 {
-    private readonly IUserService _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+    private readonly IUserService _userService = userService 
+                                                 ?? throw new ArgumentNullException(nameof(userService));
     private readonly Serilog.ILogger _logger = Log.ForContext<UsersController>();
 
+    [Authorize]
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> Get(Guid id)
     {
@@ -29,6 +32,7 @@ public class UsersController(IUserService userService) : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {

@@ -6,17 +6,24 @@ const StarRatingInteractive = ({ audiotrackId, initialStars }) => {
   const [selectedStars, setSelectedStars] = useState(initialStars);
 
   const handleStarClick = (value) => {
-    setSelectedStars(value);
-
-    let authorId = JSON.parse(localStorage.getItem('user')).id;
+    const accessToken = localStorage.getItem('accessToken');
     fetch(`http://localhost:9898/api/scores/`, {
       method: 'PUT',
       mode: 'cors',
       headers: {
+        "Authorization": `Bearer ${accessToken}`,
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ ...Score, audiotrackId: audiotrackId, authorId: authorId }),
-    });
+      body: JSON.stringify({ ...Score, value: value, audiotrackId: audiotrackId }),
+    })
+      .then((response) => {
+        if (response.status === 401) {
+          window.location = '/login';
+        }
+        else {
+          setSelectedStars(value);
+        }
+      });
   };
 
   return (

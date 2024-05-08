@@ -25,6 +25,6 @@ public class UserDto(Guid id,
     [JsonProperty("password")]
     public string Password { get; set; } = password;
 
-    [JsonProperty("password")]
+    [JsonProperty("isAdmin")]
     public bool IsAdmin { get; set; } = isAdmin;
 }

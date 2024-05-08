@@ -1,5 +1,3 @@
-import User from './models/User.js';
-
 class AuthService {
   login(email, password) {
     return fetch('http://localhost:9898/api/auth/login', {
@@ -8,7 +6,7 @@ class AuthService {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
-      body: JSON.stringify({ ...User, email: email, password: password }),
+      body: JSON.stringify({ email: email, password: password }),
     })
       .then((response) => {
         if (!response.ok) {
@@ -17,8 +15,9 @@ class AuthService {
         return response.json();
       })
       .then((data) => {
-        if (data.token && data.id) {
-          localStorage.setItem('user', JSON.stringify(data));
+        if (data.tokenDto.accessToken) {
+          console.log(data.tokenDto.accessToken);
+          localStorage.setItem('accessToken', data.tokenDto.accessToken);
         }
         return data;
       });

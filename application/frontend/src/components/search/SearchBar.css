@@ -1,0 +1,21 @@
+.search-bar {
+	width: 30vw;
+	padding: 10px 0px;
+
+	outline-color: transparent;
+	border: none;
+	outline: none;
+	border-bottom: 1px solid var(--accent-color2);
+
+	font-size: var(--font-size);
+	color: var(--accent-color2);
+
+	background-color: var(--color-primary);
+}
+
+.search-bar:focus {
+	outline-color: transparent;
+	border: none;
+	outline: none;
+	border-bottom: 2px solid var(--accent-color1);
+}

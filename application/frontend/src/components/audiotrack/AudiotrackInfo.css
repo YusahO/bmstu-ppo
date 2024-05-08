@@ -1,5 +1,5 @@
 #audiotrack-info {
-  z-index:99997;
+  z-index:2;
   position: fixed;
   left: 0;
   top: 0;
@@ -11,9 +11,12 @@
 }
 
 #audiotrack-info-content {
-  position: relative;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
   background-color: rgb(30, 30, 30);
-  margin: 5% auto;
   padding: 20px;
   border: 1px solid #888888;
   border-radius: 30px;
@@ -23,9 +26,11 @@
 }
 
 #audiotrack-info-close {
-  position: relative;
-  top: -40px;
-  left: 99%;
+  position: fixed;
+  top: 0;
+  left: 100%;
+  transform: translate(-50%, -50%);
+
   border: 0;
   width: 50px;
   height: 50px;

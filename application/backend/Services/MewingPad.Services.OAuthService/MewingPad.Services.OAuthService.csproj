@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\MewingPad.Common.Entities\MewingPad.Common.Entities.csproj" />
@@ -6,12 +6,14 @@
     <ProjectReference Include="..\..\Common\MewingPad.Common.IServices\MewingPad.Common.IServices.csproj" />
     <ProjectReference Include="..\..\Common\MewingPad.Common.IRepositories\MewingPad.Common.IRepositories.csproj" />
     <ProjectReference Include="..\..\Utils\MewingPad.Utils.PasswordHasher\MewingPad.Utils.PasswordHasher.csproj" />
+    <ProjectReference Include="..\..\Utils\MewingPad.Utils.Token\MewingPad.Utils.Token.csproj" />
 
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="microsoft.extensions.configuration" Version="8.0.0" />
     <PackageReference Include="serilog" Version="3.1.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.5.1" />
   </ItemGroup>
 
   <PropertyGroup>

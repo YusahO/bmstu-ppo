@@ -22,6 +22,7 @@ public static class CommentaryConverter
         return model is not null
                ? new(id: model.Id,
                      authorId: model.AuthorId,
+                     authorName: "",
                      audiotrackId: model.AudiotrackId,
                      text: model.Text)
                : default;

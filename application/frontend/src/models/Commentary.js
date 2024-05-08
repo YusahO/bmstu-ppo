@@ -4,6 +4,7 @@ const Score = {
   id: uuidv4(),
   audiotrackId: uuidv4(),
   authorId: uuidv4(),
+  authorName: "",
   text: ''
 };
 

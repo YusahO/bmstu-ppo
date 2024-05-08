@@ -1,8 +1,11 @@
-// import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { parseJwt } from '../../Globals.js';
+import './AudiotrackInfo.css';
+
 import AudioPlaybackControls from './AudioPlaybackControls.jsx';
 import StarRatingInteractive from '../score/StarRatingInteractive.jsx';
-import './AudiotrackInfo.css';
-import { useEffect, useState } from 'react';
+import AudiotrackTags from '../tag/AudiotrackTags.jsx';
+import AudiotrackCommentaries from '../commentary/AudiotrackCommentaries.jsx';
 
 function downloadAudio(audiotrackFilename) {
   fetch(`http://localhost:9898/api/audiotracks/${audiotrackFilename}`, { mode: 'cors' })
@@ -26,18 +29,26 @@ const AudiotrackInfo = ({ audiotrackParam, onClose }) => {
   const [score, setScore] = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:9898/api/scores/${audiotrackParam.id}`, { mode: 'cors' })
-      .then((request) => request.json())
-      .then((data) => {
-        let stars = 0;
-        let len = 0;
-        data.map((d) => {
-          stars += d.value;
-          ++len;
-        })
-        setScore(Math.round(stars / len));
+    const userId = parseJwt(localStorage.getItem('accessToken')).id;
+
+    fetch(`http://localhost:9898/api/scores/${userId}/${audiotrackParam.id}`, {
+      mode: 'cors',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+      }
+    })
+      .then((request) => {
+        if (request.status === 401 || request.status === 204) {
+          return JSON.stringify({ value: 0 });
+        }
+        return request.json();
       })
-      .catch((error) => console.log('Error occured: ', error))
+      .then((data) => {
+        setScore(data.value);
+      })
+      .catch((error) => {
+        console.error('Error occured: ', error)
+      })
   }, [audiotrackParam]);
 
   if (score === null) {
@@ -52,8 +63,8 @@ const AudiotrackInfo = ({ audiotrackParam, onClose }) => {
             X
           </button>
         </div>
-        <div style={{ display: 'flex', gap: '40px', top: '-30px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', flex: '0 0 55%', flexDirection: 'column', gap: '40px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <h1>
                 {audiotrackParam.title}
@@ -73,11 +84,14 @@ const AudiotrackInfo = ({ audiotrackParam, onClose }) => {
 
             <div>
               <h2>Теги</h2>
-              {/* TagsGrid */}
+              <AudiotrackTags audiotrackId={audiotrackParam.id} />
             </div>
           </div>
 
-          <h2>Комментарии</h2>
+          <div style={{ flex: '0 0 40%' }}>
+            <h2>Комментарии</h2>
+            <AudiotrackCommentaries audiotrackId={audiotrackParam.id}/>
+          </div>
 
         </div>
       </div>

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import Audiotrack from "../../models/Audiotrack";
-import AllAudiotrackGrid from "../../pages/AllAudiotrackGrid";
+import AudiotrackGrid from "../../pages/AudiotrackGrid";
+import './AllAudiotracks.css';
 
-function Audiotracks() {
+function AllAudiotracks() {
   const [audiotracks, setAudiotracks] = useState([]);
 
   const fetchAudiotracks = () => {
@@ -20,7 +21,7 @@ function Audiotracks() {
         });
         setAudiotracks(audiosList);
       })
-      .catch(error => console.error('Error fetching users:', error));
+      .catch(error => console.error('Error fetching audiotracks:', error));
   }
 
   useEffect(() => {
@@ -28,11 +29,13 @@ function Audiotracks() {
   }, []);
 
   return (
-    <div>
+    <>
       <h2>Все аудиотреки</h2>
-      <AllAudiotrackGrid audiotracks={audiotracks} />
-    </div>
+      <div className='audiotracks-container'>
+        <AudiotrackGrid audiotracks={audiotracks} />
+      </div>
+    </>
   );
 }
 
-export default Audiotracks;
+export default AllAudiotracks;

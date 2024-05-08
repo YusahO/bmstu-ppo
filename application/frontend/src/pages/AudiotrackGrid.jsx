@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import './AllAudiotrackGrid.css';
+import './AudiotrackGrid.css';
 import AudioPlayer from '../components/audiotrack/AudioPlayer.jsx';
 import AudiotrackInfo from '../components/audiotrack/AudiotrackInfo.jsx';
 
@@ -16,7 +16,7 @@ const trackCursor = () => {
   });
 }
 
-const AllAudiotrackGrid = ({ audiotracks }) => {
+const AudiotrackGrid = ({ audiotracks }) => {
 
   const [activeAudio, setActiveAudio] = useState(null);
 
@@ -46,4 +46,4 @@ const AllAudiotrackGrid = ({ audiotracks }) => {
   );
 };
 
-export default AllAudiotrackGrid;
+export default AudiotrackGrid;

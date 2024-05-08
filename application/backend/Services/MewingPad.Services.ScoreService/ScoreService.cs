@@ -28,16 +28,16 @@ public class ScoreService(IScoreRepository scoreRepository,
         _logger.Verbose("Exiting CreateScore");
     }
 
-    public async Task<Score> GetScoreByPrimaryKey(Guid authorId, Guid audiotrackId)
+    public async Task<Score?> GetScoreByPrimaryKey(Guid authorId, Guid audiotrackId)
     {
         _logger.Verbose($"Entering GetScoreByPrimaryKey({authorId}, {audiotrackId})");
 
         var score = await _scoreRepository.GetScoreByPrimaryKey(authorId, audiotrackId);
-        if (score is null)
-        {
-            _logger.Error($"Score (AuthorId = {authorId}, AudiotrackId = {audiotrackId}) not found");
-            throw new ScoreNotFoundException(authorId, audiotrackId);
-        }
+        // if (score is null)
+        // {
+        //     _logger.Error($"Score (AuthorId = {authorId}, AudiotrackId = {audiotrackId}) not found");
+        //     throw new ScoreNotFoundException(authorId, audiotrackId);
+        // }
 
         _logger.Verbose("Exiting GetScoreByPrimaryKey");
         return score;

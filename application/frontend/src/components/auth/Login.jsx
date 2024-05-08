@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import './Login.css'
+import UpperPanel from '../../pages/UpperPanel';
 
 const Login = ({ onLogin }) => {
   const [email, setEmail] = useState('');
@@ -11,14 +13,16 @@ const Login = ({ onLogin }) => {
 
   return (
     <div>
-      <form onSubmit={handleLogin}>
-        <input
+      <UpperPanel displayFunctional={false} />
+      <form onSubmit={handleLogin} className='form-container'>
+        <h3 className='form-label'>Авторизация</h3>
+        <input className='form-input'
           type="text"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <input
+        <input className='form-input'
           type="password"
           placeholder="Password"
           value={password}

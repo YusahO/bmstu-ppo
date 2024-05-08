@@ -1,5 +1,6 @@
 using MewingPad.Services.AudiotrackService;
 using MewingPad.UI.DTOs.Converters;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
@@ -13,6 +14,7 @@ public class AudiotracksController(IAudiotrackService audiotrackService) : Contr
                                                              ?? throw new ArgumentNullException(nameof(audiotrackService));
     private readonly Serilog.ILogger _logger = Log.ForContext<AudiotracksController>();
     
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetAllAudiotracks()
     {
@@ -30,6 +32,7 @@ public class AudiotracksController(IAudiotrackService audiotrackService) : Contr
         }
     }
 
+    [AllowAnonymous]
     [HttpGet("{filename}")]
     public async Task<IActionResult> GetAudiotrackFile(string filename)
     {

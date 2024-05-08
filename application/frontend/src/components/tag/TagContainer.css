@@ -1,0 +1,11 @@
+.tag-container {
+	display: flex;
+	align-items: flex-start;
+	flex-wrap: wrap;
+
+	overflow-y: scroll;
+	gap: 10px;
+	padding: 20px 0px;
+	width: inherit;
+	height: 280px;
+}

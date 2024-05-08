@@ -1,0 +1,15 @@
+.tag-element {
+	height: 20px;
+	background-color: var(--accent-color1);
+	padding: 5px;
+	border-radius: 5px;
+	color: var(--accent-color2);
+}
+
+.tag-select-button {
+	width: 10px;
+}
+
+.tag-select-button:hover {
+	filter: brightness(75%);
+}

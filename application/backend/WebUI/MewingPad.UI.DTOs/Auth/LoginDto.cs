@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MewingPad.UI.DTOs.Auth;
 
-public class SignInDto
+public class LoginDto
 {
     [Required(ErrorMessage = "Email is required")]
     public string? Email { get; set; }
