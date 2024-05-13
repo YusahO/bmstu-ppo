@@ -1,0 +1,27 @@
+.audiotrack-editor {
+	display: flex;
+	flex-direction: column;
+	width: 500px;
+	/* height: 200px; */
+}
+
+.audiotrack-editor > * {
+	margin-top: 10px;
+}
+
+.audiotrack-editor input[type=file] {
+	display: none;
+}
+
+.audiotrack-editor-upload {
+	border: 1px solid var(--accent-color2);
+  display: inline-block;
+  padding: 40px 12px;
+	text-align: center;
+  cursor: pointer;
+	border-radius: 5px;
+}
+
+.audiotrack-editor-upload:hover {
+	border: 1px solid var(--accent-color1);
+}

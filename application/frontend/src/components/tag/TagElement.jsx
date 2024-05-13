@@ -5,7 +5,7 @@ const TagElement = ({ tagName }) => {
 		<label className='tag-element'>
 			{tagName}
 		</label>
-	)
+	);
 }
 
 export default TagElement;

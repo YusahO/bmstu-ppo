@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Audiotrack from "../../models/Audiotrack";
-import AudiotrackGrid from "../../pages/AudiotrackGrid";
-import './AllAudiotracks.css';
+import AudiotrackGrid from "./AudiotrackGrid";
 
-function AllAudiotracks() {
+function AllAudiotracks({ renderAdd }) {
   const [audiotracks, setAudiotracks] = useState([]);
+  const [needUpdate, setNeedUpdate] = useState(false);
 
   const fetchAudiotracks = () => {
     fetch('http://localhost:9898/api/audiotracks', { mode: 'cors' })
@@ -26,13 +26,22 @@ function AllAudiotracks() {
 
   useEffect(() => {
     fetchAudiotracks()
-  }, []);
+  }, [needUpdate]);
 
   return (
     <>
       <h2>Все аудиотреки</h2>
-      <div className='audiotracks-container'>
-        <AudiotrackGrid audiotracks={audiotracks} />
+      <div style={{
+        overflow: 'hidden',
+        margin: '10px 10px',
+        padding: '10px 10px',
+        borderRadius: '10px'
+      }}>
+        <AudiotrackGrid
+          renderAdd={renderAdd}
+          audiotracks={audiotracks}
+          onAudiotrackUpdate={() => setNeedUpdate(!needUpdate)}
+        />
       </div>
     </>
   );

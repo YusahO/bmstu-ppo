@@ -6,9 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using MewingPad.Services.UserService;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using System.Diagnostics.CodeAnalysis;
+using System.Security.Cryptography;
 
 namespace MewingPad.Controllers;
 
+[AllowAnonymous]
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController(IUserService userService,
@@ -20,21 +27,31 @@ public class AuthController(IUserService userService,
     private readonly IOAuthService _oauthService = oauthService
                                                    ?? throw new ArgumentNullException(nameof(oauthService));
     private readonly Serilog.ILogger _logger = Log.ForContext<AuthController>();
-    private readonly IConfiguration _configuration = configuration;
+    private readonly IConfiguration _config = configuration;
 
-    private void AddRefreshTokenCookie(string refreshToken)
+    private string GenerateAccessToken(string userId, string userEmail, string userName)
     {
-        _ = float.TryParse(_configuration["Jwt:RefreshTokenValidityInDays"], out float refreshTokenValidityInDays);
-        var now = DateTime.UtcNow;
-        var cookieOptions = new CookieOptions
-        {
-            Expires = now.AddDays(refreshTokenValidityInDays),
-            // MaxAge = TimeSpan.FromDays(refreshTokenValidityInDays),
-            HttpOnly = true,
-        };
-        Response.Cookies.Append(_configuration["CookieNames:RefreshToken"]!,
-                                refreshToken,
-                                cookieOptions);
+        var lifetime = _config.GetValue<double>("Jwt:AccessTokenValidityInSeconds");
+        var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_config["Jwt:Secret"]!));
+
+        var expires = DateTime.UtcNow.Add(TimeSpan.FromHours(lifetime));
+
+        var claims = new List<Claim>
+            {
+                new(ClaimTypes.NameIdentifier, userId),
+                new(ClaimTypes.Email, userEmail),
+                new(ClaimTypes.Name, userName)
+            };
+
+        var jwt = new JwtSecurityToken(
+            issuer: _config["Jwt:Issuer"],
+            audience: _config["Jwt:Audience"],
+            claims: claims,
+            expires: expires,
+            signingCredentials: new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256)
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(jwt);
     }
 
     [AllowAnonymous]
@@ -50,15 +67,14 @@ public class AuthController(IUserService userService,
                                 request.Password!,
                                 request.IsAdmin);
 
-            var authData = await _oauthService.RegisterUser(user);
-            AddRefreshTokenCookie(authData.TokensData!.RefreshToken!);
-            
-            var userDto = UserConverter.CoreModelToDto(user);
+            user = await _oauthService.RegisterUser(user);
             var userAuthDto = new UserAuthDto
             {
-                UserDto = userDto,
-                TokenDto = new TokenDto { AccessToken = authData.TokensData!.AccessToken!,
-                                          RefreshToken = authData.TokensData!.RefreshToken! }
+                UserDto = UserConverter.CoreModelToDto(user),
+                TokenDto = new TokenDto
+                {
+                    AccessToken = GenerateAccessToken(user.Id.ToString(), user.Email, user.Username)
+                }
             };
             return Ok(userAuthDto);
         }
@@ -75,16 +91,17 @@ public class AuthController(IUserService userService,
     {
         try
         {
-            var authData = await _oauthService.SignInUser(request.Email!, request.Password!);
-            AddRefreshTokenCookie(authData.TokensData!.RefreshToken!);
+            var user = await _oauthService.SignInUser(request.Email!, request.Password!);
 
-            var userDto = UserConverter.CoreModelToDto(authData.User);
             var userAuthDto = new UserAuthDto
             {
-                UserDto = userDto,
-                TokenDto = new TokenDto { AccessToken = authData.TokensData!.AccessToken!,
-                                          RefreshToken = authData.TokensData!.RefreshToken! }
+                UserDto = UserConverter.CoreModelToDto(user),
+                TokenDto = new TokenDto
+                {
+                    AccessToken = GenerateAccessToken(user.Id.ToString(), user.Email, user.Username)
+                }
             };
+
             return Ok(userAuthDto);
         }
         catch (Exception ex)

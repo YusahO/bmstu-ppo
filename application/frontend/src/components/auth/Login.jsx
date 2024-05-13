@@ -1,10 +1,22 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import { UserContext } from '../../App.js';
 
-const Login = () => {
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
+const Login = ({ onChange, onSuccess }) => {
 
-	const handleLogin = (e) => {
+	const { setUser } = useContext(UserContext);
+	const [credentials, setCredentials] = useState({
+		email: '',
+		password: ''
+	});
+
+	const handleChange = (e) => {
+		setCredentials({
+			...credentials,
+			[e.target.name]: e.target.value
+		});
+	};
+
+	const handleSubmit = (e) => {
 		e.preventDefault();
 		fetch('http://localhost:9898/api/auth/login', {
 			method: 'POST',
@@ -12,7 +24,10 @@ const Login = () => {
 			headers: {
 				"Content-Type": "application/json; charset=utf-8",
 			},
-			body: JSON.stringify({ email: email, password: password }),
+			body: JSON.stringify({
+				email: credentials.email,
+				password: credentials.password
+			}),
 		})
 			.then((response) => {
 				if (!response.ok) {
@@ -22,29 +37,46 @@ const Login = () => {
 			})
 			.then((data) => {
 				if (data.tokenDto.accessToken) {
+					setUser(data.userDto);
 					console.log(data.tokenDto.accessToken);
 					localStorage.setItem('accessToken', data.tokenDto.accessToken);
 				}
 				return data;
+			})
+			.then(() => {
+				onSuccess();
 			});
 	};
 
 	return (
-		<form onSubmit={handleLogin} className='form-container'>
+		<form onSubmit={handleSubmit} className='form-container'>
 			<h3 className='form-label'>Вход</h3>
 			<input
 				type="text"
 				placeholder="Почта"
-				value={email}
-				onChange={(e) => setEmail(e.target.value)}
+				name='email'
+				value={credentials.email}
+				onChange={handleChange}
+				required={true}
 			/>
 			<input
 				type="password"
 				placeholder="Пароль"
-				value={password}
-				onChange={(e) => setPassword(e.target.value)}
+				name='password'
+				value={credentials.password}
+				onChange={handleChange}
+				required={true}
 			/>
 			<button type="submit">Войти</button>
+			<div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+				<label style={{ alignSelf: 'center' }}>или</label>
+				<label
+					style={{ textDecoration: 'underline', alignSelf: 'center' }}
+					onClick={onChange}
+				>
+					Зарегистрироваться
+				</label>
+			</div>
 		</form>
 	);
 }

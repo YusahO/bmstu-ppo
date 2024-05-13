@@ -1,79 +1,59 @@
 import { useEffect, useState } from "react";
 import SearchOptions from "./SearchOptions";
+import { useNavigate } from "react-router-dom";
 
 const SearchBar = () => {
-
-  const [title, setTitle] = useState("");
-  const [audiotracks, setAudiotracks] = useState([]);
-
-  const fetchAudiotracks = async (title) => {
-    try {
-      const response = await fetch(`http://localhost:9898/api/search/${title}`, {
-        mode: 'cors',
-        method: 'GET'
-      });
-      const data = await response.json();
-      setAudiotracks(data);
-    }
-    catch (error) {
-      return console.log(error);
-    }
-  }
-
-  useEffect(() => {
-    let isMounted = true;
-    if (title && isMounted) {
-      fetchAudiotracks(title);
-    }
-    return () => { isMounted = false };
-  }, [title]);
-
-
-  const handleInputChange = (e) => {
-    setTitle(e.target.value);
-  }
+  const navigate = useNavigate();
 
   const [inputFocused, setInputFocused] = useState(false);
   const [isHoveringDropdown, setIsHoveringDropdown] = useState(false);
 
-  const handleMouseEnterDropdown = () => {
-    console.log('is hovering')
-    setIsHoveringDropdown(true);
-  }
-
-  const handleMouseLeaveDropdown = () => {
-    setIsHoveringDropdown(false);
-  }
-
-  const handleFocusIn = (e) => {
-    setInputFocused(true);
-  }
-
-  const handleFocusOut = (e) => {
-    setInputFocused(false);
-  }
+  const [title, setTitle] = useState("");
+	const [selectedTags, setSelectedTags] = useState([]);
 
   function showElement() {
     if (inputFocused || isHoveringDropdown) {
-      return <SearchOptions />;
+      return <SearchOptions selectedTags={selectedTags} changeSelectedTags={changeSelectedTags} />;
     }
+  }
+
+	const changeSelectedTags = (tag) => {
+    const tagPresent = selectedTags.some(t => t.id === tag.id);
+		setSelectedTags(prevSelectedTags => {
+			if (tagPresent) {
+				return prevSelectedTags.filter(t => t.id !== tag.id);
+			} else {
+				return [...prevSelectedTags, tag];
+			}
+		});
+    return tagPresent;
+	}
+
+  function handleSearch(e) {
+    e.preventDefault();
+    navigate(`/search?title=${title}&tags=${selectedTags.map(t => t.id).join(',')}`);
+
+    setTitle('');
+    setSelectedTags([]);
   }
 
   return (
     <div>
-      <input
-        className="search-bar"
-        type="text"
-        placeholder="Поиск по названию"
-        value={title}
-        onChange={handleInputChange}
-        onFocus={handleFocusIn}
-        onBlur={handleFocusOut}
-      />
       <div
-        onMouseEnter={handleMouseEnterDropdown}
-        onMouseLeave={handleMouseLeaveDropdown}
+        onMouseEnter={() => setIsHoveringDropdown(true)}
+        onMouseLeave={() => setIsHoveringDropdown(false)}
       >
+        <input
+          style={{ width: '30vw' }}
+          className="search-bar"
+          type="text"
+          placeholder="Поиск по названию"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          onFocus={() => setInputFocused(true)}
+          onBlur={() => setInputFocused(false)}
+        />
+        <button onClick={handleSearch}>⌕</button>
         {showElement()}
       </div>
     </div>

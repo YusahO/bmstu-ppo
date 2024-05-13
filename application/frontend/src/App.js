@@ -1,60 +1,114 @@
-import React, { useState, useEffect } from 'react';
-import { useCookies } from 'react-cookie';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import Home from "./pages/Home.jsx";
 import './App.css';
 
-import AuthService from './AuthService';
+import React, { useEffect, useContext, useState } from 'react';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { parseJwt } from './Globals';
+
+import Home from "./pages/Home.jsx";
 import Authorization from './components/auth/Authorization.jsx';
+import SearchResults from './pages/SearchResults.jsx';
+import TopBar from './pages/TopBar.jsx';
+import SideBar from './pages/SideBar.jsx';
+import Playlists from './pages/Playlists.jsx';
+import PlaylistAudiotracks from './pages/PlaylistAudiotracks.jsx';
+import TagsPage from './pages/TagsPage.jsx';
+
+export const UserContext = React.createContext();
+
+function retrieveUser(setUser) {
+  const token = localStorage.getItem('accessToken');
+  if (!token) {
+    setUser(null);
+    return;
+  }
+
+  const userId = parseJwt(token).id;
+  fetch(`http://localhost:9898/api/users/${userId}`, {
+    mode: 'cors',
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
+    .then(response => response.json())
+    .then(data => {
+      setUser(data);
+    })
+    .catch(error => console.log(error));
+}
 
 function App() {
+  const [user, setUser] = useState(null);
 
-  const handleLogin = (username, password) => {
-    AuthService.login(username, password).then((user) => {
-      setCurrentUser(user);
-    });
-  };
+  useEffect(() => {
+    retrieveUser(setUser);
+    const storageEventListener = () => {
+      retrieveUser(setUser);
+    };
 
-  // const handleLogin = (username, password) => {
-  //   AuthService.login(username, password).then((user) => {
-  //     setCurrentUser(user);
-  //   });
-  // };
+    window.addEventListener('storage', storageEventListener);
+    return () => {
+      window.removeEventListener('storage', storageEventListener);
+    }
+  }, []);
 
-  const RequireAuth = (elem) => {
-    const [cookie, getter, setter] = useCookies('RefreshToken');
-    return !!cookie.RefreshToken ? elem : <Navigate to='/auth' />
+  return (
+    <UserContext.Provider value={{ user, setUser }}>
+      <Main />
+    </UserContext.Provider>
+  );
+}
+
+function Main() {
+
+  const { user, setUser } = useContext(UserContext);
+  const [opened, setOpened] = useState(true);
+
+  function handleClick() {
+    setOpened(!opened);
+    if (opened) {
+      document.getElementById("sidebarComp").style.width = "250px";
+    } else {
+      document.getElementById("sidebarComp").style.width = "0";
+    }
+  }
+
+  const RequireAuth = (requireAdmin, elem) => {
+    useEffect(() => {
+      retrieveUser(setUser);
+    }, []);
+    if (user === null) {
+      return <div>Loading...</div>;
+    }
+    if (requireAdmin) {
+      return user && user.isAdmin ? elem : <Navigate to='/auth' />;
+    } else {
+      return user ? elem : <Navigate to='/auth' />;
+    }
   }
 
   return (
     <BrowserRouter>
-      <div>
-        <Routes>
-          <Route path="/" element={RequireAuth(<Home currentUser={currentUser} />)} />
-          <Route path="/auth" element={<Authorization />} />
-          <Route path="/playlists" element={RequireAuth(<Authorization onLogin={handleLogin} />)} />
-        </Routes>
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '10px'
+      }}>
+        <TopBar onSidebarClick={handleClick} />
+        <div className='content-pages'>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/search" element={<SearchResults />} />
+            <Route path="/auth" element={<Authorization />} />
+            <Route path="/playlists" element={RequireAuth(false, <Playlists />)} />
+            <Route path="/audiotracks" element={RequireAuth(false, <PlaylistAudiotracks />)} />
+            <Route path="/tags" element={RequireAuth(true, <TagsPage />)} />
+          </Routes>
+          <SideBar />
+        </div>
       </div>
     </BrowserRouter>
   );
-  // return (
-  //   <div className="App">
-  //     <header className="App-header">
-  //       <img src={logo} className="App-logo" alt="logo" />
-  //       <p>
-  //         Edit <code>src/App.js</code> and save to reload.
-  //       </p>
-  //       <a
-  //         className="App-link"
-  //         href="https://reactjs.org"
-  //         target="_blank"
-  //         rel="noopener noreferrer"
-  //       >
-  //         Learn React
-  //       </a>
-  //     </header>
-  //   </div>
-  // );
 }
 
 export default App;

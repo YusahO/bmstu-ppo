@@ -1,13 +1,16 @@
 .tag-element {
-	height: 20px;
-	background-color: var(--accent-color1);
+	/* min-width: 300px; */
+	/* width: 300px; */
+	text-align: center;
 	padding: 5px;
 	border-radius: 5px;
 	color: var(--accent-color2);
+	background-color: var(--accent-color1);
 }
 
 .tag-select-button {
 	width: 10px;
+	cursor: pointer;
 }
 
 .tag-select-button:hover {

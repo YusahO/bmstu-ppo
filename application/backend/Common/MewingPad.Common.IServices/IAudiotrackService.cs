@@ -5,7 +5,9 @@ namespace MewingPad.Services.AudiotrackService;
 public interface IAudiotrackService
 {
     Task CreateAudiotrack(Audiotrack audiotrack);
+    Task CreateAudiotrackWithStream(Stream stream, Audiotrack audiotrack);
     Task<Audiotrack> UpdateAudiotrack(Audiotrack audiotrack);
+    Task<Audiotrack> UpdateAudiotrackWithStream(Stream stream, Audiotrack audiotrack);
     Task DeleteAudiotrack(Guid audiotrackId);
     Task DownloadAudiotrack(string srcpath, string savepath);
     Task<Stream> GetAudiotrackFileStream(string srcpath);

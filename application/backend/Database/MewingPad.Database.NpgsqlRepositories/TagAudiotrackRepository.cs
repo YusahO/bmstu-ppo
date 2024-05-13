@@ -87,10 +87,11 @@ public class TagAudiotrackRepository(MewingPadDbContext context) : ITagAudiotrac
         try
         {
             audiotracks = await _context.TagsAudiotracks
-                    .Where(ta => tagIds.Contains(ta.TagId))
-                    .Include(ta => ta.Audiotrack)
-                    .Select(ta => AudiotrackConverter.DbToCoreModel(ta.Audiotrack))
-                    .ToListAsync();
+                .Where(ta => tagIds.Contains(ta.TagId))
+                .Include(ta => ta.Audiotrack)
+                .Select(ta => AudiotrackConverter.DbToCoreModel(ta.Audiotrack))
+                .Distinct()
+                .ToListAsync();
         }
         catch (Exception ex)
         {

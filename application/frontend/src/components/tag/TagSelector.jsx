@@ -1,16 +1,6 @@
-import { useState } from 'react';
 import './TagElement.css';
 
-const TagSelector = ({ tag, onClick }) => {
-	const [isChecked, setIsChecked] = useState(false);
-
-	function handleClick() {
-		document.querySelector(':root')
-			.style
-			.setProperty('--tag-elem-selection', isChecked ? '100%' : '130%');
-
-		setIsChecked(!isChecked);
-	}
+const TagSelector = ({ tag, isSelected, onClick }) => {
 
 	return (
 		<div
@@ -22,9 +12,9 @@ const TagSelector = ({ tag, onClick }) => {
 			</label>
 			<label
 				className='tag-select-button'
-				onClick={() => { onClick(); handleClick() }}
+				onClick={onClick}
 			>
-				{isChecked ? 'x' : '+'}
+				{isSelected ? 'x' : '+'}
 			</label>
 		</div>
 	);

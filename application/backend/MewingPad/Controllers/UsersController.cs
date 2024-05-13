@@ -21,8 +21,7 @@ public class UsersController(IUserService userService) : ControllerBase
         try
         {
             var user = await _userService.GetUserById(id);
-            // _logger.Information("Retrieved user {@User}", new { user.Id, user.Username });
-            Log.Information("Retrieved user {@User}", new { user.Id, user.Username });
+            _logger.Information("Retrieved user {@User}", new { user.Id, user.Username });
             return Ok(UserConverter.CoreModelToDto(user));
         }
         catch (Exception ex)

@@ -1,0 +1,11 @@
+#close-button {
+  position: fixed;
+  top: 0;
+  left: 100%;
+  transform: translate(-50%, -50%);
+
+  border: 0;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}

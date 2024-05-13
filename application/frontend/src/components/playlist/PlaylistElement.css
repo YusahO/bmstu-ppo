@@ -1,0 +1,91 @@
+.playlist-element {
+  width: 180px;
+  height: 220px;
+  flex-direction: column;
+  position: relative;
+
+  padding: 10px;
+  border-radius: 20px;
+  background-color: var(--color-primary);
+
+  overflow: hidden;
+}
+
+.playlist-element::before {
+  content: '';
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  transform: translate(-50%, -50%);
+  background: radial-gradient(var(--accent-color1), transparent, transparent);
+  width: 400px;
+  height: 400px;
+  opacity: 0;
+  transition: 0.5s, top 0s, left 0s;
+}
+
+.playlist-element:hover::before {
+  opacity: 1;
+}
+
+.playlist-element::after {
+  z-index: 0;
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 18px;
+  filter: brightness(120%);
+  opacity: 70%;
+  background-color: var(--color-primary);
+}
+
+.playlist-element-label {
+  margin: 30px 0px;
+  z-index: 1;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, 0);
+  position: absolute;
+  font-size: 25px;
+  color: var(--accent-color2);
+  font-weight: bolder;
+}
+
+.playlist-element-icon {
+  margin: 30px 0px;
+  position: absolute;
+  z-index: 1;
+  top: 10%;
+  left: 50%;
+  transform: translate(-50%, 0) scale(5);
+
+  width: 100px;
+  height: 100px;
+  background-color: var(--accent-color1);
+  -webkit-mask: url(../../assets/audio-playlist-icon.svg) no-repeat center;
+  mask: url(../../assets/audio-playlist-icon.svg) no-repeat center;
+}
+
+.playlist-add-icon {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 120px;
+  color: var(--accent-color2);
+}
+
+.playlist-actions {
+  position: relative;
+  display: flex;
+  gap: 5px;
+  z-index: 1;
+}
+
+.playlist-actions button {
+  padding: 0;
+  width: 30px; height: 30px;
+  box-sizing: border-box;
+  border-radius: 50%;
+}

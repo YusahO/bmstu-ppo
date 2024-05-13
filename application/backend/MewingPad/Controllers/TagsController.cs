@@ -1,4 +1,5 @@
 using MewingPad.Services.TagService;
+using MewingPad.UI.DTOs;
 using MewingPad.UI.DTOs.Converters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,16 +32,54 @@ namespace MewingPad.Controllers
             }
         }
 
-        [AllowAnonymous]
-        [HttpGet("{audiotrackId:guid}")]
-        public async Task<IActionResult> GetAudiotrackTags(Guid audiotrackId)
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> AddTag([FromBody] TagDto tagDto)
         {
             try
-            {
-                var tags = from tag in await _tagService.GetAudiotrackTags(audiotrackId)
-                           select TagConverter.CoreModelToDto(tag);
+            {   
+                var tag = TagConverter.DtoToCoreModel(tagDto);
+                tag.Id = Guid.NewGuid();
+                await _tagService.CreateTag(tag);
                 // log
-                return Ok(tags);
+                return Ok("Tag added successfully");
+            }
+            catch (Exception ex)
+            {
+                // log
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [Authorize]
+        [HttpPut]
+        public async Task<IActionResult> UpdateTag([FromBody] TagDto tagDto)
+        {
+            try
+            {   
+                var tag = TagConverter.DtoToCoreModel(tagDto);
+                await _tagService.UpdateTagName(tag.Id, tag.Name);
+                // log
+                return Ok("Tag updated successfully");
+            }
+            catch (Exception ex)
+            {
+                // log
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+    
+        [Authorize]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteTag([FromBody] TagDto tagDto)
+        {
+            try
+            {   
+                var tag = TagConverter.DtoToCoreModel(tagDto);
+                await _tagService.DeleteTag(tag.Id);
+                // log
+                return Ok("Tag deleted successfully");
             }
             catch (Exception ex)
             {

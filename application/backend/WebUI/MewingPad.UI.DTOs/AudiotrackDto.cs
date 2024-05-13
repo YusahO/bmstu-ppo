@@ -4,10 +4,10 @@ namespace MewingPad.UI.DTOs;
 
 [JsonObject]
 public class AudiotrackDto(Guid id,
-                           string title,
-                           float duration,
-                           Guid authorId,
-                           string filepath)
+                          string title,
+                          float duration,
+                          Guid authorId,
+                          string filepath)
 {
     [JsonProperty("audiotrackId")]
     public Guid Id { get; set; } = id;

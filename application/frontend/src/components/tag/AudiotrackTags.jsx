@@ -7,29 +7,19 @@ const AudiotrackTags = ({ audiotrackId }) => {
 	const [tags, setTags] = useState([]);
 
 	useEffect(() => {
-		let isMounted = true;
-		fetch(`http://localhost:9898/api/tags/${audiotrackId}`, {
+		fetch(`http://localhost:9898/api/audiotracks/${audiotrackId}/tags`, {
 			mode: 'cors',
 			method: 'GET'
 		})
 			.then((response) => response.json())
-			.then((data) => {
-				if (isMounted) {
-					setTags(data);
-				}
-			})
+			.then((data) => setTags(data))
+			.catch(error => console.error(error))
 	}, [audiotrackId]);
 
 	return (
-		<>
-			{tags.length === 0 ?
-				<label>Ничего нет</label>
-				:
-				<div className="tag-container">
-					{tags.map(t => <TagElement tagName={t.name} />)}
-				</div>
-			}
-		</>
+		<div className="tag-container">
+			{tags.map(t => <TagElement tagName={t.name} />)}
+		</div>
 	)
 }
 

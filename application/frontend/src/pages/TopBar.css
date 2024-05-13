@@ -1,15 +1,16 @@
-.top-panel {
+.topbar {
 	display: flex;
 	flex-direction: row-reverse;
 	justify-content: space-between;
 	align-items: center;
 
-	position: fixed;
-	top: 0;
-	left: 0;
-	z-index: 2;
+	flex-shrink: 0;
 
-	width: 100vw;
+	/* position: fixed; */
+	top: 0;
+	width: 100%;
+	z-index: 2;
+	
 	height: 6vh;
 
   padding: 0 40px;

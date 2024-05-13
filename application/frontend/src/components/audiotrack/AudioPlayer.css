@@ -4,7 +4,7 @@
 
   padding: 10px;
   border-radius: 20px;
-  background-color: rgba(43, 43, 43, 1);
+  background-color: var(--color-primary);
 
   overflow: hidden;
 }
@@ -15,7 +15,7 @@
   top: var(--y);
   left: var(--x);
   transform: translate(-50%, -50%);
-  background: radial-gradient(rgb(25, 132, 255), transparent, transparent);
+  background: radial-gradient(var(--accent-color1), transparent, transparent);
   width: 400px;
   height: 400px;
   opacity: 0;
@@ -32,7 +32,9 @@
   position: absolute;
   inset: 2px;
   border-radius: 18px;
-  background-color: rgba(43, 43, 43, 0.9);
+  filter: brightness(120%);
+  opacity: 70%;
+  background-color: var(--color-primary);
 }
 
 #audio-title-label {
@@ -44,4 +46,20 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+}
+
+.audio-actions {
+  position: relative;
+  display: flex;
+  top: 0;
+  left: 85%;
+  gap: 5px;
+  z-index: 1;
+}
+
+.audio-actions-button {
+  padding: 0px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
 }

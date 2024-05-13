@@ -100,42 +100,6 @@ internal class Program
                         ValidAudience = configuration["Jwt:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration["Jwt:Secret"]!))
                     };
-                    // options.Events = new()
-                    // {
-                    //     OnMessageReceived = context =>
-                    //     {
-                    //         var accessToken = context.Request
-                    //             .Headers
-                    //             .Authorization
-                    //             .FirstOrDefault();
-
-                    //         if (string.IsNullOrEmpty(accessToken))
-                    //         {
-                    //             context.NoResult();
-                    //             return Task.CompletedTask;
-                    //         }
-
-                    //         if (accessToken.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-                    //         {
-                    //             context.Token = accessToken["Bearer ".Length..].Trim();
-                    //         }
-                    //         context.Token = accessToken;
-
-                    //         if (TokenUtils.IsAccessTokenExpired(context.Token))
-                    //         {
-                    //             Console.WriteLine("Access token is expired");
-                    //             var refreshToken = context.Request.Cookies[configuration["CookieNames:RefreshToken"]!];
-                    //             if (refreshToken is null)
-                    //             {
-                    //                 context.Fail("Refresh token is expired");
-                    //                 return Task.CompletedTask;
-                    //             }
-                    //             context.Token = "Bearer " + TokenUtils.RegenerateAccessToken(context.Token);
-                    //         }
-
-                    //         return Task.CompletedTask;
-                    //     }
-                    // };
                 });
             builder.Services.AddAuthorization();
 

@@ -1,0 +1,8 @@
+.commentary-container {
+	flex: 1;
+	overflow-y: scroll;
+}
+
+.commentary-container::-webkit-scrollbar {
+	display: none;
+}

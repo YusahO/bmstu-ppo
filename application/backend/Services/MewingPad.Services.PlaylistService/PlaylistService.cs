@@ -111,7 +111,7 @@ public class PlaylistService(IPlaylistRepository playlistRepository,
             _logger.Error($"Audiotrack (Id = {audiotrackId}) not found");
             throw new AudiotrackNotFoundException(audiotrackId);
         }
-        if (!await _playlistAudiotrackRepository.IsAudiotrackInPlaylist(playlistId, audiotrackId))
+        if (!await _playlistAudiotrackRepository.IsAudiotrackInPlaylist(audiotrackId, playlistId))
         {
             _logger.Error($"Audiotrack (Id = {audiotrackId}) is not in playlist (Id = {playlistId})");
             throw new AudiotrackNotFoundInPlaylistException(playlistId, audiotrackId);
@@ -211,5 +211,33 @@ public class PlaylistService(IPlaylistRepository playlistRepository,
 
         _logger.Verbose("Exiting GetUserPlaylists");
         return playlists;
+    }
+
+    public async Task<List<Playlist>> GetUserPlaylistsContainingAudiotrack(Guid userId, Guid audiotrackId)
+    {
+        _logger.Verbose($"Entering GetPlaylistsContainingAudiotrack({audiotrackId})");
+        
+        if (await _audiotrackRepository.GetAudiotrackById(audiotrackId) is null)
+        {
+            _logger.Error($"Audiotrack (Id = {audiotrackId}) not found");
+            throw new AudiotrackNotFoundException(audiotrackId);
+        }
+        if (await _userRepository.GetUserById(userId) is null)
+        {
+            _logger.Error($"User (Id = {userId}) not found");
+            throw new UserNotFoundException(userId);
+        }
+
+        var playlists = await _playlistRepository.GetUserPlaylists(userId);
+        var resultingPlaylists = new List<Playlist>();
+        foreach (var p in playlists)
+        {
+            if (await _playlistAudiotrackRepository.IsAudiotrackInPlaylist(audiotrackId, p.Id))
+            {
+                resultingPlaylists.Add(p);
+            }
+        }
+        _logger.Verbose($"Exiting GetPlaylistsContainingAudiotrack");
+        return resultingPlaylists;
     }
 }

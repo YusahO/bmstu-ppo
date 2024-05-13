@@ -1,30 +1,50 @@
-import React, { useState } from 'react';
-import Score from '../../models/Score.js';
 import './StarRatingInteractive.css';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Score from '../../models/Score.js';
 
 const StarRatingInteractive = ({ audiotrackId, initialStars }) => {
+
+  const navigate = useNavigate();
   const [selectedStars, setSelectedStars] = useState(initialStars);
 
   const handleStarClick = (value) => {
-    const accessToken = localStorage.getItem('accessToken');
+    // await api.put('/scores', {
+    //   ...Score,
+    //   value: value,
+    //   audiotrackId: audiotrackId
+    // }, {
+    //   headers: `Bearer ${localStorage.getItem('accessToken')}`
+    // })
+    //   .then(response => {
+    //     console.log('AAAAAAAA');
+    //     if (response.status === 401) {
+    //       navigate('/auth');
+    //     }
+    //     console.log(value);
+    //     setSelectedStars(value);
+    //   })
+    //   .catch(error => console.warn(error));
+
     fetch(`http://localhost:9898/api/scores/`, {
       method: 'PUT',
       mode: 'cors',
       headers: {
-        "Authorization": `Bearer ${accessToken}`,
+        "Authorization": `Bearer ${localStorage.getItem('accessToken')}`,
         "Content-Type": "application/json; charset=utf-8",
       },
       body: JSON.stringify({ ...Score, value: value, audiotrackId: audiotrackId }),
     })
       .then((response) => {
         if (response.status === 401) {
-          window.location = '/login';
+          navigate('/auth');
         }
         else {
           setSelectedStars(value);
         }
       });
   };
+
 
   return (
     <div className="rate">

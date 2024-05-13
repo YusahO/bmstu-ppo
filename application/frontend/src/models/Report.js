@@ -6,7 +6,7 @@ const Report = {
   authorId: uuidv4(),
   audiotrackId: uuidv4(),
   text: "",
-  status: ReportStatus(),
+  status: ReportStatus.NotViewed,
 };
 
 export default Report;

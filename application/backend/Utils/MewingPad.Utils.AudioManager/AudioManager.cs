@@ -21,7 +21,7 @@ public class AudioManager
 
         try
         {
-            using var stream = await _client.GetStreamAsync($"audiofiles/{srcpath}");
+            using var stream = await _client.GetStreamAsync($"audiotracks/{srcpath}");
             using var fileStream = new FileStream(
                 Path.Combine(savepath, srcpath),
                 FileMode.Create,
@@ -69,7 +69,7 @@ public class AudioManager
                 { new StreamContent(fileStream), "audio", Path.GetFileName(filepath) }
             };
 
-            using var response = await _client.PostAsync("audiofiles", content);
+            using var response = await _client.PostAsync("audiotracks", content);
             if (response.IsSuccessStatusCode)
             {
                 _logger.Information($"File '{filepath}' uploaded successfully");
@@ -89,13 +89,44 @@ public class AudioManager
         return true;
     }
 
+    public async Task<bool> CreateFileFromStreamAsync(Stream fileStream, string fileName)
+    {
+        _logger.Verbose("Entering CreateFileFromStreamAsync method");
+
+        try
+        {
+            using var content = new MultipartFormDataContent
+            {
+                { new StreamContent(fileStream), "audio", fileName }
+            };
+
+            using var response = await _client.PostAsync("audiotracks", content);
+            if (response.IsSuccessStatusCode)
+            {
+                _logger.Information($"File '{fileName}' uploaded successfully");
+            }
+            else
+            {
+                _logger.Error($"Failed to upload file '{fileName}'. Status: {response.StatusCode}");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error creating file from stream. Reason: {ErrorMessage}", ex.Message);
+            return false;
+        }
+
+        _logger.Verbose("Exiting CreateFileFromStreamAsync method");
+        return true;
+    }
+
     public async Task<bool> DeleteFileAsync(string filepath)
     {
         _logger.Verbose("Entering DeleteFileAsync method");
 
         try
         {
-            HttpResponseMessage response = await _client.DeleteAsync($"audiofiles/{filepath}");
+            HttpResponseMessage response = await _client.DeleteAsync($"audiotracks/{filepath}");
             if (response.IsSuccessStatusCode)
             {
                 _logger.Information($"File '{filepath}' deleted successfully");
@@ -145,6 +176,37 @@ public class AudioManager
         }
 
         _logger.Verbose("Exiting UpdateFileAsync method");
+        return true;
+    }
+
+    public async Task<bool> UpdateFileFromStreamAsync(Stream fileStream, string filename)
+    {
+        _logger.Verbose("Entering UpdateFileFromStreamAsync");
+
+        try
+        {
+            using var content = new MultipartFormDataContent
+            {
+                { new StreamContent(fileStream), "audio", filename }
+            };
+
+            using var response = await _client.PutAsync($"audiotracks/{filename}", content);
+            if (response.IsSuccessStatusCode)
+            {
+                _logger.Information($"File '{filename}' uploaded successfully");
+            }
+            else
+            {
+                _logger.Error($"Failed to upload file '{filename}'. Status: {response.StatusCode}");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error creating file from stream. Reason: {Message}");
+            return false;
+        }
+
+        _logger.Verbose("Exiting UpdateFileFromStreamAsync");
         return true;
     }
 }

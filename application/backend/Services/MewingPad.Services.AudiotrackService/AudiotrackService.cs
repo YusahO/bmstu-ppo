@@ -51,6 +51,40 @@ public class AudiotrackService(IAudiotrackRepository audiotrackRepository,
         _logger.Verbose("Exiting CreateAudiotrack method");
     }
 
+    public async Task CreateAudiotrackWithStream(Stream audioStream, Audiotrack audiotrack)
+    {
+        _logger.Verbose("Entering CreateAudiotrackWithStream method");
+
+        if (await _audiotrackRepository.GetAudiotrackById(audiotrack.Id) is not null)
+        {
+            _logger.Error("Audiotrack {@Audio} already exists",
+                          new { audiotrack.Id, audiotrack.Title });
+            throw new AudiotrackExistsException(audiotrack.Id);
+        }
+
+        try
+        {
+            await _audiotrackRepository.AddAudiotrack(audiotrack);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Exception thrown {Message}");
+            throw;
+        }
+
+        string filename = audiotrack.Filepath;
+        if (!await _audioManager.CreateFileFromStreamAsync(audioStream, filename))
+        {
+            _logger.Error($"Failed to upload audiotrack with name \"{filename}\"");
+            throw new AudiotrackServerUploadException($"Failed to upload audiotrack with name \"{filename}\"");
+        }
+
+        _logger.Information("Created audiotrack {@Audio} in database",
+                            new { audiotrack.Id, audiotrack.Title });
+
+        _logger.Verbose("Exiting CreateAudiotrackWithStream method");
+    }
+
     public async Task<Audiotrack> UpdateAudiotrack(Audiotrack audiotrack)
     {
         _logger.Verbose("Entering UpdateAudiotrack({@Audio})", audiotrack);
@@ -183,5 +217,40 @@ public class AudiotrackService(IAudiotrackRepository audiotrackRepository,
 
         _logger.Verbose("Exiting GetAudiotrackFileStream");
         return stream;
+    }
+
+    public async Task<Audiotrack> UpdateAudiotrackWithStream(Stream stream, Audiotrack audiotrack)
+    {
+        _logger.Verbose("Entering UpdateAudiotrackWithStream");
+
+        if (await _audiotrackRepository.GetAudiotrackById(audiotrack.Id) is null)
+        {
+            _logger.Error("Audiotrack {@Audio} not found",
+                          new { audiotrack.Id, audiotrack.Title });
+            throw new AudiotrackNotFoundException(audiotrack.Id);
+        }
+
+        try
+        {
+            await _audiotrackRepository.UpdateAudiotrack(audiotrack);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Exception thrown {Message}");
+            throw;
+        }
+
+        string filename = audiotrack.Filepath;
+        if (!await _audioManager.UpdateFileFromStreamAsync(stream, filename))
+        {
+            _logger.Error($"Failed to update audiotrack with name \"{filename}\"");
+            throw new AudiotrackServerUploadException($"Failed to update audiotrack with name \"{filename}\"");
+        }
+
+        _logger.Information("Created audiotrack {@Audio} in database",
+                            new { audiotrack.Id, audiotrack.Title });
+
+        _logger.Verbose("Exiting UpdateAudiotrackWithStream");
+        return audiotrack;
     }
 }

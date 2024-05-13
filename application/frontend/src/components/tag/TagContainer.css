@@ -9,3 +9,7 @@
 	width: inherit;
 	height: 280px;
 }
+
+.tag-container::-webkit-scrollbar {
+	display: none;
+}

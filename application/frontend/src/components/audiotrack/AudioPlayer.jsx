@@ -27,7 +27,7 @@ const AudioPlayer = ({ audiotrack }) => {
         data.map(d => sum += d.value);
         setTotalScore(Math.floor(sum / data.length));
       })
-  }, [totalScore]);
+  }, [audiotrack]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>

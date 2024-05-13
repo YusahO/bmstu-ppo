@@ -28,7 +28,7 @@
   border: transparent;
   width: 50px;
   height: 50px;
-  background-color: rgb(25, 132, 255);
+  background-color: var(--accent-color1);
   border-radius: 100px;
 }
 
@@ -41,5 +41,5 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  fill: rgb(255, 255, 255);
+  fill: var(--accent-color2);
 }

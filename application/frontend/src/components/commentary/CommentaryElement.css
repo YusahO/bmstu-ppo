@@ -1,0 +1,14 @@
+.commentary-actions {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.commentary-actions button {
+	width: 30px;
+	height: 30px;
+	font-size: medium;
+	padding: 0px;
+	background-color: transparent;
+	border: 1px solid var(--accent-color2);
+}

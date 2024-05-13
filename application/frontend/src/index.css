@@ -23,6 +23,7 @@ code {
 
 button {
   border: 0;
+  border-radius: 5px;
   background-color: var(--accent-color1);
   color: white;
   font-size: large;
@@ -37,7 +38,7 @@ button:active {
   filter: brightness(110%);
 }
 
-input {
+input,textarea {
 	padding: 10px 0px;
 
 	outline-color: transparent;
@@ -51,9 +52,20 @@ input {
 	background-color: var(--color-primary);
 }
 
-input:focus {
+input:focus,textarea:focus {
 	outline-color: transparent;
 	border: none;
 	outline: none;
 	border-bottom: 2px solid var(--accent-color1);
+}
+
+input:focus:invalid,textarea:focus:invalid {
+	outline-color: transparent;
+	border: none;
+	outline: none;
+	border-bottom: 1px solid red;
+}
+
+textarea {
+  resize: none;
 }

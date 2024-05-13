@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+
+<svg
+   fill="#000000"
+   width="20"
+   height="20"
+   viewBox="0 0 6.4 6.4"
+   id="Flat"
+   version="1.1"
+   sodipodi:docname="audio-playlist-icon.svg"
+   inkscape:version="1.3.2 (091e20ef0f, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="16.08"
+     inkscape:cx="17.475124"
+     inkscape:cy="14.365672"
+     inkscape:window-width="1920"
+     inkscape:window-height="1008"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="Flat" />
+  <path
+     d="m 5.4620639,0.75914157 a 0.09594471,0.09478072 0 0 0 -0.0822,-0.017228 L 2.3138645,1.4991143 a 0.09581728,0.09465483 0 0 0 -0.072584,0.09183 v 2.8127209 a 0.76590589,0.75661394 0 1 0 0.1916249,0.500033 V 1.6648438 L 5.3072809,0.95496777 V 3.6464642 a 0.76590589,0.75661394 0 1 0 0.191625,0.500033 V 0.83374387 a 0.09583764,0.09467494 0 0 0 -0.03684,-0.074604 z M 1.6664055,5.4716002 a 0.57487493,0.56790057 0 1 1 0.5748752,-0.5679 0.57553364,0.56855128 0 0 1 -0.5748752,0.5679 z m 3.0659994,-0.7572 a 0.57487493,0.56790057 0 1 1 0.574876,-0.567901 0.57553364,0.56855128 0 0 1 -0.574876,0.567901 z"
+     id="path1"
+     style="stroke-width:0.0238074" />
+</svg>
