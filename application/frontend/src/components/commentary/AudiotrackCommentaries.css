@@ -6,3 +6,7 @@
 .commentary-container::-webkit-scrollbar {
 	display: none;
 }
+
+.commentary-container.submit {
+	color: var(--font-color);
+}

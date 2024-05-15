@@ -1,10 +1,17 @@
-import React, { useContext, useState } from 'react';
-import { UserContext } from '../../App.js';
+import '../search/SearchOptions.css';
+
+import { useState } from "react";
+import { parseJwt, setCookie } from "../../Globals";
+import { api } from '../../api/mpFetch';
+import { useUserContext } from '../../context/UserContext';
+import { AlertTypes, useAlertContext } from '../../context/AlertContext';
 
 const Login = ({ onChange, onSuccess }) => {
+	const { setUser } = useUserContext();
+	const { addAlert } = useAlertContext();
 
-	const { setUser } = useContext(UserContext);
 	const [credentials, setCredentials] = useState({
+		username: '',
 		email: '',
 		password: ''
 	});
@@ -18,34 +25,22 @@ const Login = ({ onChange, onSuccess }) => {
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		fetch('http://localhost:9898/api/auth/login', {
-			method: 'POST',
-			mode: "cors",
-			headers: {
-				"Content-Type": "application/json; charset=utf-8",
-			},
-			body: JSON.stringify({
-				email: credentials.email,
-				password: credentials.password
-			}),
+		api.post('auth/login', {
+			email: credentials.email,
+			password: credentials.password
 		})
-			.then((response) => {
-				if (!response.ok) {
-					throw new Error('Login failed');
+			.then(response => {
+
+				const token = response.data.token;
+				if (token) {
+					const tokenParsed = parseJwt(token);
+					const cookieLifetime = (new Date(tokenParsed.exp).getTime() - Math.floor(new Date().getTime() / 1000));
+					setUser(response.data.userDto);
+					setCookie('token', token, cookieLifetime);
 				}
-				return response.json();
-			})
-			.then((data) => {
-				if (data.tokenDto.accessToken) {
-					setUser(data.userDto);
-					console.log(data.tokenDto.accessToken);
-					localStorage.setItem('accessToken', data.tokenDto.accessToken);
-				}
-				return data;
-			})
-			.then(() => {
 				onSuccess();
-			});
+			})
+			.catch(error => addAlert(AlertTypes.info, 'Не удалось авторизоваться'))
 	};
 
 	return (
@@ -60,7 +55,7 @@ const Login = ({ onChange, onSuccess }) => {
 				required={true}
 			/>
 			<input
-				type="password"
+				type="new-password"
 				placeholder="Пароль"
 				name='password'
 				value={credentials.password}

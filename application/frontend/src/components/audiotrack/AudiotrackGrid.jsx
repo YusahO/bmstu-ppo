@@ -1,12 +1,12 @@
 import './AudiotrackGrid.css';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import AudioPlayer from './AudioPlayer.jsx';
 import AudiotrackInfo from './AudiotrackInfo.jsx';
-import { UserContext } from '../../App.js';
 import EditorAudioPlayer from './EditorAudioPlayer.jsx';
 import AudiotrackEditor from './AudiotrackEditor.jsx';
 import BlurComponent from '../common/BlurComponent.jsx';
 import CloseButton from '../common/CloseButton.jsx';
+import { useUserContext } from '../../context/UserContext.js';
 
 const AudiotrackEdit = ({ audiotrack, onClose }) => {
   return (
@@ -31,12 +31,15 @@ const AudiotrackAdd = ({ onClick }) => {
     <div
       onClick={onClick}
       className='audio-player'
-      style={{
-        textAlign: 'center',
-        alignContent: 'center'
-      }}
     >
-      <label style={{ fontSize: '100px' }}>
+      <label style={{
+        fontSize: '100px',
+        position: 'absolute',
+        zIndex: 1,
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)'
+      }}>
         +
       </label>
     </div>
@@ -44,7 +47,7 @@ const AudiotrackAdd = ({ onClick }) => {
 }
 
 const AudiotrackGrid = ({ audiotracks, onAudiotrackUpdate = () => { }, renderAdd }) => {
-  const { user } = useContext(UserContext);
+  const { user } = useUserContext();
   const [activeAudio, setActiveAudio] = useState(null);
   const [editedAudiotrack, setEditedAudiotrack] = useState(null);
   const [editing, setEditing] = useState(false);
@@ -76,27 +79,34 @@ const AudiotrackGrid = ({ audiotracks, onAudiotrackUpdate = () => { }, renderAdd
     trackCursor();
   }, [audiotracks]);
 
+  function pickAudiotrackPlayer(audiotrack) {
+    if (!user || !user.isAdmin) {
+      return <AudioPlayer audiotrack={audiotrack} />
+    } else if (user && user.isAdmin) {
+      return (
+        <EditorAudioPlayer
+          audiotrack={audiotrack}
+          needUpdate={onAudiotrackUpdate}
+          onEditClicked={() => { setEditedAudiotrack(audiotrack); setEditing(true); }}
+        />
+      )
+    }
+  }
+
   return (
-    <>
-      {!!activeAudio && <AudiotrackInfo audiotrack={activeAudio} onClose={handleInfoClose} />}
+    <div>
+      {activeAudio && <AudiotrackInfo audiotrack={activeAudio} onClose={handleInfoClose} />}
       {editing && <AudiotrackEdit audiotrack={editedAudiotrack} onClose={handleEditClose} />}
       <div className="grid-container">
         {user && user.isAdmin && renderAdd &&
           <AudiotrackAdd onClick={() => { setEditedAudiotrack(null); setEditing(true) }} />}
         {audiotracks.map((audiotrack, index) => (
           <div key={index} className="audio-player" onDoubleClick={() => setActiveAudio(audiotrack)}>
-            {user && (user.isAdmin && renderAdd ?
-              <EditorAudioPlayer
-                audiotrack={audiotrack}
-                needUpdate={onAudiotrackUpdate}
-                onEditClicked={() => { setEditedAudiotrack(audiotrack); setEditing(true); }}
-              /> :
-              <AudioPlayer audiotrack={audiotrack} />
-            )}
+            {pickAudiotrackPlayer(audiotrack)}
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 };
 

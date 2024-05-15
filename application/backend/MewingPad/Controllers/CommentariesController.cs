@@ -17,30 +17,6 @@ public class CommentariesController(ICommentaryService commentaryService,
     private readonly IUserService _userService = userService;
     private readonly Serilog.ILogger _logger = Log.ForContext<CommentariesController>();
 
-    [AllowAnonymous]
-    [HttpGet("{audiotrackId:guid}")]
-    public async Task<IActionResult> GetAudiotrackCommentaries(Guid audiotrackId)
-    {
-        try
-        {
-            var comms = (from comm in await _commentaryService.GetAudiotrackCommentaries(audiotrackId)
-                         select CommentaryConverter.CoreModelToDto(comm)).ToList();
-
-            for (int i = 0; i < comms.Count; ++i)
-            {
-                var username = (await _userService.GetUserById(comms[i].AuthorId)).Username;
-                comms[i].AuthorName = username;
-            }
-            _logger.Information("Retrieved commentaries for audiotrack (Id = {@AudiotrackId}): {@Comms}", audiotrackId, comms);
-            return Ok(comms);
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(ex, "Exception thrown {Message}");
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-        }
-    }
-
     [Authorize]
     [HttpPost]
     public async Task<IActionResult> AddCommentary([FromBody] CommentaryDto commentary)

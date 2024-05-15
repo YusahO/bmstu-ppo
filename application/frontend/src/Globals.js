@@ -13,3 +13,17 @@ export function parseJwt(token = "") {
 		return null;
 	}
 };
+
+export function setCookie(name, value, lifetimeSecs) {
+	let cookie = name + "=" + encodeURIComponent(value);
+
+	if (typeof lifetimeSecs === "number") {
+		cookie += "; max-age=" + (lifetimeSecs);
+		document.cookie = cookie;
+	}
+}
+
+export function getCookie(name) {
+  let cookie = document.cookie.split('; ').find(row => row.startsWith(name + '='));
+  return cookie ? cookie.split('=')[1] : null;
+}

@@ -1,16 +1,14 @@
 import './ReportForm.css';
-
-import { useContext, useState } from 'react';
-import { UserContext } from '../../App';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import { apiAuth } from '../../api/mpFetch.js';
 import Report from '../../models/Report.js';
 import BlurComponent from "../common/BlurComponent";
 import CloseButton from '../common/CloseButton';
-import { ReportStatus } from '../../models/enums/ReportStatus';
+import { useUserContext } from '../../context/UserContext.js';
 
 const ReportForm = ({ audiotrack, onClose }) => {
-	const { user } = useContext(UserContext);
+	const { user } = useUserContext();
 	const [text, setText] = useState('');
 	const navigate = useNavigate();
 
@@ -19,26 +17,13 @@ const ReportForm = ({ audiotrack, onClose }) => {
 			navigate('/auth');
 			return;
 		}
-		fetch(`http://localhost:9898/api/reports`, {
-			mode: 'cors',
-			method: 'POST',
-			headers: {
-				'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-				'Content-Type': 'application/json; charset=utf-8'
-			},
-			body: JSON.stringify({
-				...Report,
-				authorId: user.id,
-				audiotrackId: audiotrack.id,
-				text: text
-			})
+		apiAuth.post('reports', {
+			...Report,
+			authorId: user.id,
+			audiotrackId: audiotrack.id,
+			text: text
 		})
-			.then(response => {
-				if (response.status === 401) {
-					navigate('/auth');
-				}
-				onClose();
-			})
+			.then(() => onClose())
 			.catch(error => console.error(error));
 	}
 

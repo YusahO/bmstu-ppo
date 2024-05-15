@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SearchOptions from "./SearchOptions";
 import { useNavigate } from "react-router-dom";
 

@@ -17,7 +17,7 @@ namespace MewingPad.Database.Context.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.4")
+                .HasAnnotation("ProductVersion", "8.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -51,7 +51,7 @@ namespace MewingPad.Database.Context.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.ToTable("Audiotracks");
+                    b.ToTable("Audiotracks", (string)null);
                 });
 
             modelBuilder.Entity("MewingPad.Database.Models.CommentaryDbModel", b =>
@@ -80,7 +80,7 @@ namespace MewingPad.Database.Context.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.ToTable("Commentaries");
+                    b.ToTable("Commentaries", (string)null);
                 });
 
             modelBuilder.Entity("MewingPad.Database.Models.PlaylistAudiotrackDbModel", b =>
@@ -95,7 +95,7 @@ namespace MewingPad.Database.Context.Migrations
 
                     b.HasIndex("PlaylistId");
 
-                    b.ToTable("PlaylistsAudiotracks");
+                    b.ToTable("PlaylistsAudiotracks", (string)null);
                 });
 
             modelBuilder.Entity("MewingPad.Database.Models.PlaylistDbModel", b =>
@@ -118,7 +118,7 @@ namespace MewingPad.Database.Context.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Playlists");
+                    b.ToTable("Playlists", (string)null);
                 });
 
             modelBuilder.Entity("MewingPad.Database.Models.ReportDbModel", b =>
@@ -152,7 +152,7 @@ namespace MewingPad.Database.Context.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.ToTable("Reports");
+                    b.ToTable("Reports", (string)null);
                 });
 
             modelBuilder.Entity("MewingPad.Database.Models.ScoreDbModel", b =>
@@ -173,7 +173,7 @@ namespace MewingPad.Database.Context.Migrations
 
                     b.HasIndex("AudiotrackId");
 
-                    b.ToTable("Scores");
+                    b.ToTable("Scores", (string)null);
                 });
 
             modelBuilder.Entity("MewingPad.Database.Models.TagAudiotrackDbModel", b =>
@@ -190,7 +190,7 @@ namespace MewingPad.Database.Context.Migrations
 
                     b.HasIndex("TagId");
 
-                    b.ToTable("TagsAudiotracks");
+                    b.ToTable("TagsAudiotracks", (string)null);
                 });
 
             modelBuilder.Entity("MewingPad.Database.Models.TagDbModel", b =>
@@ -212,7 +212,7 @@ namespace MewingPad.Database.Context.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.ToTable("Tags");
+                    b.ToTable("Tags", (string)null);
                 });
 
             modelBuilder.Entity("MewingPad.Database.Models.UserDbModel", b =>
@@ -243,11 +243,6 @@ namespace MewingPad.Database.Context.Migrations
                         .HasColumnType("varchar(128)")
                         .HasColumnName("password");
 
-                    b.Property<string>("RefreshToken")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("refresh_token");
-
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("varchar(64)")
@@ -260,7 +255,7 @@ namespace MewingPad.Database.Context.Migrations
 
                     b.HasIndex("FavouritesPlaylistId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("MewingPad.Database.Models.AudiotrackDbModel", b =>

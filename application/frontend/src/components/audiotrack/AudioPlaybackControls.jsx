@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
-import { useWavesurfer } from '@wavesurfer/react'
 import './AudioPlaybackControls.css';
+import { MEWING_PAD_API_HOST } from '../../api/mpFetch.js';
+import { useEffect, useRef, useState } from 'react';
+import { useWavesurfer } from '@wavesurfer/react';
 
 
 const Pause = ({ onPlayPause }) => {
@@ -38,7 +39,7 @@ export default function AudioPlaybackControls({ audiotrackParam }) {
 
   const { wavesurfer, isPlaying } = useWavesurfer({
     container: containerRef,
-    url: `http://localhost:9898/api/audiotracks/${audiotrackParam.filepath}`,
+    url: MEWING_PAD_API_HOST + `/audiofiles/${audiotrackParam.filepath}`,
     waveColor: '#ccc',
     progressColor: '#0178ff',
     cursorColor: 'transparent',

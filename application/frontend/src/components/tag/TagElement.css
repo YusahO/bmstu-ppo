@@ -1,14 +1,21 @@
 .tag-element {
-	/* min-width: 300px; */
-	/* width: 300px; */
+	color: var(--font-color);
+	min-width: 30px;
 	text-align: center;
-	padding: 5px;
+	padding: 10px;
 	border-radius: 5px;
 	color: var(--accent-color2);
 	background-color: var(--accent-color1);
 }
 
-.tag-select-button {
+.tag-element.add {
+	display: flex;
+	justify-content: center;
+}
+
+.tag-element.button {
+	text-align: end;
+	padding: 0px;
 	width: 10px;
 	cursor: pointer;
 }

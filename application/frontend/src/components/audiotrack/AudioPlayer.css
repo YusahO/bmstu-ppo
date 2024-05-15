@@ -16,8 +16,8 @@
   left: var(--x);
   transform: translate(-50%, -50%);
   background: radial-gradient(var(--accent-color1), transparent, transparent);
-  width: 400px;
-  height: 400px;
+  width: 600px;
+  height: 600px;
   opacity: 0;
   transition: 0.5s, top 0s, left 0s;
 }

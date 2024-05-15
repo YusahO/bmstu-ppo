@@ -1,9 +1,8 @@
-import { useContext } from 'react';
 import './SideBar.css';
-import { UserContext } from '../App';
+import { useUserContext } from '../context/UserContext';
 
 const SideBar = () => {
-	const { user } = useContext(UserContext);
+	const { user } = useUserContext();
 	return (
 		<div id='sidebarComp' className='sidepanel'>
 			<a href='/playlists'>Мои плейлисты</a>

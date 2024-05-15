@@ -5,16 +5,16 @@ const TagSelector = ({ tag, isSelected, onClick }) => {
 	return (
 		<div
 			className="tag-element"
-			style={{ display: 'flex', gap: '10px' }}
+			style={{ display: 'flex', justifyContent: 'space-between' }}
 		>
 			<label>
 				{tag.name}
 			</label>
 			<label
-				className='tag-select-button'
+				className='tag-element button'
 				onClick={onClick}
 			>
-				{isSelected ? 'x' : '+'}
+				{isSelected ? <span>&times;</span> : '+'}
 			</label>
 		</div>
 	);

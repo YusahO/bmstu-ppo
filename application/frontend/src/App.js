@@ -1,8 +1,8 @@
 import './App.css';
 
-import React, { useEffect, useContext, useState } from 'react';
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
-import { parseJwt } from './Globals';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
+import { getCookie, parseJwt } from './Globals';
 
 import Home from "./pages/Home.jsx";
 import Authorization from './components/auth/Authorization.jsx';
@@ -12,57 +12,56 @@ import SideBar from './pages/SideBar.jsx';
 import Playlists from './pages/Playlists.jsx';
 import PlaylistAudiotracks from './pages/PlaylistAudiotracks.jsx';
 import TagsPage from './pages/TagsPage.jsx';
-
-export const UserContext = React.createContext();
-
-function retrieveUser(setUser) {
-  const token = localStorage.getItem('accessToken');
-  if (!token) {
-    setUser(null);
-    return;
-  }
-
-  const userId = parseJwt(token).id;
-  fetch(`http://localhost:9898/api/users/${userId}`, {
-    mode: 'cors',
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  })
-    .then(response => response.json())
-    .then(data => {
-      setUser(data);
-    })
-    .catch(error => console.log(error));
-}
+import { apiAuth } from './api/mpFetch.js';
+import { Cookies } from 'react-cookie';
+import { AlertProvider } from './context/AlertContext.js';
+import AlertNotifies from './components/common/AlertNotify.jsx';
+import { UserProvider, useUserContext } from './context/UserContext.js';
+import ReportsPage from './pages/ReportsPage.jsx';
 
 function App() {
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    retrieveUser(setUser);
-    const storageEventListener = () => {
-      retrieveUser(setUser);
-    };
-
-    window.addEventListener('storage', storageEventListener);
-    return () => {
-      window.removeEventListener('storage', storageEventListener);
-    }
-  }, []);
-
   return (
-    <UserContext.Provider value={{ user, setUser }}>
-      <Main />
-    </UserContext.Provider>
+    <AlertProvider>
+      <UserProvider>
+        <Main />
+      </UserProvider>
+    </AlertProvider>
   );
 }
 
 function Main() {
 
-  const { user, setUser } = useContext(UserContext);
+  const { user, setUser } = useUserContext();
   const [opened, setOpened] = useState(true);
+
+  const cookies = new Cookies();
+  const token = cookies.get('token');
+
+  useEffect(() => {
+    if (!token) {
+      setUser(null);
+      return;
+    }
+    const userId = parseJwt(token).id;
+    apiAuth.get(`users/${userId}`)
+      .then(response => setUser(response.data))
+      .catch(error => console.log(error));
+
+    const cookieChangeListener = (name, value) => {
+      if (name === 'token' && value === 'undefined') {
+        setUser(null);
+      }
+    }
+
+    cookies.addChangeListener(cookieChangeListener);
+    return () => {
+      cookies.removeChangeListener(cookieChangeListener);
+    }
+  }, []);
+
+  if (!user && token) {
+    return <div>Loading...</div>
+  }
 
   function handleClick() {
     setOpened(!opened);
@@ -74,12 +73,10 @@ function Main() {
   }
 
   const RequireAuth = (requireAdmin, elem) => {
-    useEffect(() => {
-      retrieveUser(setUser);
-    }, []);
-    if (user === null) {
-      return <div>Loading...</div>;
+    if (!getCookie('token')) {
+      setUser(null);
     }
+
     if (requireAdmin) {
       return user && user.isAdmin ? elem : <Navigate to='/auth' />;
     } else {
@@ -89,24 +86,21 @@ function Main() {
 
   return (
     <BrowserRouter>
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '10px'
-      }}>
-        <TopBar onSidebarClick={handleClick} />
-        <div className='content-pages'>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/search" element={<SearchResults />} />
-            <Route path="/auth" element={<Authorization />} />
-            <Route path="/playlists" element={RequireAuth(false, <Playlists />)} />
-            <Route path="/audiotracks" element={RequireAuth(false, <PlaylistAudiotracks />)} />
-            <Route path="/tags" element={RequireAuth(true, <TagsPage />)} />
-          </Routes>
-          <SideBar />
-        </div>
+      <TopBar onSidebarClick={handleClick} />
+
+      <div className='content-pages'>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/search" element={<SearchResults />} />
+          <Route path="/auth" element={<Authorization />} />
+          <Route path="/playlists" element={RequireAuth(false, <Playlists />)} />
+          <Route path="/audiotracks" element={RequireAuth(false, <PlaylistAudiotracks />)} />
+          <Route path="/tags" element={RequireAuth(true, <TagsPage />)} />
+          <Route path="/reports" element={RequireAuth(true, <ReportsPage />)} />
+        </Routes>
+        <SideBar />
       </div>
+      <AlertNotifies />
     </BrowserRouter>
   );
 }

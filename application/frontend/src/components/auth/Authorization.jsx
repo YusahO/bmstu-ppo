@@ -1,13 +1,14 @@
+import './Authorization.css';
 import React, { useState } from 'react';
 import Registration from './Registration';
 import Login from './Login';
-
-import './Authorization.css';
 import { useNavigate } from 'react-router-dom';
+import { AlertTypes, useAlertContext } from '../../context/AlertContext';
 
 const Authorization = () => {
 
   const navigate = useNavigate();
+  const { addAlert } = useAlertContext()
   const [isLogin, setIsLogin] = useState(true);
 
   function handleSwitch() {
@@ -15,18 +16,16 @@ const Authorization = () => {
   }
 
   function handleNavigate() {
+    addAlert(AlertTypes.success, 'Авторизация успешна')
     navigate('/');
   }
 
   return (
     <div>
-      <div>
-        {isLogin ?
-          <Registration onChange={handleSwitch} onSuccess={handleNavigate} /> :
-          <Login onChange={handleSwitch} onSuccess={handleNavigate} />
-        }
-      </div>
-
+      {isLogin ?
+        <Login onChange={handleSwitch} onSuccess={handleNavigate} /> :
+        <Registration onChange={handleSwitch} onSuccess={handleNavigate} />
+      }
     </div>
   );
 };

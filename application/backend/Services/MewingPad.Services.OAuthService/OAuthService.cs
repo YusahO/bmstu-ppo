@@ -49,11 +49,6 @@ public class OAuthService(IConfiguration config,
         return user;
     }
 
-    public async Task SaveRefreshToken(Guid userId, string refreshToken)
-    {
-        await _userRepository.SaveRefreshToken(userId, refreshToken);
-    }
-
     public async Task<User> SignInUser(string email, string password)
     {
         _logger.Verbose($"Entering SignInUser({email})");

@@ -1,32 +1,26 @@
+import './AudioPlayer.css';
 import AudioPlaybackControls from './AudioPlaybackControls.jsx';
 import { useEffect, useState } from 'react';
-import './AudioPlayer.css';
+import { api } from '../../api/mpFetch.js';
 
 const AudioPlayer = ({ audiotrack }) => {
 
   const [totalScore, setTotalScore] = useState(0);
 
   useEffect(() => {
-    fetch(`http://localhost:9898/api/scores/${audiotrack.id}`, {
-      mode: 'cors',
-      method: 'GET'
-    })
-      .then((response) => {
-        if (response.status === 204) {
-          return JSON.stringify({ value: 0 });
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (data.length === 0) {
+    api.get(`audiotracks/${audiotrack.id}/scores`)
+      .then(response => {
+        const data = response.data;
+        console.log(data);
+        if (response.status === 204 || data.length === 0) {
           setTotalScore(0);
           return;
         }
-
         let sum = 0;
         data.map(d => sum += d.value);
         setTotalScore(Math.floor(sum / data.length));
       })
+      .catch(error => console.error(error));
   }, [audiotrack]);
 
   return (
@@ -34,8 +28,8 @@ const AudioPlayer = ({ audiotrack }) => {
       <AudioPlaybackControls audiotrackParam={audiotrack} />
       <div style={{
         display: 'flex',
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
+        justifyContent: 'space-between',
+        alignItems: 'center',
         gap: '30px'
       }}>
         <label id='audio-title-label'>{audiotrack.title}</label>

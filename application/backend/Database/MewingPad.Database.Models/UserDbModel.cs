@@ -37,9 +37,6 @@ public class UserDbModel(Guid id,
     [Column("is_admin", TypeName = "bool")]
     public bool IsAdmin { get; set; } = isAdmin;
 
-    [Column("refresh_token", TypeName = "text")]
-    public string RefreshToken { get; set; } = "";
-
     public ICollection<PlaylistDbModel> Playlists { get; set; } = [];
     public ICollection<ScoreDbModel> Scores { get; set; } = [];
     public PlaylistDbModel? FavouritesPlaylist { get; set; }

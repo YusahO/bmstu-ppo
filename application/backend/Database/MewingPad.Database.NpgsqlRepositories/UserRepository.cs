@@ -111,40 +111,6 @@ public class UserRepository(MewingPadDbContext context) : IUserRepository
         return user;
     }
 
-    public async Task<string> GetUserRefreshToken(Guid userId)
-    {
-        _logger.Verbose("Entering GetUserRefreshToken");
-
-        UserDbModel? userDbModel;
-        try
-        {
-            userDbModel = await _context.Users.FindAsync(userId);
-        }
-        catch (Exception ex)
-        {
-            throw new RepositoryException(ex.Message, ex.InnerException);
-        }
-
-        _logger.Verbose("Exiting GetUserRefreshToken");
-        return userDbModel!.RefreshToken;
-    }
-
-    public async Task SaveRefreshToken(Guid userId, string refreshToken)
-    {
-        _logger.Verbose("Entering SaveRefreshToken");
-        try
-        {
-            var userDbModel = await _context.Users.FindAsync(userId);
-            userDbModel!.RefreshToken = refreshToken;
-            await _context.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            throw new RepositoryException(ex.Message, ex.InnerException);
-        }
-        _logger.Verbose("Exiting SaveRefreshToken");
-    }
-
     public async Task<User> UpdateUser(User user)
     {
         _logger.Verbose("Entering UpdateUser");

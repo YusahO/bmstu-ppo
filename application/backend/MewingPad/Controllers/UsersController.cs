@@ -1,3 +1,4 @@
+using MewingPad.Services.PlaylistService;
 using MewingPad.Services.UserService;
 using MewingPad.UI.DTOs.Converters;
 using Microsoft.AspNetCore.Authorization;
@@ -8,10 +9,11 @@ namespace MewingPad.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UsersController(IUserService userService) : ControllerBase
+public class UsersController(IUserService userService,
+                             IPlaylistService playlistService) : ControllerBase
 {
-    private readonly IUserService _userService = userService 
-                                                 ?? throw new ArgumentNullException(nameof(userService));
+    private readonly IUserService _userService = userService;
+    private readonly IPlaylistService _playlistService = playlistService;
     private readonly Serilog.ILogger _logger = Log.ForContext<UsersController>();
 
     [Authorize]
@@ -43,8 +45,23 @@ public class UsersController(IUserService userService) : ControllerBase
             return Ok(users);
         }
         catch (Exception ex)
-        {   
+        {
             // log
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [Authorize]
+    [HttpGet("{userId:guid}/playlists")]
+    public async Task<IActionResult> GetUserPlaylists(Guid userId)
+    {
+        try
+        {
+            var playlists = await _playlistService.GetUserPlaylists(userId);
+            return Ok(playlists);
+        }
+        catch (Exception ex)
+        {
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }

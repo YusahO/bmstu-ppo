@@ -71,10 +71,7 @@ public class AuthController(IUserService userService,
             var userAuthDto = new UserAuthDto
             {
                 UserDto = UserConverter.CoreModelToDto(user),
-                TokenDto = new TokenDto
-                {
-                    AccessToken = GenerateAccessToken(user.Id.ToString(), user.Email, user.Username)
-                }
+                Token = GenerateAccessToken(user.Id.ToString(), user.Email, user.Username)
             };
             return Ok(userAuthDto);
         }
@@ -96,10 +93,7 @@ public class AuthController(IUserService userService,
             var userAuthDto = new UserAuthDto
             {
                 UserDto = UserConverter.CoreModelToDto(user),
-                TokenDto = new TokenDto
-                {
-                    AccessToken = GenerateAccessToken(user.Id.ToString(), user.Email, user.Username)
-                }
+                Token = GenerateAccessToken(user.Id.ToString(), user.Email, user.Username)
             };
 
             return Ok(userAuthDto);

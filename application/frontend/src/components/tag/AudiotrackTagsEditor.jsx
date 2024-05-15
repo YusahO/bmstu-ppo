@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
 import './TagContainer.css';
+import { api, apiAuth } from '../../api/mpFetch.js';
+import { useEffect, useState } from "react";
 import TagSelector from "./TagSelector.jsx";
 
 const AudiotrackTagsEditor = ({ audiotrackId }) => {
@@ -9,51 +10,25 @@ const AudiotrackTagsEditor = ({ audiotrackId }) => {
 
 	function handleTagUpdate(tag) {
 		if (tags.some(t => t.id === tag.id)) {
-			fetch(`http://localhost:9898/api/audiotracks/${audiotrackId}/tags`, {
-				mode: 'cors',
-				method: 'DELETE',
-				headers: {
-					'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-					'Content-Type': 'application/json; charset=utf-8'
-				},
-				body: JSON.stringify(tag.id)
-			})
-				.then((response) => {
-					setTags(tags.filter(t => t.id != tag.id));
-				})
-				.catch(error => console.error(error))
+			apiAuth.delete(`audiotracks/${audiotrackId}/tags`, { data: tag.id })
+				.then(() => setTags(tags.filter(t => t.id !== tag.id)))
+				.catch(error => console.error(error));
+
 		} else {
-			fetch(`http://localhost:9898/api/audiotracks/${audiotrackId}/tags`, {
-				mode: 'cors',
-				method: 'POST',
-				headers: {
-					'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-					'Content-Type': 'application/json; charset=utf-8'
-				},
-				body: JSON.stringify(tag.id)
-			})
-				.then((response) => {
-					setTags([...tags, tag]);
-				})
-				.catch(error => console.error(error))
+			apiAuth.post(`audiotracks/${audiotrackId}/tags`, tag.id)
+				.then(() => setTags([...tags, tag]))
+				.catch(error => console.error(error));
 		}
 	}
 
 	useEffect(() => {
-		fetch(`http://localhost:9898/api/audiotracks/${audiotrackId}/tags`, {
-			mode: 'cors',
-			method: 'GET'
-		})
-			.then((response) => response.json())
-			.then((data) => setTags(data))
+		api.get(`audiotracks/${audiotrackId}/tags`)
+			.then(response => setTags(response.data))
+			.catch(error => console.error(error));
 
-		fetch(`http://localhost:9898/api/tags`, {
-			mode: 'cors',
-			method: 'GET'
-		})
-			.then((response) => response.json())
-			.then((data) => setAllTags(data))
-			.catch(error => console.error(error))
+		api.get('tags')
+			.then(response => setAllTags(response.data))
+			.catch(error => console.error(error));
 
 	}, [audiotrackId]);
 

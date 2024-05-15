@@ -1,5 +1,18 @@
-.username-link {
+/* .username-link {
 	text-decoration: none;
 	font-size: var(--font-size);
 	color: var(--accent-color1);
+} */
+.user-minimized {
+	width: 100px;
+}
+
+.user-minimized label {
+	cursor: pointer;
+	color: var(--accent-color1);
+}
+
+.user-minimized .user-options {
+	display: flex; 
+	justify-content: space-between;
 }

@@ -1,39 +1,50 @@
-import { useState } from "react";
-
 import '../search/SearchOptions.css';
 
-const Registration = ({ onChange, onSuccess }) => {
+import { useState } from "react";
+import { parseJwt, setCookie } from "../../Globals";
+import { api } from '../../api/mpFetch';
+import { useUserContext } from '../../context/UserContext';
+import { AlertTypes, useAlertContext } from '../../context/AlertContext';
 
-	const [username, setUsername] = useState('');
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
+const Registration = ({ onChange, onSuccess }) => {
+	const { setUser } = useUserContext();
+	const { addAlert } = useAlertContext();
+
+	const [credentials, setCredentials] = useState({
+		username: '',
+		email: '',
+		password: ''
+	});
+
+	const handleChange = (e) => {
+		setCredentials({
+			...credentials,
+			[e.target.name]: e.target.value
+		});
+	};
 
 	function handleRegister(e) {
 		e.preventDefault();
-		fetch('http://localhost:9898/api/auth/registration', {
-			method: 'POST',
-			mode: "cors",
-			headers: {
-				"Content-Type": "application/json; charset=utf-8",
-			},
-			body: JSON.stringify({ username: username, email: email, password: password }),
+		api.post('auth/registration', {
+			username: credentials.username,
+			email: credentials.email,
+			password: credentials.password
 		})
-			.then((response) => {
-				if (!response.ok) {
+			.then(response => {
+				if (response.status !== 200) {
 					throw new Error('Registration failed');
 				}
-				return response.json();
-			})
-			.then((data) => {
-				if (data.tokenDto.accessToken) {
-					console.log(data.tokenDto.accessToken);
-					localStorage.setItem('accessToken', data.tokenDto.accessToken);
+
+				const token = response.data.token;
+				if (token) {
+					const tokenParsed = parseJwt(token);
+					const cookieLifetime = (new Date(tokenParsed.exp).getTime() - Math.floor(new Date().getTime() / 1000));
+					setUser(response.data.userDto);
+					setCookie('token', token, cookieLifetime);
 				}
-				return data;
-			})
-			.then(() => {
 				onSuccess();
-			});
+			})
+			.catch(error => addAlert(AlertTypes.error, 'Не удалось зарегистрироваться'))
 	}
 
 	return (
@@ -42,22 +53,25 @@ const Registration = ({ onChange, onSuccess }) => {
 			<input
 				type="text"
 				placeholder="Имя пользователя"
-				value={username}
-				onChange={(e) => setUsername(e.target.value)}
+				name='username'
+				value={credentials.username}
+				onChange={handleChange}
 				required={true}
 			/>
 			<input
-				type="text"
+				type="email"
 				placeholder="Почта"
-				value={email}
-				onChange={(e) => setEmail(e.target.value)}
+				name='email'
+				value={credentials.email}
+				onChange={handleChange}
 				required={true}
 			/>
 			<input
-				type="password"
+				type="new-password"
 				placeholder="Пароль"
-				value={password}
-				onChange={(e) => setPassword(e.target.value)}
+				name='password'
+				value={credentials.password}
+				onChange={handleChange}
 				required={true}
 			/>
 			<button type="submit">Зарегистрироваться</button>

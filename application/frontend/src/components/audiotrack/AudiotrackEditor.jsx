@@ -1,17 +1,14 @@
 import './AudiotrackEditor.css';
-
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Audiotrack from '../../models/Audiotrack.js';
-import { UserContext } from "../../App";
-import { useNavigate } from 'react-router-dom';
+import { apiAuth } from '../../api/mpFetch.js';
+import { useUserContext } from '../../context/UserContext.js';
 
 const AudiotrackEditor = ({ audiotrack, onDone }) => {
-
-	const navigate = useNavigate();
 	const [file, setFile] = useState(null);
 	const [title, setTitle] = useState('');
 	const [path, setPath] = useState('');
-	const { user } = useContext(UserContext);
+	const { user } = useUserContext();
 
 	useEffect(() => {
 		if (audiotrack) {
@@ -38,20 +35,8 @@ const AudiotrackEditor = ({ audiotrack, onDone }) => {
 		}
 		formData.append('file', file);
 
-		fetch(`http://localhost:9898/api/audiotracks`, {
-			mode: 'cors',
-			method: 'PUT',
-			headers: {
-				'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-			},
-			body: formData
-		})
-			.then(response => {
-				if (response.status === 401) {
-					navigate('/auth')
-				}
-				onDone();
-			})
+		apiAuth.put('audiotracks', formData)
+			.then(() => onDone())
 			.catch(error => console.error(error));
 	}
 
@@ -73,20 +58,8 @@ const AudiotrackEditor = ({ audiotrack, onDone }) => {
 		}
 		formData.append('file', file);
 
-		fetch(`http://localhost:9898/api/audiotracks`, {
-			mode: 'cors',
-			method: 'POST',
-			headers: {
-				'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-			},
-			body: formData
-		})
-			.then(response => {
-				if (response.status === 401) {
-					navigate('/auth')
-				}
-				onDone();
-			})
+		apiAuth.post('audiotracks', formData)
+			.then(() => onDone())
 			.catch(error => console.error(error));
 	}
 

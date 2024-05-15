@@ -1,28 +1,19 @@
 import './PlaylistElement.css';
-import { useNavigate } from "react-router-dom";
 import DeletePrompt from "../common/DeletePrompt";
-import { useContext, useState } from 'react';
-import { UserContext } from '../../App';
+import { useState } from 'react';
+import { apiAuth } from '../../api/mpFetch';
+import { useUserContext } from '../../context/UserContext';
+import { AlertTypes, useAlertContext } from '../../context/AlertContext';
 
 const PlaylistEditField = ({ playlist, onClose }) => {
 	const [newTitle, setNewTitle] = useState('');
-	const navigate = useNavigate();
+	const { addAlert } = useAlertContext();
 
 	function handlePlaylistEdited() {
-		fetch(`http://localhost:9898/api/playlists`, {
-			mode: 'cors',
-			method: 'PUT',
-			headers: {
-				'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-				'Content-Type': 'application/json; charset=utf-8'
-			},
-			body: JSON.stringify({ ...playlist, title: newTitle }),
-		})
-			.then(response => {
-				if (response.status === 401) {
-					navigate('/auth');
-				}
-				onClose();
+		apiAuth.put('playlists', { ...playlist, title: newTitle })
+			.then(() => {
+				addAlert(AlertTypes.info, 'Название плейлиста обновлено');
+				onClose()
 			})
 			.catch(error => console.error(error));
 	}
@@ -33,7 +24,7 @@ const PlaylistEditField = ({ playlist, onClose }) => {
 			display: 'flex',
 			flexDirection: 'column',
 			width: 300
-		}}>
+		}} onMouseLeave={onClose}>
 			<input
 				placeholder="Новое название (Enter для сохранения)"
 				type="text"
@@ -50,35 +41,26 @@ const PlaylistEditField = ({ playlist, onClose }) => {
 }
 
 const PlaylistActions = ({ playlist, needUpdate }) => {
-	const navigate = useNavigate();
 	const [showEditField, setShowEditField] = useState(false);
 	const [showDeletePrompt, setShowDeletePrompt] = useState(false);
+	const { addAlert } = useAlertContext();
 
 	function handlePlaylistDelete() {
-		fetch(`http://localhost:9898/api/playlists`, {
-			mode: 'cors',
-			method: 'DELETE',
-			headers: {
-				'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-				'Content-Type': 'application/json; charset=utf-8'
-			},
-			body: JSON.stringify(playlist),
-		})
-			.then(response => {
-				if (response.status === 401) {
-					navigate('/auth');
-				}
+		apiAuth.delete(`playlists/${playlist.id}`,)
+			.then(() => {
 				setShowDeletePrompt(false); needUpdate();
+				addAlert(AlertTypes.info, 'Плейлист успешно удален');
 			})
 			.catch(error => console.error(error));
 	}
 
 	return (
-		<div
-			className='playlist-actions'
-		>
+		<div className='playlist-actions' >
 			<div>
-				<button onClick={() => setShowEditField(!showEditField)}>
+				<button
+					className='playlist-actions-button'
+					onClick={() => setShowEditField(!showEditField)}
+				>
 					&#9998;
 				</button>
 				{showEditField &&
@@ -86,7 +68,10 @@ const PlaylistActions = ({ playlist, needUpdate }) => {
 			</div>
 
 			<div>
-				<button onClick={() => setShowDeletePrompt(true)}>
+				<button
+					className='playlist-actions-button'
+					onClick={() => setShowDeletePrompt(true)}
+				>
 					&#215;
 				</button>
 				{showDeletePrompt &&
@@ -97,11 +82,11 @@ const PlaylistActions = ({ playlist, needUpdate }) => {
 }
 
 const PlaylistElement = ({ playlist, onDoubleClick, needUpdate }) => {
-	const { user } = useContext(UserContext);
+	const { user } = useUserContext();
 
 	return (
 		<div onDoubleClick={onDoubleClick} className='playlist-element'>
-			<div class="playlist-element-icon"></div>
+			<div className="playlist-element-icon"></div>
 			<label className='playlist-element-label'>
 				{playlist.title}
 			</label>

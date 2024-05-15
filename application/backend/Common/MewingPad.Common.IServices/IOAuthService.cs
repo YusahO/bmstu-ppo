@@ -6,5 +6,4 @@ public interface IOAuthService
 {
     Task<User> RegisterUser(User user);
     Task<User> SignInUser(string email, string password);
-    Task SaveRefreshToken(Guid userId, string refreshToken);
 }

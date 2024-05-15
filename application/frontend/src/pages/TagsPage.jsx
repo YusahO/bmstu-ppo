@@ -1,26 +1,14 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import TagsEditor from "../components/tag/TagsEditor";
-import { UserContext } from "../App";
-import { useNavigate } from "react-router-dom";
+import { api } from "../api/mpFetch";
 
 const TagsPage = () => {
-	// const { user } = useContext(UserContext);
-	const navigate = useNavigate();
 	const [tags, setTags] = useState(null);
 	const [needUpdate, setNeedUpdate] = useState(false);
 
 	useEffect(() => {
-		fetch(`http://localhost:9898/api/tags`, {
-			mode: 'cors',
-			method: 'GET'
-		})
-			.then(response => {
-				if (response.status === 401) {
-					navigate('/auth');
-				}
-				return response.json();
-			})
-			.then(data => setTags(data))
+		api.get('tags')
+			.then(response => setTags(response.data))
 			.catch(error => console.error(error));
 	}, [needUpdate]);
 

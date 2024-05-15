@@ -1,27 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import Audiotrack from "../../models/Audiotrack";
 import AudiotrackGrid from "./AudiotrackGrid";
+import { api } from '../../api/mpFetch';
 
 function AllAudiotracks({ renderAdd }) {
   const [audiotracks, setAudiotracks] = useState([]);
   const [needUpdate, setNeedUpdate] = useState(false);
 
   const fetchAudiotracks = () => {
-    fetch('http://localhost:9898/api/audiotracks', { mode: 'cors' })
-      .then((response) => response.json())
-      .then((data) => {
-        let audiosList = [];
-        data.map((audiotrack) => {
-          audiosList.push({
-            ...Audiotrack,
-            id: audiotrack.id,
-            title: audiotrack.title,
-            filepath: audiotrack.filepath
-          });
-        });
-        setAudiotracks(audiosList);
-      })
-      .catch(error => console.error('Error fetching audiotracks:', error));
+    api.get('audiotracks')
+      .then(response => setAudiotracks(response.data))
+      .catch(error => console.error(error));
   }
 
   useEffect(() => {

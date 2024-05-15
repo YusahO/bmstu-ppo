@@ -24,7 +24,7 @@
     content: '★ ';
 }
 .rate > input:checked ~ label {
-    color: #0178ff;    
+    color: var(--accent-color1);  
 }
 .rate:not(:checked) > label:hover,
 .rate:not(:checked) > label:hover ~ label {

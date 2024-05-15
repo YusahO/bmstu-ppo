@@ -1,5 +1,9 @@
 using MewingPad.Services.AudiotrackService;
+using MewingPad.Services.CommentaryService;
+using MewingPad.Services.PlaylistService;
+using MewingPad.Services.ScoreService;
 using MewingPad.Services.TagService;
+using MewingPad.Services.UserService;
 using MewingPad.UI.DTOs;
 using MewingPad.UI.DTOs.Converters;
 using Microsoft.AspNetCore.Authorization;
@@ -11,10 +15,18 @@ namespace MewingPad.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class AudiotracksController(IAudiotrackService audiotrackService,
-                                   ITagService tagService) : ControllerBase
+                                   ITagService tagService,
+                                   IScoreService scoreService,
+                                   IPlaylistService playlistService,
+                                   ICommentaryService commentaryService,
+                                   IUserService userService) : ControllerBase
 {
     private readonly IAudiotrackService _audiotrackService = audiotrackService;
     private readonly ITagService _tagService = tagService;
+    private readonly IScoreService _scoreService = scoreService;
+    private readonly IPlaylistService _playlistService = playlistService;
+    private readonly ICommentaryService _commentaryService = commentaryService;
+    private readonly IUserService _userService = userService;
 
     private readonly Serilog.ILogger _logger = Log.ForContext<AudiotracksController>();
 
@@ -37,14 +49,14 @@ public class AudiotracksController(IAudiotrackService audiotrackService,
     }
 
     [AllowAnonymous]
-    [HttpGet("{filename}")]
-    public async Task<IActionResult> GetAudiotrackFile(string filename)
+    [HttpGet("{audiotrackId:guid}")]
+    public async Task<IActionResult> GetAudiotrack(Guid audiotrackId)
     {
         try
         {
-            var audioStream = await _audiotrackService.GetAudiotrackFileStream(filename);
+            var audiotrack = await _audiotrackService.GetAudiotrackById(audiotrackId);
             // log
-            return File(audioStream, "application/octet-stream");
+            return Ok(audiotrack);
         }
         catch (Exception ex)
         {
@@ -83,13 +95,12 @@ public class AudiotracksController(IAudiotrackService audiotrackService,
     }
 
     [Authorize]
-    [HttpDelete]
-    public async Task<IActionResult> DeleteAudiotrack([FromBody] AudiotrackDto audiotrackDto)
+    [HttpDelete("{audiotrackId:guid}")]
+    public async Task<IActionResult> DeleteAudiotrack(Guid audiotrackId)
     {
         try
         {
-            var audiotrack = AudiotrackConverter.DtoToCoreModel(audiotrackDto);
-            await _audiotrackService.DeleteAudiotrack(audiotrack.Id);
+            await _audiotrackService.DeleteAudiotrack(audiotrackId);
             return Ok("Audiotrack deleted successfully");
         }
         catch (Exception ex)
@@ -173,6 +184,64 @@ public class AudiotracksController(IAudiotrackService audiotrackService,
         catch (Exception ex)
         {
             // log
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [AllowAnonymous]
+    [HttpGet("{audiotrackId:guid}/scores")]
+    public async Task<IActionResult> GetAllScores(Guid audiotrackId)
+    {
+        try
+        {
+            var scores = from score in await _scoreService.GetAudiotrackScores(audiotrackId)
+                         select ScoreConverter.CoreModelToDto(score);
+            // log
+            return Ok(scores);
+        }
+        catch (Exception ex)
+        {
+            // log
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [Authorize]
+    [HttpGet("{audiotrackId:guid}/playlists")]
+    public async Task<IActionResult> GetUserPlaylistsWithAudiotrack(Guid audiotrackId,
+                                                                    [FromQuery] Guid userId)
+    {
+        try
+        {
+            var playlists = await _playlistService.GetUserPlaylistsContainingAudiotrack(userId, audiotrackId);
+            return Ok(playlists);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [AllowAnonymous]
+    [HttpGet("{audiotrackId:guid}/commentaries")]
+    public async Task<IActionResult> GetAudiotrackCommentaries(Guid audiotrackId)
+    {
+        try
+        {
+            var comms = (from comm in await _commentaryService.GetAudiotrackCommentaries(audiotrackId)
+                         select CommentaryConverter.CoreModelToDto(comm)).ToList();
+
+            for (int i = 0; i < comms.Count; ++i)
+            {
+                var username = (await _userService.GetUserById(comms[i].AuthorId)).Username;
+                comms[i].AuthorName = username;
+            }
+            _logger.Information("Retrieved commentaries for audiotrack (Id = {@AudiotrackId}): {@Comms}", audiotrackId, comms);
+            return Ok(comms);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Exception thrown {Message}");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }

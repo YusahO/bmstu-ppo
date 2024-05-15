@@ -1,49 +1,21 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import TagElement from "./TagElement";
 import DeletePrompt from "../common/DeletePrompt";
 import TagSelector from "./TagSelector";
+import { apiAuth } from "../../api/mpFetch";
 
 const TagEditSelector = ({ tag, onClose }) => {
 	function handleDelete() {
-		fetch('http://localhost:9898/api/tags', {
-			mode: 'cors',
-			method: 'DELETE',
-			headers: {
-				'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-				'Content-Type': 'application/json; charset=utf-8'
-			},
-			body: JSON.stringify(activeTag)
-		})
-			.then(response => {
-				if (response.status === 401) {
-					navigate('/auth');
-				}
-				onClose();
-			})
+		apiAuth.delete('tags', { data: activeTag })
+			.then(() => onClose())
 			.catch(error => console.error(error));
 	}
 
 	function handleUpdate() {
-		fetch('http://localhost:9898/api/tags', {
-			mode: 'cors',
-			method: 'PUT',
-			headers: {
-				'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-				'Content-Type': 'application/json; charset=utf-8'
-			},
-			body: JSON.stringify(activeTag)
-		})
-			.then(response => {
-				if (response.status === 401) {
-					navigate('/auth');
-				}
-				onClose();
-			})
+		apiAuth.put('tags', activeTag)
+			.then(() => onClose())
 			.catch(error => console.error(error));
 	}
 
-	const navigate = useNavigate();
 	const [activeTag, setActiveTag] = useState(tag);
 	const [showDelete, setShowDelete] = useState(false);
 	const [showEdit, setShowEdit] = useState(false);

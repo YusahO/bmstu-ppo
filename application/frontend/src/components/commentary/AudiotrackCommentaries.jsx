@@ -1,12 +1,14 @@
 import './AudiotrackCommentaries.css'
-
-import { useContext, useEffect, useState } from "react";
-import { UserContext } from "../../App.js";
+import { api, apiAuth } from '../../api/mpFetch.js';
+import { useEffect, useState } from "react";
 import Commentary from '../../models/Commentary.js';
 import CommentaryElement from "./CommentaryElement.jsx";
+import { useUserContext } from '../../context/UserContext.js';
+import { AlertTypes, useAlertContext } from '../../context/AlertContext.js';
 
 const AudiotrackCommentaries = ({ audiotrackId }) => {
-	const { user } = useContext(UserContext);
+	const { user } = useUserContext();
+	const { addAlert } = useAlertContext();
 
 	const [comms, setComms] = useState([]);
 	const [needUpdate, setNeedUpdate] = useState(false);
@@ -14,28 +16,21 @@ const AudiotrackCommentaries = ({ audiotrackId }) => {
 
 	function handleCommSubmit() {
 		if (commText === '') {
-		// 	document.getElementById('ac-comm-inp').style.borderColor = 'red';
+			addAlert(AlertTypes.warn, 'Введите текст комментария');
 			return;
 		}
 
-		fetch('http://localhost:9898/api/commentaries/', {
-			mode: 'cors',
-			method: 'POST',
-			headers: {
-				'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-				"Content-Type": "application/json; charset=utf-8",
-			},
-			body: JSON.stringify({
-				...Commentary,
-				authorId: user.id,
-				audiotrackId: audiotrackId,
-				text: commText
-			}),
+		apiAuth.post('commentaries', {
+			...Commentary,
+			authorId: user.id,
+			audiotrackId: audiotrackId,
+			text: commText
 		})
 			.then(() => {
 				setNeedUpdate(!needUpdate);
 				setCommText('');
-			});
+			})
+			.catch(error => console.error(error));
 	}
 
 	function handleCommUpdate() {
@@ -44,12 +39,9 @@ const AudiotrackCommentaries = ({ audiotrackId }) => {
 
 	useEffect(() => {
 		setComms([]);
-		fetch(`http://localhost:9898/api/commentaries/${audiotrackId}`, {
-			mode: 'cors',
-			method: 'GET'
-		})
-			.then((response) => response.json())
-			.then((data) => { setComms(data); console.log('refetch!') });
+		api.get(`audiotracks/${audiotrackId}/commentaries`)
+			.then(response => setComms(response.data))
+			.catch(error => console.error(error));
 	}, [needUpdate, audiotrackId]);
 
 	useEffect(() => { console.log(comms) }, [comms]);

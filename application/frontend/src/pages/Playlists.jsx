@@ -1,29 +1,25 @@
-import { useContext, useEffect, useState } from 'react';
-import { UserContext } from '../App.js';
+import { useEffect, useState } from 'react';
 import PlaylistGrid from '../components/playlist/PlaylistGrid.jsx';
+import { apiAuth } from '../api/mpFetch.js';
+import { useUserContext } from '../context/UserContext.js';
 
 const Playlists = () => {
-	const { user } = useContext(UserContext);
+	const { user } = useUserContext();
 	const [needUpdate, setNeedUpdate] = useState(false);
-	const [playlists, setPlaylists] = useState([]);
-
-	useEffect(() => {
-		fetch(`http://localhost:9898/api/playlists/users/${user.id}`, {
-			mode: 'cors',
-			method: 'GET',
-			headers: {
-				'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-			},
-		})
-			.then(response => response.json())
-			.then(data => {
-				setPlaylists(data);
-			})
-			.catch(error => console.error(error));
-	}, [user.id, needUpdate]);
+	const [playlists, setPlaylists] = useState(null);
 
 	function handlePlaylistsChange() {
 		setNeedUpdate(!needUpdate);
+	}
+
+	useEffect(() => {
+		apiAuth.get(`users/${user.id}/playlists`)
+			.then(response => setPlaylists(response.data))
+			.catch(error => console.error(error));
+	}, [user.id, needUpdate]);
+
+	if (!playlists) {
+		return <div>Loading...</div>
 	}
 
 	return (

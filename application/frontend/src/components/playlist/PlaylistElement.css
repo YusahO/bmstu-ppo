@@ -83,7 +83,7 @@
   z-index: 1;
 }
 
-.playlist-actions button {
+.playlist-actions-button {
   padding: 0;
   width: 30px; height: 30px;
   box-sizing: border-box;

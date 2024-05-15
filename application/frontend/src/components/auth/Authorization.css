@@ -2,13 +2,12 @@
   position: absolute;
 	display: flex;
 	flex-direction: column;
-
   gap: 30px;
   width: 20vw;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-} 
+}
 
 .form-label {
 	align-self: center;

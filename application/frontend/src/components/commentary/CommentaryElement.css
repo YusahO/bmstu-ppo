@@ -1,14 +1,30 @@
-.commentary-actions {
+.commentary-element {
+	 display: flex;
+	 flex-direction: column;
+	 border: none;
+	 border-top: 1px solid var(--font-color);
+	 margin-top: 30px;
+}
+
+.commentary-element div {
 	display: flex;
 	align-items: center;
+	justify-content: space-between;
+}
+
+.commentary-actions {
+	display: flex;
 	gap: 10px;
 }
 
-.commentary-actions button {
+.commentary-actions.button {
+	color: var(--font-color);
+	align-items: center;
+	justify-content: center;
 	width: 30px;
 	height: 30px;
 	font-size: medium;
 	padding: 0px;
 	background-color: transparent;
-	border: 1px solid var(--accent-color2);
+	border: 1px solid var(--font-color);
 }

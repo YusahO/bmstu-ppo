@@ -46,13 +46,12 @@ public class PlaylistsController(IPlaylistService playlistService) : ControllerB
     }
 
     [Authorize]
-    [HttpDelete]
-    public async Task<IActionResult> DeletePlaylist([FromBody] PlaylistDto playlistDto)
+    [HttpDelete("{playlistId:guid}")]
+    public async Task<IActionResult> DeletePlaylist(Guid playlistId)
     {
         try
         {
-            var playlist = PlaylistConverter.DtoToCoreModel(playlistDto);
-            await _playlistService.DeletePlaylist(playlist.Id);
+            await _playlistService.DeletePlaylist(playlistId);
             return Ok("Playlist deleted successfully");
         }
         catch (Exception ex)
@@ -62,13 +61,44 @@ public class PlaylistsController(IPlaylistService playlistService) : ControllerB
     }
 
     [Authorize]
-    [HttpGet("users/{userId:guid}")]
-    public async Task<IActionResult> GetUserPlaylists(Guid userId)
+    [HttpGet("{playlistId:guid}/audiotracks")]
+    public async Task<IActionResult> RemoveFromPlaylist(Guid playlistId)
     {
         try
         {
-            var playlists = await _playlistService.GetUserPlaylists(userId);
-            return Ok(playlists);
+            var audiotracks = from a in await _playlistService.GetAllAudiotracksFromPlaylist(playlistId)
+                              select AudiotrackConverter.CoreModelToDto(a);
+            return Ok(audiotracks);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [Authorize]
+    [HttpDelete("{playlistId:guid}/audiotracks/{audiotrackId:guid}")]
+    public async Task<IActionResult> RemoveFromPlaylist(Guid playlistId, Guid audiotrackId)
+    {
+        try
+        {
+            await _playlistService.RemoveAudiotrackFromPlaylist(playlistId, audiotrackId);
+            return Ok("Audiotrack removed successfully");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [Authorize]
+    [HttpPost("{playlistId:guid}/audiotracks/{audiotrackId:guid}")]
+    public async Task<IActionResult> AddToPlaylist(Guid playlistId, Guid audiotrackId)
+    {
+        try
+        {
+            await _playlistService.AddAudiotrackToPlaylist(playlistId, audiotrackId);
+            return Ok("Audiotrack added successfully");
         }
         catch (Exception ex)
         {

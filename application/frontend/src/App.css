@@ -38,10 +38,20 @@
   }
 }
 
+.mewing-pad-home {
+  font-size: 30px;
+  font-style: italic;
+  cursor: pointer;
+}
+
 .content-pages {
-  justify-content: space-between;
+  position: fixed;
+  top: 0;
   height: 100%;
-  padding: 20px 0 20px 20px;
+  min-width: 100%;
+  /* width: 100%; */
+  justify-content: space-between;
+  padding: 80px 20px 20px 20px;
   overflow-y: scroll;
 }
 

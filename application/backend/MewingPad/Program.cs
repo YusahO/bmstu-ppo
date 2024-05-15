@@ -100,6 +100,19 @@ internal class Program
                         ValidAudience = configuration["Jwt:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration["Jwt:Secret"]!))
                     };
+                    options.Events = new()
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            context.Token = context.Request.Cookies["token"];
+                            if (context.Token is not null)
+                            {
+                                var parsedToken = new JwtSecurityToken(context.Token);
+                                context.HttpContext.Items["userId"] = parsedToken.Claims.ElementAt(0).Value;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
             builder.Services.AddAuthorization();
 

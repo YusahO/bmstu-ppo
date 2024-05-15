@@ -1,8 +1,5 @@
 import './AudiotrackInfo.css';
-
-import { useContext, useEffect, useState } from 'react';
-import { UserContext } from '../../App.js';
-
+import { useEffect, useState } from 'react';
 import AudioPlaybackControls from './AudioPlaybackControls.jsx';
 import StarRatingInteractive from '../score/StarRatingInteractive.jsx';
 import AudiotrackTags from '../tag/AudiotrackTags.jsx';
@@ -12,13 +9,14 @@ import BlurComponent from '../common/BlurComponent.jsx';
 import ReportForm from '../report/ReportForm.jsx';
 import CloseButton from '../common/CloseButton.jsx';
 import AudiotrackTagsEditor from '../tag/AudiotrackTagsEditor.jsx';
+import { api, apiAuth } from '../../api/mpFetch.js';
+import { useUserContext } from '../../context/UserContext.js';
 
 function downloadAudio(audiotrackFilename) {
-  fetch(`http://localhost:9898/api/audiotracks/${audiotrackFilename}`, { mode: 'cors' })
-    .then((response) => response.blob())
-    .then((blob) => {
+  api.get(`audiotracks/${audiotrackFilename}`, { responseType: 'blob' })
+    .then(response => {
       const url = window.URL.createObjectURL(
-        new Blob([blob])
+        new Blob([response.data])
       );
       const link = document.createElement('a');
       link.href = url;
@@ -28,10 +26,11 @@ function downloadAudio(audiotrackFilename) {
       link.click();
       link.parentNode.removeChild(link);
     })
+    .catch(error => console.error(error));
 }
 
 const AudiotrackInfo = ({ audiotrack, onClose }) => {
-  const { user } = useContext(UserContext);
+  const { user } = useUserContext();
 
   const [score, setScore] = useState(null);
   const [isHoveringDropdown, setIsHoveringDropdown] = useState(false);
@@ -43,26 +42,31 @@ const AudiotrackInfo = ({ audiotrack, onClose }) => {
       return;
     }
 
-    fetch(`http://localhost:9898/api/scores/${user.id}/${audiotrack.id}`, {
-      mode: 'cors',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+    apiAuth.get('scores', {
+      params: {
+        authorId: user.id,
+        audiotrackId: audiotrack.id
       }
     })
-      .then((request) => {
-        if (request.status === 401 || request.status === 204) {
-          return JSON.stringify({ value: 0 });
+      .then(response => {
+        if (response.status === 204) {
+          setScore({ value: 0 });
+          return;
         }
-        return request.json();
+        setScore(response.data.value);
       })
-      .then((data) => setScore(data.value))
-      .catch((error) => {
-        console.error('Error occured: ', error)
-      })
+      .catch(error => console.error(error));
   }, [user, audiotrack]);
 
   if (score === null) {
     return <p>Loading...</p>;
+  }
+
+  function selectTagsElement() {
+    if (!user || !user.isAdmin)
+      return <AudiotrackTags audiotrackId={audiotrack.id} />
+    else if (user && user.isAdmin)
+      return <AudiotrackTagsEditor audiotrackId={audiotrack.id} />
   }
 
   return (
@@ -87,30 +91,31 @@ const AudiotrackInfo = ({ audiotrack, onClose }) => {
               <button onClick={() => downloadAudio(audiotrack.filepath)}>
                 Скачать
               </button>
-              <div
-                onMouseEnter={() => setIsHoveringDropdown(true)}
-                onMouseLeave={() => setIsHoveringDropdown(false)}
-              >
-                <button>
-                  Изменить плейлисты
-                </button>
-                {isHoveringDropdown &&
-                  <AudiotrackPlaylistEditor audiotrackId={audiotrack.id} />}
-              </div>
-              <div>
-                <button onClick={() => setShowReportForm(!showReportForm)}>
-                  Пожаловаться
-                </button>
-                {showReportForm && <ReportForm audiotrack={audiotrack} onClose={() => setShowReportForm(false)} />}
-              </div>
+              {user &&
+                <div
+                  onMouseEnter={() => setIsHoveringDropdown(true)}
+                  onMouseLeave={() => setIsHoveringDropdown(false)}
+                >
+                  <button>
+                    Изменить плейлисты
+                  </button>
+                  {isHoveringDropdown &&
+                    <AudiotrackPlaylistEditor audiotrackId={audiotrack.id} />}
+                </div>
+              }
+              {user &&
+                <div>
+                  <button onClick={() => setShowReportForm(!showReportForm)}>
+                    Пожаловаться
+                  </button>
+                  {showReportForm && <ReportForm audiotrack={audiotrack} onClose={() => setShowReportForm(false)} />}
+                </div>
+              }
             </div>
 
             <div>
               <h2>Теги</h2>
-              {user && (user.isAdmin ? 
-                <AudiotrackTagsEditor audiotrackId={audiotrack.id}/>:
-                <AudiotrackTags audiotrackId={audiotrack.id} />
-              )}
+              {selectTagsElement()}
             </div>
           </div>
 

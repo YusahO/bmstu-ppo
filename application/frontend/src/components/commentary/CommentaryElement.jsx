@@ -1,30 +1,24 @@
-import { useContext, useState } from "react";
-import { UserContext } from "../../App";
+import { useState } from "react";
 import './CommentaryElement.css';
-import { useNavigate } from "react-router-dom";
 import DeletePrompt from "../common/DeletePrompt";
+import { apiAuth } from "../../api/mpFetch";
+import { useUserContext } from "../../context/UserContext";
+import { AlertTypes, useAlertContext } from "../../context/AlertContext";
 
 const CommentaryEditField = ({ commentary, onClose }) => {
-	const [newText, setNewText] = useState('');
-	const navigate = useNavigate();
+	const { addAlert } = useAlertContext();
+	const [newText, setNewText] = useState(commentary.text);
 
 	function handleCommentaryEdited() {
-		fetch(`http://localhost:9898/api/commentaries`, {
-			mode: 'cors',
-			method: 'PUT',
-			headers: {
-				'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-				'Content-Type': 'application/json; charset=utf-8'
-			},
-			body: JSON.stringify({ ...commentary, text: newText }),
-		})
-			.then(response => {
-				if (response.status === 401) {
-					navigate('/auth');
-				}
-				onClose();
+		apiAuth.put('commentaries', { ...commentary, text: newText })
+			.then(() => {
+				addAlert(AlertTypes.success, 'Комментарий успешно изменен')
+				onClose()
 			})
-			.catch(error => console.error(error));
+			.catch(error => {
+				addAlert(AlertTypes.error, 'Не удалось обновить комментарий');
+				console.error(error);
+			});
 	}
 
 	return (
@@ -50,25 +44,15 @@ const CommentaryEditField = ({ commentary, onClose }) => {
 }
 
 const CommentaryActions = ({ commentary, needUpdate }) => {
-	const {user} = useContext(UserContext);
-	const navigate = useNavigate();
+	const { user } = useUserContext();
+	const { addAlert } = useAlertContext();
 	const [showEditField, setShowEditField] = useState(false);
 	const [showDeletePrompt, setShowDeletePrompt] = useState(false);
 
 	function handleCommentaryDelete() {
-		fetch(`http://localhost:9898/api/commentaries`, {
-			mode: 'cors',
-			method: 'DELETE',
-			headers: {
-				'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-				'Content-Type': 'application/json; charset=utf-8'
-			},
-			body: JSON.stringify(commentary),
-		})
-			.then(response => {
-				if (response.status === 401) {
-					navigate('/auth');
-				}
+		apiAuth.delete('commentaries', { data: commentary })
+			.then(() => {
+				addAlert(AlertTypes.success, 'Комментарий успешно удален')
 				setShowDeletePrompt(false); needUpdate();
 			})
 			.catch(error => console.error(error));
@@ -78,7 +62,10 @@ const CommentaryActions = ({ commentary, needUpdate }) => {
 		<div className="commentary-actions">
 			{user && (user.id === commentary.authorId) &&
 				<div>
-					<button onClick={() => setShowEditField(!showEditField)}>
+					<button
+						className="commentary-actions button"
+						onClick={() => setShowEditField(!showEditField)}
+					>
 						&#9998;
 					</button>
 					{showEditField &&
@@ -87,7 +74,10 @@ const CommentaryActions = ({ commentary, needUpdate }) => {
 			}
 
 			<div>
-				<button onClick={() => setShowDeletePrompt(true)}>
+				<button
+					className="commentary-actions button"
+					onClick={() => setShowDeletePrompt(true)}
+				>
 					&#128465;
 				</button>
 				{showDeletePrompt &&
@@ -98,21 +88,10 @@ const CommentaryActions = ({ commentary, needUpdate }) => {
 }
 
 const CommentaryElement = ({ commentary, needUpdate }) => {
-	const { user } = useContext(UserContext);
+	const { user } = useUserContext();
 	return (
-		<div style={{
-			display: 'flex',
-			flexDirection: 'column',
-
-			border: 'none',
-			borderTop: '1px solid #ffffff',
-			marginTop: '30px'
-		}}>
-			<div style={{
-				display: 'flex',
-				alignItems: 'center',
-				justifyContent: 'space-between'
-			}}>
+		<div className="commentary-element">
+			<div>
 				<h3 style={{ padding: '10px 0px' }}>{commentary.authorName}</h3>
 				{user && (user.id === commentary.authorId || user.isAdmin) &&
 					<CommentaryActions commentary={commentary} needUpdate={needUpdate} />}

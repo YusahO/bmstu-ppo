@@ -1,9 +1,8 @@
+import './TopBar.css';
+import '../App.css';
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import SearchBar from "../components/search/SearchBar";
 import UserMinimized from "../components/user/UserMinimized";
-
-import './TopBar.css';
 
 const TopBar = ({ onSidebarClick }) => {
 
@@ -15,23 +14,17 @@ const TopBar = ({ onSidebarClick }) => {
 	return (
 		<div className='topbar'>
 
-			<button style={{
-				transform: 'scale(1.3)',
-				backgroundColor: 'transparent',
-				borderRadius: 0,
-				position: "fixed",
-				right: 5,
-				float: 'right'
-			}} onClick={onSidebarClick}>☰</button>
+			<button
+				className={'sidebar-open-button'}
+				onClick={onSidebarClick}
+			>
+				☰
+			</button>
 			<div style={{ padding: '50px' }}>
 				<UserMinimized />
 			</div>
 			<SearchBar />
-			<label style={{
-				fontSize: '30px',
-				fontStyle: 'italic',
-				cursor: 'pointer'
-			}} onClick={handleClick}>
+			<label className={'mewing-pad-home'} onClick={handleClick}>
 				MewingPad
 			</label>
 		</div>

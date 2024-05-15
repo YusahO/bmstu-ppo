@@ -2,13 +2,27 @@
   --color-primary: #222222;
   --accent-color1: #0178ff;
   --accent-color2: #ffffff;
+
+  /* --color-primary: #e5e5e5;
+  --accent-color1: #ff73ce;
+  --accent-color2: #ffffff; */
+
+  --font-color: #ffffff;
+
   --font-size: 16px;
+  --font-size-h1: 40px;
+  --font-size-h2: 30px;
+  --font-size-h3: 20px;
+}
+
+#root {
+  height: 100vh;
 }
 
 body {
   margin: 0;
   background-color: var(--color-primary);
-  color: white;
+  color: var(--font-color);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -21,51 +35,74 @@ code {
     monospace;
 }
 
+h1 {
+  font-size: var(--font-size-h1);
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+}
+
+h3 {
+  font-size: var(--font-size-h3);
+}
+
+label {
+  font-size: var(--font-size);
+}
+
 button {
   border: 0;
   border-radius: 5px;
   background-color: var(--accent-color1);
-  color: white;
+  color: var(--accent-color2);
   font-size: large;
   padding: 10px;
+  transition: transform 0.2s ease;
 }
 
 button:hover {
-  filter: brightness(75%);
+  transform: scale(105%);
 }
 
 button:active {
-  filter: brightness(110%);
+  transform: scale(120%);
 }
 
-input,textarea {
-	padding: 10px 0px;
-
-	outline-color: transparent;
-	border: none;
-	outline: none;
-	border-bottom: 1px solid var(--accent-color2);
-
-	font-size: var(--font-size);
-	color: var(--accent-color2);
-
-	background-color: var(--color-primary);
+input,
+textarea,
+select {
+  padding: 10px 0px;
+  outline-color: transparent;
+  border: none;
+  outline: none;
+  border-bottom: 1px solid var(--accent-color2);
+  font-size: var(--font-size);
+  color: var(--accent-color2);
+  background-color: var(--color-primary);
 }
 
-input:focus,textarea:focus {
-	outline-color: transparent;
-	border: none;
-	outline: none;
-	border-bottom: 2px solid var(--accent-color1);
+input:focus,
+textarea:focus {
+  outline-color: transparent;
+  border: none;
+  outline: none;
+  border-bottom: 1px solid var(--accent-color1);
 }
 
-input:focus:invalid,textarea:focus:invalid {
-	outline-color: transparent;
-	border: none;
-	outline: none;
-	border-bottom: 1px solid red;
+input:focus:invalid,
+textarea:focus:invalid {
+  outline-color: transparent;
+  border: none;
+  outline: none;
+  border-bottom: 1px solid red;
 }
 
 textarea {
   resize: none;
+}
+
+select {
+  border-bottom: 4px solid var(--accent-color1);
+  height: 50px;
 }

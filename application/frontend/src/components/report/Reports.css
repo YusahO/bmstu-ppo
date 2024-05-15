@@ -1,0 +1,66 @@
+.report-minimized-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: scroll;
+}
+
+.report-minimized-container::-webkit-scrollbar {
+  display: none;
+}
+
+.report-minimized {
+  margin: 10px 10px;
+  position: relative;
+  height: 100px;
+  padding: 20px;
+  border-radius: 20px;
+  background-color: color-mix(in srgb, var(--color-primary), white 2%);
+  box-shadow: 5px 5px 5px color-mix(in srgb, transparent, var(--accent-color1) 20%);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.report-minimized:hover {
+  transform: translateY(-5px) translateX(-5px);
+  box-shadow: 10px 10px 10px color-mix(in srgb, transparent, var(--accent-color1) 50%);
+}
+
+.report-minimized.accepted {
+  box-shadow: 5px 5px 5px color-mix(in srgb, transparent, green 20%);
+}
+.report-minimized.accepted:hover {
+  box-shadow: 10px 10px 10px color-mix(in srgb, transparent, green 50%);
+}
+
+.report-minimized.declined {
+  box-shadow: 5px 5px 5px color-mix(in srgb, transparent, red 20%);
+}
+.report-minimized.declined:hover {
+  box-shadow: 10px 10px 10px color-mix(in srgb, transparent, red 50%);
+}
+
+.report-minimized label,
+h3 {
+  color: var(--font-color);
+  z-index: 1;
+  position: relative;
+}
+
+.report-minimized label {
+  font-size: var(--font-size);
+}
+
+.report-minimized h3 {
+  font-size: var(--font-size-h3);
+}
+
+.report-minimized.unread {
+  position: absolute;
+  left: 90%;
+  top: 0;
+  z-index: 3;
+  fill: white;
+  transform: scale(10%);
+}

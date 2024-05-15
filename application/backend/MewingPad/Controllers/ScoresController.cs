@@ -17,27 +17,10 @@ public class ScoresController(IScoreService scoreService) : ControllerBase
                                                    ?? throw new ArgumentNullException(nameof(scoreService));
     private readonly Serilog.ILogger _logger = Log.ForContext<ScoresController>();
 
-    [AllowAnonymous]
-    [HttpGet("{audiotrackId:guid}")]
-    public async Task<IActionResult> GetAllScores(Guid audiotrackId)
-    {
-        try
-        {
-            var scores = from score in await _scoreService.GetAudiotrackScores(audiotrackId)
-                         select ScoreConverter.CoreModelToDto(score);
-            // log
-            return Ok(scores);
-        }
-        catch (Exception ex)
-        {
-            // log
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-        }
-    }
-
     [Authorize]
-    [HttpGet("{authorId:guid}/{audiotrackId:guid}")]
-    public async Task<IActionResult> GetScoreByPrimaryKey(Guid authorId, Guid audiotrackId)
+    [HttpGet]
+    public async Task<IActionResult> GetScoreByPrimaryKey([FromQuery] Guid authorId,
+                                                          [FromQuery] Guid audiotrackId)
     {
         try
         {

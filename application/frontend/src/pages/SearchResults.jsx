@@ -1,3 +1,4 @@
+import { api } from "../api/mpFetch";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import AudiotrackGrid from "../components/audiotrack/AudiotrackGrid";
@@ -14,37 +15,23 @@ const SearchResults = () => {
 	const [audiosTitle, setAudiosTitle] = useState([]);
 	const [results, setResults] = useState([]);
 
-	const fetchSearchResults = () => {
-		if (queryTags.length && queryTags[0] !== '') {
-			const tags = queryTags.join('&tags=');
-			fetch(`http://localhost:9898/api/SearchResults?tags=${tags}`, {
-				mode: 'cors',
-				method: 'GET',
-			})
-				.then((response) => response.json())
-				.then((data) => setAudiosTags(data))
-				.catch(error => console.log('Nothing found'));
-		}
-
-		if (queryTitle !== '') {
-			fetch(`http://localhost:9898/api/SearchResults/${queryTitle}`, {
-				mode: 'cors',
-				method: 'GET',
-			})
-				.then((response) => response.json())
-				.then((data) => setAudiosTitle(data))
-				.catch(error => console.log('Nothing found'));
-		}
-	};
-
 	useEffect(() => {
 		setResults([]);
 		setQueryTitle(searchParams.get('title'));
 		setQueryTags(searchParams.get('tags').split(','));
 	}, [location.search]);
 
-	useEffect(() => {	
-		fetchSearchResults();
+	useEffect(() => {
+		if (queryTags.length && queryTags[0] !== '') {
+			api.get(`searchResults?tags=${queryTags.join('&tags=')}`)
+				.then(response => setAudiosTags(response.data))
+				.catch(() => console.log('Nothing found'));
+		}
+		if (queryTitle !== '') {
+			api.get(`searchResults/${queryTitle}`)
+				.then(response => setAudiosTitle(response.data))
+				.catch(() => console.log('Nothing found'));
+		}
 	}, [queryTags, queryTitle]);
 
 
