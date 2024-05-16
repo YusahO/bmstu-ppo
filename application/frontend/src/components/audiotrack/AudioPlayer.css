@@ -51,8 +51,9 @@
 .audio-actions {
   position: relative;
   display: flex;
+  flex-direction: row-reverse;
   top: 0;
-  left: 85%;
+  /* left: 85%; */
   gap: 5px;
   z-index: 1;
 }

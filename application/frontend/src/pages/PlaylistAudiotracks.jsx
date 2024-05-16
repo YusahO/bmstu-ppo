@@ -37,6 +37,7 @@ const PlaylistAudiotracks = () => {
 					renderAdd={false}
 					audiotracks={audiotracks}
 					onAudiotrackUpdate={() => setNeedUpdate(!needUpdate)}
+					showActions={false}
 				/> :
 				<h3>Пусто</h3>
 			}

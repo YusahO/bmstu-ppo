@@ -1,18 +1,18 @@
 .playlist-selector {
+	font-size: var(--font-size);
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: 0 10px;
-	width: 140%;
+	padding: 0px 10px;
+	width: 160%;
 	background-color: var(--accent-color1);
 }
 
-.playlist-select-button {
-	/* margin-left: 10px; */
-	padding: 10px;
-	background-color: var(--accent-color1);
+.playlist-selector input[type=checkbox] {
+	margin: 10px 0px;
+	background-color: transparent;
 }
 
-.playlist-select-button:hover {
+.playlist-selector input[type=checkbox]:hover {
 	filter: brightness(75%);
 }

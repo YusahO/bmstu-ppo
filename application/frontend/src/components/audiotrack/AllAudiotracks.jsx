@@ -23,6 +23,7 @@ function AllAudiotracks({ renderAdd }) {
         renderAdd={renderAdd}
         audiotracks={audiotracks}
         onAudiotrackUpdate={() => setNeedUpdate(!needUpdate)}
+        showActions={true}
       />
     </>
   );

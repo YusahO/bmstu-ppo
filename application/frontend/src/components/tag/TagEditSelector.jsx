@@ -22,9 +22,12 @@ const TagEditSelector = ({ tag, onClose }) => {
 
 	return (
 		<div>
-			<div onDoubleClick={() => setShowEdit(true)}>
-				<TagSelector tag={tag} onClick={() => setShowDelete(true)} isSelected={true} />
-			</div>
+			<TagSelector
+				tag={tag}
+				onClick={() => setShowDelete(true)}
+				isSelected={true}
+				onEditClick={() => setShowEdit(!showEdit)}
+			/>
 			{showDelete && <DeletePrompt onAccept={handleDelete} onClose={() => setShowDelete(false)} />}
 			{showEdit &&
 				<input

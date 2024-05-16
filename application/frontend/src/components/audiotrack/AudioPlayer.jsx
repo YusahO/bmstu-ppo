@@ -2,8 +2,9 @@ import './AudioPlayer.css';
 import AudioPlaybackControls from './AudioPlaybackControls.jsx';
 import { useEffect, useState } from 'react';
 import { api } from '../../api/mpFetch.js';
+import AudiotrackActions from './AudiotrackActions.jsx';
 
-const AudioPlayer = ({ audiotrack }) => {
+const AudioPlayer = ({ audiotrack, onInfoClicked }) => {
 
   const [totalScore, setTotalScore] = useState(0);
 
@@ -25,6 +26,7 @@ const AudioPlayer = ({ audiotrack }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <AudiotrackActions onInfoClicked={onInfoClicked} />
       <AudioPlaybackControls audiotrackParam={audiotrack} />
       <div style={{
         display: 'flex',

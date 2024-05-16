@@ -2,18 +2,11 @@ import './PlaylistSelector.css';
 
 const PlaylistSelector = ({ playlist, isSelected, onClick }) => {
 	return (
-		<div
-			className='playlist-selector'
-		>
+		<div className='playlist-selector'>
 			<label>
 				{playlist.title}
 			</label>
-			<label
-				className='playlist-select-button'
-				onClick={onClick}
-			>
-				{isSelected ? '-' : '+'}
-			</label>
+			<input type="checkbox" checked={isSelected} onClick={onClick} />
 		</div>
 	);
 }

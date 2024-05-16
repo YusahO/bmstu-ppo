@@ -46,7 +46,7 @@ const AudiotrackAdd = ({ onClick }) => {
   );
 }
 
-const AudiotrackGrid = ({ audiotracks, onAudiotrackUpdate = () => { }, renderAdd }) => {
+const AudiotrackGrid = ({ audiotracks, onAudiotrackUpdate = () => { }, renderAdd, showActions }) => {
   const { user } = useUserContext();
   const [activeAudio, setActiveAudio] = useState(null);
   const [editedAudiotrack, setEditedAudiotrack] = useState(null);
@@ -81,13 +81,15 @@ const AudiotrackGrid = ({ audiotracks, onAudiotrackUpdate = () => { }, renderAdd
 
   function pickAudiotrackPlayer(audiotrack) {
     if (!user || !user.isAdmin) {
-      return <AudioPlayer audiotrack={audiotrack} />
+      return <AudioPlayer audiotrack={audiotrack} onInfoClicked={() => setActiveAudio(audiotrack)} />
     } else if (user && user.isAdmin) {
       return (
         <EditorAudioPlayer
           audiotrack={audiotrack}
           needUpdate={onAudiotrackUpdate}
           onEditClicked={() => { setEditedAudiotrack(audiotrack); setEditing(true); }}
+          showAdminActions={showActions}
+          onInfoClicked={() => setActiveAudio(audiotrack)}
         />
       )
     }
@@ -101,7 +103,10 @@ const AudiotrackGrid = ({ audiotracks, onAudiotrackUpdate = () => { }, renderAdd
         {user && user.isAdmin && renderAdd &&
           <AudiotrackAdd onClick={() => { setEditedAudiotrack(null); setEditing(true) }} />}
         {audiotracks.map((audiotrack, index) => (
-          <div key={index} className="audio-player" onDoubleClick={() => setActiveAudio(audiotrack)}>
+          <div
+            key={index} className="audio-player"
+            onDoubleClick={() => setActiveAudio(audiotrack)}
+          >
             {pickAudiotrackPlayer(audiotrack)}
           </div>
         ))}

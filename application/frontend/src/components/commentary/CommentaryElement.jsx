@@ -1,16 +1,25 @@
-import { useState } from "react";
 import './CommentaryElement.css';
-import DeletePrompt from "../common/DeletePrompt";
+import { useState } from "react";
 import { apiAuth } from "../../api/mpFetch";
 import { useUserContext } from "../../context/UserContext";
 import { AlertTypes, useAlertContext } from "../../context/AlertContext";
+import { useNavigate } from "react-router-dom";
+import DeletePrompt from "../common/DeletePrompt";
+import BlurComponent from "../common/BlurComponent";
+import CloseButton from '../common/CloseButton';
 
 const CommentaryEditField = ({ commentary, onClose }) => {
+	const { user } = useUserContext();
 	const { addAlert } = useAlertContext();
-	const [newText, setNewText] = useState(commentary.text);
+	const [text, setText] = useState(commentary.text);
+	const navigate = useNavigate();
 
-	function handleCommentaryEdited() {
-		apiAuth.put('commentaries', { ...commentary, text: newText })
+	function handleSendReport() {
+		if (!user) {
+			navigate('/auth');
+			return;
+		}
+		apiAuth.put('commentaries', { ...commentary, text: text })
 			.then(() => {
 				addAlert(AlertTypes.success, 'Комментарий успешно изменен')
 				onClose()
@@ -22,25 +31,28 @@ const CommentaryEditField = ({ commentary, onClose }) => {
 	}
 
 	return (
-		<div style={{
-			position: 'fixed',
-			display: 'flex',
-			flexDirection: 'column',
-			width: 300
+		<BlurComponent style={{
+			left: '50%',
+			top: '50%',
+			transform: 'translate(-50%, -50%)'
 		}}>
-			<input
-				placeholder="Новый текст (Enter для сохранения)"
-				type="text"
-				value={newText}
-				onChange={e => setNewText(e.target.value)}
-				onKeyDown={e => {
-					if (e.key === 'Enter') {
-						handleCommentaryEdited();
-					}
-				}}
-			/>
-		</div>
-	);
+			<div id="report-window">
+				<h2>Изменение комментария</h2>
+				<textarea
+					type='text'
+					placeholder='Текст комментария'
+					value={text}
+					multiline={true}
+					onChange={e => setText(e.target.value)}
+					style={{
+						width: '100%', height: '100%'
+					}}
+				/>
+				<button onClick={handleSendReport}>Изменить</button>
+				<CloseButton onClose={onClose} />
+			</div>
+		</BlurComponent>
+	)
 }
 
 const CommentaryActions = ({ commentary, needUpdate }) => {

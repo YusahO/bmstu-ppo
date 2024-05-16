@@ -1,6 +1,6 @@
 import './TagElement.css';
 
-const TagSelector = ({ tag, isSelected, onClick }) => {
+const TagSelector = ({ tag, isSelected, onClick, onEditClick = null }) => {
 
 	return (
 		<div
@@ -16,6 +16,9 @@ const TagSelector = ({ tag, isSelected, onClick }) => {
 			>
 				{isSelected ? <span>&times;</span> : '+'}
 			</label>
+			{onEditClick &&
+				<label className='tag-element button' onClick={onEditClick}> &#9998; </label>
+			}
 		</div>
 	);
 }

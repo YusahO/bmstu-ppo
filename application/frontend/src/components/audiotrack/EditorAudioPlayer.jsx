@@ -1,52 +1,51 @@
 import './AudioPlayer.css';
 import AudioPlaybackControls from './AudioPlaybackControls.jsx';
 import { useEffect, useState } from 'react';
-import DeletePrompt from '../common/DeletePrompt.jsx';
 import { api, apiAuth } from '../../api/mpFetch.js';
-import { AlertTypes, useAlertContext } from '../../context/AlertContext.js';
+import AudiotrackActions from './AudiotrackActions.jsx';
 
-const AudiotrackActions = ({ audiotrack, onEditClicked, needUpdate }) => {
-	const [showDeletePrompt, setShowDeletePrompt] = useState(false);
-	const { addAlert } = useAlertContext();
+// const AudiotrackActions = ({ audiotrack, onEditClicked, needUpdate, showAdminActions }) => {
+// 	const [showDeletePrompt, setShowDeletePrompt] = useState(false);
+// 	const { addAlert } = useAlertContext();
 
-	function handleAudiotrackDelete() {
-		apiAuth.delete(`audiotracks/${audiotrack.id}`)
-			.then(() => {
-				addAlert(AlertTypes.info, 'Аудиотрек удален');
-				setShowDeletePrompt(false); needUpdate();
-			})
-			.catch(error => {
-				addAlert(AlertTypes.error, 'Ошибки при удалении аудиотрека');
-				console.error(error)
-			});
-	}
+// 	function handleAudiotrackDelete() {
+// 		apiAuth.delete(`audiotracks/${audiotrack.id}`)
+// 			.then(() => {
+// 				addAlert(AlertTypes.info, 'Аудиотрек удален');
+// 				setShowDeletePrompt(false); needUpdate();
+// 			})
+// 			.catch(error => {
+// 				addAlert(AlertTypes.error, 'Ошибки при удалении аудиотрека');
+// 				console.error(error)
+// 			});
+// 	}
 
-	return (
-		<div className='audio-actions'>
-			<div>
-				<button className='audio-actions-button' onClick={onEditClicked}>
-					&#9998;
-				</button>
-			</div>
+// 	return (
+// 		<div className='audio-actions'>
+// 			<button className='audio-actions-button'>i</button>
+// 			{showAdminActions &&
+// 				<div>
+// 					<button className='audio-actions-button' onClick={onEditClicked}>
+// 						&#9998;
+// 					</button>
+// 					<button className='audio-actions-button' onClick={() => setShowDeletePrompt(true)}>
+// 						&#215;
+// 					</button>
+// 					{showDeletePrompt &&
+// 						<div style={{ position: 'relative', top: '-50px', left: '-190px' }}>
+// 							<DeletePrompt
+// 								onAccept={handleAudiotrackDelete}
+// 								onClose={() => { setShowDeletePrompt(false); needUpdate(); }}
+// 							/>
+// 						</div>
+// 					}
+// 				</div>
+// 			}
+// 		</div>
+// 	);
+// }
 
-			<div>
-				<button className='audio-actions-button' onClick={() => setShowDeletePrompt(true)}>
-					&#215;
-				</button>
-				{showDeletePrompt &&
-					<div style={{ position: 'relative', top: '-50px', left: '-190px' }}>
-						<DeletePrompt
-							onAccept={handleAudiotrackDelete}
-							onClose={() => { setShowDeletePrompt(false); needUpdate(); }}
-						/>
-					</div>
-				}
-			</div>
-		</div>
-	);
-}
-
-const EditorAudioPlayer = ({ audiotrack, onEditClicked, needUpdate }) => {
+const EditorAudioPlayer = ({ audiotrack, onInfoClicked, onEditClicked, needUpdate, showAdminActions = false }) => {
 	const [totalScore, setTotalScore] = useState(0);
 
 	useEffect(() => {
@@ -66,7 +65,13 @@ const EditorAudioPlayer = ({ audiotrack, onEditClicked, needUpdate }) => {
 
 	return (
 		<div style={{ zIndex: 0, display: 'flex', flexDirection: 'column' }}>
-			<AudiotrackActions audiotrack={audiotrack} needUpdate={needUpdate} onEditClicked={onEditClicked} />
+			<AudiotrackActions
+				audiotrack={audiotrack}
+				needUpdate={needUpdate}
+				onEditClicked={onEditClicked}
+				showAdminActions={showAdminActions}
+				onInfoClicked={onInfoClicked}
+			/>
 			<AudioPlaybackControls audiotrackParam={audiotrack} />
 			<div style={{
 				display: 'flex',
