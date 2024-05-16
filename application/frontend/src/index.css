@@ -41,6 +41,7 @@ h1 {
 
 h2 {
   font-size: var(--font-size-h2);
+  margin-bottom: 20px;
 }
 
 h3 {
@@ -52,6 +53,7 @@ label {
 }
 
 button {
+  cursor: pointer;
   border: 0;
   border-radius: 5px;
   background-color: var(--accent-color1);
@@ -66,7 +68,7 @@ button:hover {
 }
 
 button:active {
-  transform: scale(120%);
+  transform: scale(110%);
 }
 
 input,

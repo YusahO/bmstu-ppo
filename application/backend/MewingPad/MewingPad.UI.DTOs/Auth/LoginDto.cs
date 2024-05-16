@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace MewingPad.UI.DTOs.Auth;
+namespace MewingPad.DTOs.Auth;
 
 public class LoginDto
 {

@@ -163,13 +163,6 @@ internal class Program
 
             app.UseHttpsRedirection();
             app.MapControllers();
-
-            // using (var scope = app.Services.CreateScope())
-            // using (var db = scope.ServiceProvider.GetRequiredService<MewingPadDbContext>())
-            // {
-            //     db.Database.Migrate();
-            // }
-
             app.Run();
         }
         catch (Exception ex)

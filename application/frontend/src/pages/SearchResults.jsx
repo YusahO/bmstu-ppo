@@ -23,7 +23,7 @@ const SearchResults = () => {
 
 	useEffect(() => {
 		if (queryTags.length && queryTags[0] !== '') {
-			api.get(`searchResults?tags=${queryTags.join('&tags=')}`)
+			api.post('searchResults', queryTags)
 				.then(response => setAudiosTags(response.data))
 				.catch(() => console.log('Nothing found'));
 		}
@@ -51,7 +51,10 @@ const SearchResults = () => {
 	return (
 		<div>
 			<h2>Результаты поиска</h2>
-			{results.length > 0 && <AudiotrackGrid renderAdd={false} audiotracks={results} />}
+			{results.length > 0 ?
+				<AudiotrackGrid renderAdd={false} audiotracks={results} /> :
+				<h3>Ничего не найдено</h3>
+			}
 		</div>
 	)
 }

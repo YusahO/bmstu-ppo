@@ -1,27 +1,27 @@
 using System.Diagnostics.CodeAnalysis;
 using MewingPad.Common.Entities;
 
-namespace MewingPad.UI.DTOs.Converters;
+namespace MewingPad.DTOs.Converters;
 
-public static class PlaylistConverter
+public static class TagConverter
 {
     [return: NotNullIfNotNull(nameof(model))]
-    public static Playlist? DtoToCoreModel(PlaylistDto? model)
+    public static Tag? DtoToCoreModel(TagDto? model)
     {
         return model is not null
                ? new(id: model.Id,
-                     title: model.Title,
-                     userId: model.UserId)
+                     authorId: model.AuthorId,
+                     name: model.Name)
                : default;
     }
 
     [return: NotNullIfNotNull(nameof(model))]
-    public static PlaylistDto? CoreModelToDto(Playlist? model)
+    public static TagDto? CoreModelToDto(Tag? model)
     {
         return model is not null
                ? new(id: model.Id,
-                     title: model.Title,
-                     userId: model.UserId)
+                     authorId: model.AuthorId,
+                     name: model.Name)
                : default;
     }
 }

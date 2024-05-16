@@ -6,9 +6,11 @@ import Report from '../../models/Report.js';
 import BlurComponent from "../common/BlurComponent";
 import CloseButton from '../common/CloseButton';
 import { useUserContext } from '../../context/UserContext.js';
+import { AlertTypes, useAlertContext } from '../../context/AlertContext.js';
 
 const ReportForm = ({ audiotrack, onClose }) => {
 	const { user } = useUserContext();
+	const { addAlert } = useAlertContext();
 	const [text, setText] = useState('');
 	const navigate = useNavigate();
 
@@ -23,7 +25,10 @@ const ReportForm = ({ audiotrack, onClose }) => {
 			audiotrackId: audiotrack.id,
 			text: text
 		})
-			.then(() => onClose())
+			.then(() => {
+				addAlert(AlertTypes.info, 'Жалоба отправлена');
+				onClose()
+			})
 			.catch(error => console.error(error));
 	}
 

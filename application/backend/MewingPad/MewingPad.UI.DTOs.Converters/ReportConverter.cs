@@ -1,27 +1,31 @@
 using System.Diagnostics.CodeAnalysis;
 using MewingPad.Common.Entities;
 
-namespace MewingPad.UI.DTOs.Converters;
+namespace MewingPad.DTOs.Converters;
 
-public static class TagConverter
+public static class ReportConverter
 {
     [return: NotNullIfNotNull(nameof(model))]
-    public static Tag? DtoToCoreModel(TagDto? model)
+    public static Report? DtoToCoreModel(ReportDto? model)
     {
         return model is not null
                ? new(id: model.Id,
                      authorId: model.AuthorId,
-                     name: model.Name)
+                     audiotrackId: model.AudiotrackId,
+                     text: model.Text,
+                     status: model.Status)
                : default;
     }
 
     [return: NotNullIfNotNull(nameof(model))]
-    public static TagDto? CoreModelToDto(Tag? model)
+    public static ReportDto? CoreModelToDto(Report? model)
     {
         return model is not null
                ? new(id: model.Id,
                      authorId: model.AuthorId,
-                     name: model.Name)
+                     audiotrackId: model.AudiotrackId,
+                     text: model.Text,
+                     status: model.Status)
                : default;
     }
 }

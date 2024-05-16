@@ -54,4 +54,19 @@ public class UserService(IUserRepository repository) : IUserService
         _logger.Verbose("Exiting GetUserById");
         return user;
     }
+
+    public async Task<User> GetUserByEmail(string userEmail)
+    {
+        _logger.Verbose($"Entering GetUserByEmail({userEmail})");
+
+        var user = await _userRepository.GetUserByEmail(userEmail);
+        if (user is null)
+        {
+            _logger.Error($"User (Email = {userEmail}) not found");
+            throw new UserNotFoundException($"User (Email = {userEmail}) not found");
+        }
+
+        _logger.Verbose("Exiting GetUserByEmail");
+        return user;
+    }
 }

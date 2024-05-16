@@ -1,8 +1,12 @@
 import './App.css';
 
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { getCookie, parseJwt } from './Globals';
+import { apiAuth } from './api/mpFetch.js';
+import { Cookies } from 'react-cookie';
+import { AlertProvider } from './context/AlertContext.js';
+import { UserProvider, useUserContext } from './context/UserContext.js';
 
 import Home from "./pages/Home.jsx";
 import Authorization from './components/auth/Authorization.jsx';
@@ -12,12 +16,9 @@ import SideBar from './pages/SideBar.jsx';
 import Playlists from './pages/Playlists.jsx';
 import PlaylistAudiotracks from './pages/PlaylistAudiotracks.jsx';
 import TagsPage from './pages/TagsPage.jsx';
-import { apiAuth } from './api/mpFetch.js';
-import { Cookies } from 'react-cookie';
-import { AlertProvider } from './context/AlertContext.js';
 import AlertNotifies from './components/common/AlertNotify.jsx';
-import { UserProvider, useUserContext } from './context/UserContext.js';
 import ReportsPage from './pages/ReportsPage.jsx';
+import AuthAdminPage from './pages/AuthAdminPage.jsx'
 
 function App() {
   return (
@@ -66,7 +67,7 @@ function Main() {
   function handleClick() {
     setOpened(!opened);
     if (opened) {
-      document.getElementById("sidebarComp").style.width = "250px";
+      document.getElementById("sidebarComp").style.width = "350px";
     } else {
       document.getElementById("sidebarComp").style.width = "0";
     }
@@ -87,7 +88,6 @@ function Main() {
   return (
     <BrowserRouter>
       <TopBar onSidebarClick={handleClick} />
-
       <div className='content-pages'>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -97,8 +97,9 @@ function Main() {
           <Route path="/audiotracks" element={RequireAuth(false, <PlaylistAudiotracks />)} />
           <Route path="/tags" element={RequireAuth(true, <TagsPage />)} />
           <Route path="/reports" element={RequireAuth(true, <ReportsPage />)} />
+          <Route path="/auth_admin" element={RequireAuth(true, <AuthAdminPage />)} />
         </Routes>
-        <SideBar />
+        {user && <SideBar />}
       </div>
       <AlertNotifies />
     </BrowserRouter>

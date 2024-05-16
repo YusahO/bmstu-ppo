@@ -5,7 +5,7 @@ import { apiAuth } from "../../api/mpFetch";
 
 const TagEditSelector = ({ tag, onClose }) => {
 	function handleDelete() {
-		apiAuth.delete('tags', { data: activeTag })
+		apiAuth.delete(`tags/${tag.id}`)
 			.then(() => onClose())
 			.catch(error => console.error(error));
 	}

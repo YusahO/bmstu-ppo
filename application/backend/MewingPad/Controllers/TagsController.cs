@@ -1,6 +1,6 @@
 using MewingPad.Services.TagService;
-using MewingPad.UI.DTOs;
-using MewingPad.UI.DTOs.Converters;
+using MewingPad.DTOs;
+using MewingPad.DTOs.Converters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
@@ -22,12 +22,11 @@ namespace MewingPad.Controllers
             {
                 var tags = from tag in await _tagService.GetAllTags()
                            select TagConverter.CoreModelToDto(tag);
-                // log
                 return Ok(tags);
             }
             catch (Exception ex)
             {
-                // log
+                _logger.Error(ex, "Exception thrown {Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
@@ -38,15 +37,15 @@ namespace MewingPad.Controllers
         {
             try
             {   
+                _logger.Information("Received {@Tag}", tagDto);
                 var tag = TagConverter.DtoToCoreModel(tagDto);
                 tag.Id = Guid.NewGuid();
                 await _tagService.CreateTag(tag);
-                // log
                 return Ok("Tag added successfully");
             }
             catch (Exception ex)
             {
-                // log
+                _logger.Error(ex, "Exception thrown {Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
@@ -57,33 +56,32 @@ namespace MewingPad.Controllers
         {
             try
             {   
+                _logger.Information("Received {@Tag}", tagDto);
                 var tag = TagConverter.DtoToCoreModel(tagDto);
                 await _tagService.UpdateTagName(tag.Id, tag.Name);
-                // log
                 return Ok("Tag updated successfully");
             }
             catch (Exception ex)
             {
-                // log
+                _logger.Error(ex, "Exception thrown {Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 
     
         [Authorize]
-        [HttpDelete]
-        public async Task<IActionResult> DeleteTag([FromBody] TagDto tagDto)
+        [HttpDelete("{tagId:guid}")]
+        public async Task<IActionResult> DeleteTag(Guid tagId)
         {
             try
-            {   
-                var tag = TagConverter.DtoToCoreModel(tagDto);
-                await _tagService.DeleteTag(tag.Id);
-                // log
+            {
+                _logger.Information("Received {@TagId}", tagId);
+                await _tagService.DeleteTag(tagId);
                 return Ok("Tag deleted successfully");
             }
             catch (Exception ex)
             {
-                // log
+                _logger.Error(ex, "Exception thrown {Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }

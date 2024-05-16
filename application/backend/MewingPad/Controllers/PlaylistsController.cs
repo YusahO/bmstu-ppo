@@ -1,8 +1,9 @@
 using MewingPad.Services.PlaylistService;
-using MewingPad.UI.DTOs;
-using MewingPad.UI.DTOs.Converters;
+using MewingPad.DTOs;
+using MewingPad.DTOs.Converters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace MewingPad.Controllers;
 
@@ -11,6 +12,7 @@ namespace MewingPad.Controllers;
 public class PlaylistsController(IPlaylistService playlistService) : ControllerBase
 {
     private readonly IPlaylistService _playlistService = playlistService;
+    private readonly Serilog.ILogger _logger = Log.ForContext<PlaylistsController>();
 
     [Authorize]
     [HttpPost]
@@ -18,6 +20,8 @@ public class PlaylistsController(IPlaylistService playlistService) : ControllerB
     {
         try
         {
+            _logger.Information("Received {@Playlist}", playlistDto);
+
             var playlist = PlaylistConverter.DtoToCoreModel(playlistDto);
             playlist.Id = Guid.NewGuid();
             await _playlistService.CreatePlaylist(playlist);
@@ -25,6 +29,7 @@ public class PlaylistsController(IPlaylistService playlistService) : ControllerB
         }
         catch (Exception ex)
         {
+            _logger.Error(ex, "Exception thrown {Message}");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
@@ -35,12 +40,15 @@ public class PlaylistsController(IPlaylistService playlistService) : ControllerB
     {
         try
         {
+            _logger.Information("Received {@Playlist}", playlistDto);
+
             var playlist = PlaylistConverter.DtoToCoreModel(playlistDto);
             await _playlistService.UpdatePlaylistTitle(playlist.Id, playlist.Title);
             return Ok("Playlist updated successfully");
         }
         catch (Exception ex)
         {
+            _logger.Error(ex, "Exception thrown {Message}");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
@@ -51,27 +59,40 @@ public class PlaylistsController(IPlaylistService playlistService) : ControllerB
     {
         try
         {
+            _logger.Information("Received {@Playlist}", playlistId);
             await _playlistService.DeletePlaylist(playlistId);
             return Ok("Playlist deleted successfully");
         }
         catch (Exception ex)
         {
+            _logger.Error(ex, "Exception thrown {Message}");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
 
     [Authorize]
     [HttpGet("{playlistId:guid}/audiotracks")]
-    public async Task<IActionResult> RemoveFromPlaylist(Guid playlistId)
+    public async Task<IActionResult> GetPlaylistAudiotracks(Guid playlistId)
     {
         try
         {
+            _logger.Information("Received {@PlaylistId}", playlistId);
+
+            var userId = Guid.Parse(HttpContext.Items["userId"]!.ToString()!);
+            var playlist = await _playlistService.GetPlaylistById(playlistId);
+            if (userId != playlist.UserId)
+            {
+                _logger.Warning("Access to playlist {@PlaylistId} denied to user {@UserId}", playlistId, userId);
+                return StatusCode(StatusCodes.Status403Forbidden, "");
+            }
+
             var audiotracks = from a in await _playlistService.GetAllAudiotracksFromPlaylist(playlistId)
                               select AudiotrackConverter.CoreModelToDto(a);
             return Ok(audiotracks);
         }
         catch (Exception ex)
         {
+            _logger.Error(ex, "Exception thrown {Message}");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
@@ -82,11 +103,13 @@ public class PlaylistsController(IPlaylistService playlistService) : ControllerB
     {
         try
         {
+            _logger.Information("Received {@Data}", new { playlistId, audiotrackId });
             await _playlistService.RemoveAudiotrackFromPlaylist(playlistId, audiotrackId);
             return Ok("Audiotrack removed successfully");
         }
         catch (Exception ex)
         {
+            _logger.Error(ex, "Exception thrown {Message}");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
@@ -97,11 +120,13 @@ public class PlaylistsController(IPlaylistService playlistService) : ControllerB
     {
         try
         {
+            _logger.Information("Received {@Data}", new { playlistId, audiotrackId });
             await _playlistService.AddAudiotrackToPlaylist(playlistId, audiotrackId);
             return Ok("Audiotrack added successfully");
         }
         catch (Exception ex)
         {
+            _logger.Error(ex, "Exception thrown {Message}");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
-namespace MewingPad.UI.DTOs;
+namespace MewingPad.DTOs;
 
 [JsonObject]
 public class AudiotrackFormDto

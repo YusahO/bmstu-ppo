@@ -50,7 +50,7 @@ const CommentaryActions = ({ commentary, needUpdate }) => {
 	const [showDeletePrompt, setShowDeletePrompt] = useState(false);
 
 	function handleCommentaryDelete() {
-		apiAuth.delete('commentaries', { data: commentary })
+		apiAuth.delete(`commentaries/${commentary.id}`)
 			.then(() => {
 				addAlert(AlertTypes.success, 'Комментарий успешно удален')
 				setShowDeletePrompt(false); needUpdate();

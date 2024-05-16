@@ -1,7 +1,6 @@
 using MewingPad.Services.CommentaryService;
-using MewingPad.Services.UserService;
-using MewingPad.UI.DTOs;
-using MewingPad.UI.DTOs.Converters;
+using MewingPad.DTOs;
+using MewingPad.DTOs.Converters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
@@ -10,20 +9,19 @@ namespace MewingPad.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CommentariesController(ICommentaryService commentaryService,
-                                    IUserService userService) : ControllerBase
+public class CommentariesController(ICommentaryService commentaryService) : ControllerBase
 {
     private readonly ICommentaryService _commentaryService = commentaryService;
-    private readonly IUserService _userService = userService;
     private readonly Serilog.ILogger _logger = Log.ForContext<CommentariesController>();
 
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> AddCommentary([FromBody] CommentaryDto commentary)
+    public async Task<IActionResult> AddCommentary([FromBody] CommentaryDto commentaryDto)
     {
         try
         {
-            var comm = CommentaryConverter.DtoToCoreModel(commentary);
+            _logger.Information("Received {@Comm}", commentaryDto);
+            var comm = CommentaryConverter.DtoToCoreModel(commentaryDto);
             comm.Id = Guid.NewGuid();
             await _commentaryService.CreateCommentary(comm);
             
@@ -39,11 +37,12 @@ public class CommentariesController(ICommentaryService commentaryService,
 
     [Authorize]
     [HttpPut]
-    public async Task<IActionResult> UpdateCommentary([FromBody] CommentaryDto commentary)
+    public async Task<IActionResult> UpdateCommentary([FromBody] CommentaryDto commentaryDto)
     {
         try
         {
-            var comm = CommentaryConverter.DtoToCoreModel(commentary);
+            _logger.Information("Received {@Comm}", commentaryDto);
+            var comm = CommentaryConverter.DtoToCoreModel(commentaryDto);
             await _commentaryService.UpdateCommentary(comm);
 
             _logger.Information("Updated commentary {@Comm}", comm);
@@ -57,15 +56,13 @@ public class CommentariesController(ICommentaryService commentaryService,
     }
 
     [Authorize]
-    [HttpDelete]
-    public async Task<IActionResult> DeleteCommentary([FromBody] CommentaryDto commentary)
+    [HttpDelete("{commentaryId:guid}")]
+    public async Task<IActionResult> DeleteCommentary(Guid commentaryId)
     {
         try
         {
-            var comm = CommentaryConverter.DtoToCoreModel(commentary);
-            await _commentaryService.DeleteCommentary(comm.Id);
-            
-            _logger.Information("Deleted commentary {@Comm}", comm);
+            _logger.Information("Received {@CommId}", commentaryId);
+            await _commentaryService.DeleteCommentary(commentaryId);
             return Ok("Commentary deleted successfully");
         }
         catch (Exception ex)

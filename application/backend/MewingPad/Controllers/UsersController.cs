@@ -1,6 +1,7 @@
+using MewingPad.Common.Exceptions;
 using MewingPad.Services.PlaylistService;
 using MewingPad.Services.UserService;
-using MewingPad.UI.DTOs.Converters;
+using MewingPad.DTOs.Converters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
@@ -17,39 +18,46 @@ public class UsersController(IUserService userService,
     private readonly Serilog.ILogger _logger = Log.ForContext<UsersController>();
 
     [Authorize]
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> Get(Guid id)
+    [HttpGet("{userId:guid}")]
+    public async Task<IActionResult> Get(Guid userId)
     {
         try
         {
-            var user = await _userService.GetUserById(id);
-            _logger.Information("Retrieved user {@User}", new { user.Id, user.Username });
+            _logger.Information("Received {@UserId}", userId);
+            var user = await _userService.GetUserById(userId);
             return Ok(UserConverter.CoreModelToDto(user));
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Exception thrown: {Message}");
+            _logger.Error(ex, "Exception thrown {Message}");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
 
     [Authorize]
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
+    [HttpPost("{email}")]
+    public async Task<IActionResult> UpliftPrivileges(string email)
     {
         try
         {
-            var users = from user in await _userService.GetAllUsers()
-                        select UserConverter.CoreModelToDto(user);
-            // log
-            return Ok(users);
+            _logger.Information("Received {@UserEmail}", email);
+
+            var user = await _userService.GetUserByEmail(email);
+            await _userService.ChangeUserPermissions(user.Id, true);
+            return Ok("User privileges uplifted");
+        }
+        catch (UserNotFoundException ex)
+        {
+            _logger.Error(ex, "Exception thrown {Message}");
+            return NotFound(ex.Message);
         }
         catch (Exception ex)
         {
-            // log
+            _logger.Error(ex, "Exception thrown {Message}");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
+
 
     [Authorize]
     [HttpGet("{userId:guid}/playlists")]
@@ -57,11 +65,13 @@ public class UsersController(IUserService userService,
     {
         try
         {
+            _logger.Information("Received {@UserId}", userId);
             var playlists = await _playlistService.GetUserPlaylists(userId);
             return Ok(playlists);
         }
         catch (Exception ex)
         {
+            _logger.Error(ex, "Exception thrown {Message}");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }

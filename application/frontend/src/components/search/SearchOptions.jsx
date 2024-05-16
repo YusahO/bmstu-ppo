@@ -5,7 +5,6 @@ import TagSelector from "../tag/TagSelector";
 import { api } from "../../api/mpFetch";
 
 const SearchOptions = ({ selectedTags, changeSelectedTags }) => {
-
 	const [allTags, setAllTags] = useState([]);
 
 	useEffect(() => {

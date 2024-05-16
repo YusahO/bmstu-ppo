@@ -1,6 +1,5 @@
 import { api } from '../../api/mpFetch.js';
 import { useEffect, useState } from "react";
-import TagElement from './TagElement.jsx';
 import './TagContainer.css';
 
 const AudiotrackTags = ({ audiotrackId }) => {
@@ -17,7 +16,11 @@ const AudiotrackTags = ({ audiotrackId }) => {
 
 	return (
 		<div className="tag-container">
-			{tags.map(t => <TagElement tagName={t.name} />)}
+			{tags.map((t, index) =>
+				<div key={index}>
+					<label>{t.name}</label>
+				</div>
+			)}
 		</div>
 	)
 }

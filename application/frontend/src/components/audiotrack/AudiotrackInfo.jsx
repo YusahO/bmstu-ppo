@@ -13,7 +13,7 @@ import { api, apiAuth } from '../../api/mpFetch.js';
 import { useUserContext } from '../../context/UserContext.js';
 
 function downloadAudio(audiotrackFilename) {
-  api.get(`audiotracks/${audiotrackFilename}`, { responseType: 'blob' })
+  api.get(`audiofiles/${audiotrackFilename}`, { responseType: 'blob' })
     .then(response => {
       const url = window.URL.createObjectURL(
         new Blob([response.data])

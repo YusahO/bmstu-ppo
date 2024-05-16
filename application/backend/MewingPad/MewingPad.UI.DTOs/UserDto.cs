@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace MewingPad.UI.DTOs;
+namespace MewingPad.DTOs;
 
 [JsonObject]
 public class UserDto(Guid id,

@@ -1,6 +1,7 @@
 using MewingPad.Services.AudiotrackService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace MewingPad.Controllers;
 
@@ -9,6 +10,7 @@ namespace MewingPad.Controllers;
 public class AudiofilesController(IAudiotrackService audiotrackService) : ControllerBase
 {
     private readonly IAudiotrackService _audiotrackService = audiotrackService;
+    private readonly Serilog.ILogger _logger = Log.ForContext<AudiofilesController>();
 
     [AllowAnonymous]
     [HttpGet("{filename}")]
@@ -16,13 +18,13 @@ public class AudiofilesController(IAudiotrackService audiotrackService) : Contro
     {
         try
         {
+            _logger.Information("Received {@Filename}", filename);
             var audioStream = await _audiotrackService.GetAudiotrackFileStream(filename);
-            // log
             return File(audioStream, "application/octet-stream");
         }
         catch (Exception ex)
         {
-            // log
+            _logger.Error(ex, "Exception thrown {Message}");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }

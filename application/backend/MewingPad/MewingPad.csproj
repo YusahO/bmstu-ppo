@@ -17,6 +17,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.OpenApi" Version="1.6.14" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="serilog" Version="3.1.1" />
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
     <PackageReference Include="Serilog.Expressions" Version="4.0.0" />
@@ -38,8 +39,6 @@
     <ProjectReference Include="..\Services\MewingPad.Services.ReportService\MewingPad.Services.ReportService.csproj" />
     <ProjectReference Include="..\Services\MewingPad.Services.TagService\MewingPad.Services.TagService.csproj" />
     <ProjectReference Include="..\Services\MewingPad.Services.OAuthService\MewingPad.Services.OAuthService.csproj" />
-    <ProjectReference Include="..\WebUI\MewingPad.UI.DTOs\MewingPad.UI.DTOs.csproj" />
-    <ProjectReference Include="..\WebUI\MewingPad.UI.DTOs.Converters\MewingPad.UI.DTOs.Converters.csproj" />
     <ProjectReference Include="..\Common\MewingPad.Common.IRepositories\MewingPad.Common.IRepositories.csproj" />
     <ProjectReference Include="..\Database\MewingPad.Database.Context\MewingPad.Database.Context.csproj" />
     <ProjectReference Include="..\Database\MewingPad.Database.NpgsqlRepositories\MewingPad.Database.NpgsqlRepositories.csproj" />

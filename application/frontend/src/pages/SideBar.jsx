@@ -10,6 +10,7 @@ const SideBar = () => {
 				<div>
 					<a href='/reports'>Жалобы</a>
 					<a href='/tags'>Теги</a>
+					<a href='/auth_admin'>Добавить админстратора</a>
 				</div>
 			}
 		</div>

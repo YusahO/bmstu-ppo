@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import { AlertTypes, useAlertContext } from '../../context/AlertContext';
 
 const Authorization = () => {
-
   const navigate = useNavigate();
   const { addAlert } = useAlertContext()
   const [isLogin, setIsLogin] = useState(true);

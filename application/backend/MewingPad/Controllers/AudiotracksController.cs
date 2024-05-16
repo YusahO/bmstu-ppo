@@ -4,8 +4,8 @@ using MewingPad.Services.PlaylistService;
 using MewingPad.Services.ScoreService;
 using MewingPad.Services.TagService;
 using MewingPad.Services.UserService;
-using MewingPad.UI.DTOs;
-using MewingPad.UI.DTOs.Converters;
+using MewingPad.DTOs;
+using MewingPad.DTOs.Converters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
@@ -38,12 +38,11 @@ public class AudiotracksController(IAudiotrackService audiotrackService,
         {
             var audiotracks = from audiotrack in await _audiotrackService.GetAllAudiotracks()
                               select AudiotrackConverter.CoreModelToDto(audiotrack);
-            // log
             return Ok(audiotracks);
         }
         catch (Exception ex)
         {
-            // log
+            _logger.Error(ex, "Exception thrown {Message}");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
@@ -54,13 +53,13 @@ public class AudiotracksController(IAudiotrackService audiotrackService,
     {
         try
         {
+            _logger.Information("Received {@AudiotrackId}", audiotrackId);
             var audiotrack = await _audiotrackService.GetAudiotrackById(audiotrackId);
-            // log
             return Ok(audiotrack);
         }
         catch (Exception ex)
         {
-            // log
+            _logger.Error(ex, "Exception thrown {Message}");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
@@ -71,9 +70,10 @@ public class AudiotracksController(IAudiotrackService audiotrackService,
     {
         try
         {
-            _logger.Information("Audiotrack dto {@Audio} received", audiotrackDto);
+            _logger.Information("Received {@Audio}", audiotrackDto);
             if (audiotrackDto.File is null || audiotrackDto.File.Length == 0)
             {
+                _logger.Error("File is empty");
                 throw new ArgumentException("File is empty");
             }
             using var memoryStream = new MemoryStream();
@@ -83,8 +83,6 @@ public class AudiotracksController(IAudiotrackService audiotrackService,
             var audiotrack = AudiotrackFormConverter.DtoToCoreModel(audiotrackDto);
             audiotrack.Id = Guid.NewGuid();
             await _audiotrackService.CreateAudiotrackWithStream(memoryStream, audiotrack);
-            _logger.Information("Audiotrack {@Audio} uploaded successfully", audiotrack);
-
             return Ok("Audiotrack uploaded successfully");
         }
         catch (Exception ex)
@@ -100,6 +98,7 @@ public class AudiotracksController(IAudiotrackService audiotrackService,
     {
         try
         {
+            _logger.Information("Received {@Audio}", audiotrackId);
             await _audiotrackService.DeleteAudiotrack(audiotrackId);
             return Ok("Audiotrack deleted successfully");
         }
@@ -116,9 +115,10 @@ public class AudiotracksController(IAudiotrackService audiotrackService,
     {
         try
         {
-            _logger.Information("Audiotrack dto {@Audio} received", audiotrackDto);
+            _logger.Information("Received {@Audio}", audiotrackDto);
             if (audiotrackDto.File is null || audiotrackDto.File.Length == 0)
             {
+                _logger.Error("File is empty");
                 throw new ArgumentException("File is empty");
             }
             using var memoryStream = new MemoryStream();
@@ -144,14 +144,14 @@ public class AudiotracksController(IAudiotrackService audiotrackService,
     {
         try
         {
+            _logger.Information("Received {@Audio}", audiotrackId);
             var tags = from tag in await _tagService.GetAudiotrackTags(audiotrackId)
                        select TagConverter.CoreModelToDto(tag);
-            // log
             return Ok(tags);
         }
         catch (Exception ex)
         {
-            // log
+            _logger.Error(ex, "Exception thrown {Message}");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
@@ -162,12 +162,13 @@ public class AudiotracksController(IAudiotrackService audiotrackService,
     {
         try
         {
+            _logger.Information("Received {@Data}", new { audiotrackId, tagId });
             await _tagService.AssignTagToAudiotrack(audiotrackId, tagId);
             return Ok("Tag added successfully");
         }
         catch (Exception ex)
         {
-            // log
+            _logger.Error(ex, "Exception thrown {Message}");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
@@ -178,12 +179,13 @@ public class AudiotracksController(IAudiotrackService audiotrackService,
     {
         try
         {
+            _logger.Information("Received {@Data}", new { audiotrackId, tagId });
             await _tagService.DeleteTagFromAudiotrack(audiotrackId, tagId);
             return Ok("Tag removed successfully");
         }
         catch (Exception ex)
         {
-            // log
+            _logger.Error(ex, "Exception thrown {Message}");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
@@ -194,14 +196,14 @@ public class AudiotracksController(IAudiotrackService audiotrackService,
     {
         try
         {
+            _logger.Information("Received {@AudioId}", audiotrackId);
             var scores = from score in await _scoreService.GetAudiotrackScores(audiotrackId)
                          select ScoreConverter.CoreModelToDto(score);
-            // log
             return Ok(scores);
         }
         catch (Exception ex)
         {
-            // log
+            _logger.Error(ex, "Exception thrown {Message}");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
@@ -213,11 +215,13 @@ public class AudiotracksController(IAudiotrackService audiotrackService,
     {
         try
         {
+            _logger.Information("Received {@Data}", new { audiotrackId, userId });
             var playlists = await _playlistService.GetUserPlaylistsContainingAudiotrack(userId, audiotrackId);
             return Ok(playlists);
         }
         catch (Exception ex)
         {
+            _logger.Error(ex, "Exception thrown {Message}");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
@@ -228,6 +232,7 @@ public class AudiotracksController(IAudiotrackService audiotrackService,
     {
         try
         {
+            _logger.Information("Received {@AudioId}", audiotrackId);
             var comms = (from comm in await _commentaryService.GetAudiotrackCommentaries(audiotrackId)
                          select CommentaryConverter.CoreModelToDto(comm)).ToList();
 
@@ -236,7 +241,6 @@ public class AudiotracksController(IAudiotrackService audiotrackService,
                 var username = (await _userService.GetUserById(comms[i].AuthorId)).Username;
                 comms[i].AuthorName = username;
             }
-            _logger.Information("Retrieved commentaries for audiotrack (Id = {@AudiotrackId}): {@Comms}", audiotrackId, comms);
             return Ok(comms);
         }
         catch (Exception ex)

@@ -1,12 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
 using MewingPad.Common.Entities;
 
-namespace MewingPad.UI.DTOs.Converters;
+namespace MewingPad.DTOs.Converters;
 
-public static class AudiotrackFormConverter
+public static class AudiotrackConverter
 {
     [return: NotNullIfNotNull(nameof(model))]
-    public static Audiotrack? DtoToCoreModel(AudiotrackFormDto? model)
+    public static Audiotrack? DtoToCoreModel(AudiotrackDto? model)
     {
         return model is not null
                ? new(id: model.Id,
@@ -18,7 +18,7 @@ public static class AudiotrackFormConverter
     }
 
     [return: NotNullIfNotNull(nameof(model))]
-    public static AudiotrackFormDto? CoreModelToDto(Audiotrack? model)
+    public static AudiotrackDto? CoreModelToDto(Audiotrack? model)
     {
         return model is not null
                ? new(id: model.Id,

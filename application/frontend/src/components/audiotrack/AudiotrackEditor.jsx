@@ -35,7 +35,9 @@ const AudiotrackEditor = ({ audiotrack, onDone }) => {
 		}
 		formData.append('file', file);
 
-		apiAuth.put('audiotracks', formData)
+		apiAuth.put('audiotracks', formData, {
+			headers: { 'Content-Type': 'multipart/form-data' }
+		})
 			.then(() => onDone())
 			.catch(error => console.error(error));
 	}
@@ -58,7 +60,9 @@ const AudiotrackEditor = ({ audiotrack, onDone }) => {
 		}
 		formData.append('file', file);
 
-		apiAuth.post('audiotracks', formData)
+		apiAuth.post('audiotracks', formData, {
+			headers: { 'Content-Type': 'multipart/form-data' }
+		})
 			.then(() => onDone())
 			.catch(error => console.error(error));
 	}

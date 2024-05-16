@@ -1,6 +1,6 @@
 using MewingPad.Services.ScoreService;
-using MewingPad.UI.DTOs;
-using MewingPad.UI.DTOs.Converters;
+using MewingPad.DTOs;
+using MewingPad.DTOs.Converters;
 using MewingPad.Utils.Token;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -24,39 +24,41 @@ public class ScoresController(IScoreService scoreService) : ControllerBase
     {
         try
         {
+            _logger.Information("Received {@Data}", new { authorId, audiotrackId });
             var score = await _scoreService.GetScoreByPrimaryKey(authorId, audiotrackId);
-            // log
             return Ok(ScoreConverter.CoreModelToDto(score));
         }
         catch (Exception ex)
         {
-            // log
+            _logger.Error(ex, "Exception thrown {Message}");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
 
-    [HttpPut]
     [Authorize]
-    public async Task<IActionResult> UpdateScore([FromBody] ScoreDto score)
+    [HttpPut]
+    public async Task<IActionResult> UpdateScore([FromBody] ScoreDto scoreDto)
     {
         try
         {
+            _logger.Information("Received {@Score}", scoreDto);
             var accessToken = await HttpContext.GetTokenAsync("access_token");
-            score.AuthorId = Guid.Parse(TokenUtils.TryGetClaimOfType(accessToken!));
+            scoreDto.AuthorId = Guid.Parse(TokenUtils.TryGetClaimOfType(accessToken!));
 
-            if ((await _scoreService.GetScoreByPrimaryKey(score.AuthorId, score.AudiotrackId)) is null)
+            if ((await _scoreService.GetScoreByPrimaryKey(scoreDto.AuthorId, scoreDto.AudiotrackId)) is null)
             {
-                await _scoreService.CreateScore(ScoreConverter.DtoToCoreModel(score));
+                await _scoreService.CreateScore(ScoreConverter.DtoToCoreModel(scoreDto));
                 return Ok("Score created successfully");
             }
             else
             {
-                await _scoreService.UpdateScore(ScoreConverter.DtoToCoreModel(score));
+                await _scoreService.UpdateScore(ScoreConverter.DtoToCoreModel(scoreDto));
                 return Ok("Score updated successfully");
             }
         }
         catch (Exception ex)
         {
+            _logger.Error(ex, "Exception thrown {Message}");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }

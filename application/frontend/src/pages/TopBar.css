@@ -23,6 +23,7 @@
 }
 
 .sidebar-open-button {
+	color: var(--font-color);
 	transform: scale(1.3);
 	float: right;
 	right: 5px;

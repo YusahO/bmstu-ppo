@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using MewingPad.Common.Entities;
 
-namespace MewingPad.UI.DTOs.Converters;
+namespace MewingPad.DTOs.Converters;
 
 public static class CommentaryConverter
 {

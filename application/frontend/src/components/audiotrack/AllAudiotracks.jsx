@@ -19,18 +19,11 @@ function AllAudiotracks({ renderAdd }) {
   return (
     <>
       <h2>Все аудиотреки</h2>
-      <div style={{
-        overflow: 'hidden',
-        margin: '10px 10px',
-        padding: '10px 10px',
-        borderRadius: '10px'
-      }}>
-        <AudiotrackGrid
-          renderAdd={renderAdd}
-          audiotracks={audiotracks}
-          onAudiotrackUpdate={() => setNeedUpdate(!needUpdate)}
-        />
-      </div>
+      <AudiotrackGrid
+        renderAdd={renderAdd}
+        audiotracks={audiotracks}
+        onAudiotrackUpdate={() => setNeedUpdate(!needUpdate)}
+      />
     </>
   );
 }

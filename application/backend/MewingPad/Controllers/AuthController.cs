@@ -1,17 +1,15 @@
 using MewingPad.Services.OAuthService;
 using MewingPad.Common.Entities;
-using MewingPad.UI.DTOs.Converters;
-using MewingPad.UI.DTOs.Auth;
+using MewingPad.DTOs.Converters;
+using MewingPad.DTOs.Auth;
 using Microsoft.AspNetCore.Mvc;
-using Serilog;
 using MewingPad.Services.UserService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
-using System.Diagnostics.CodeAnalysis;
-using System.Security.Cryptography;
+using Serilog;
 
 namespace MewingPad.Controllers;
 
@@ -22,12 +20,10 @@ public class AuthController(IUserService userService,
                             IOAuthService oauthService,
                             IConfiguration configuration) : ControllerBase
 {
-    private readonly IUserService _userService = userService
-                                                 ?? throw new ArgumentNullException(nameof(userService));
-    private readonly IOAuthService _oauthService = oauthService
-                                                   ?? throw new ArgumentNullException(nameof(oauthService));
-    private readonly Serilog.ILogger _logger = Log.ForContext<AuthController>();
+    private readonly IUserService _userService = userService;
+    private readonly IOAuthService _oauthService = oauthService;
     private readonly IConfiguration _config = configuration;
+    private readonly Serilog.ILogger _logger = Log.ForContext<AuthController>();
 
     private string GenerateAccessToken(string userId, string userEmail, string userName)
     {
@@ -56,16 +52,17 @@ public class AuthController(IUserService userService,
 
     [AllowAnonymous]
     [HttpPost(nameof(Registration))]
-    public async Task<IActionResult> Registration([FromBody] RegisterDto request)
+    public async Task<IActionResult> Registration([FromBody] RegisterDto registerDto)
     {
         try
         {
+            _logger.Information("Received {@Data}", new { registerDto.Username, registerDto.Email, registerDto.IsAdmin });
             var user = new User(Guid.NewGuid(),
                                 Guid.NewGuid(),
-                                request.Username!,
-                                request.Email!,
-                                request.Password!,
-                                request.IsAdmin);
+                                registerDto.Username!,
+                                registerDto.Email!,
+                                registerDto.Password!,
+                                registerDto.IsAdmin);
 
             user = await _oauthService.RegisterUser(user);
             var userAuthDto = new UserAuthDto
@@ -77,30 +74,29 @@ public class AuthController(IUserService userService,
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Exception thrown");
+            _logger.Error(ex, "Exception thrown {Message}");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
 
     [AllowAnonymous]
     [HttpPost(nameof(Login))]
-    public async Task<IActionResult> Login([FromBody] LoginDto request)
+    public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
     {
         try
         {
-            var user = await _oauthService.SignInUser(request.Email!, request.Password!);
-
+            _logger.Information("Received {@Data}", new { loginDto.Email });
+            var user = await _oauthService.SignInUser(loginDto.Email!, loginDto.Password!);
             var userAuthDto = new UserAuthDto
             {
                 UserDto = UserConverter.CoreModelToDto(user),
                 Token = GenerateAccessToken(user.Id.ToString(), user.Email, user.Username)
             };
-
             return Ok(userAuthDto);
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Exception thrown");
+            _logger.Error(ex, "Exception thrown {Message}");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }

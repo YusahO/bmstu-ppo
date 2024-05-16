@@ -1,4 +1,6 @@
-namespace MewingPad.UI.DTOs.Auth;
+using System.ComponentModel.DataAnnotations;
+
+namespace MewingPad.DTOs.Auth;
 
 public class UserAuthDto
 {

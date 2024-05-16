@@ -1,11 +1,10 @@
 import './TagElement.css';
-import TagElement from "./TagElement";
-import Tag from '../../models/Tag.js'
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import TagEditSelector from "./TagEditSelector.jsx";
 import { apiAuth } from "../../api/mpFetch.js";
 import { useUserContext } from "../../context/UserContext.js";
+import Tag from '../../models/Tag.js'
+import TagEditSelector from "./TagEditSelector.jsx";
 
 const TagAdd = ({ onClose }) => {
 	const { user } = useUserContext();
@@ -22,7 +21,6 @@ const TagAdd = ({ onClose }) => {
 			navigate('/auth');
 			return;
 		}
-
 		apiAuth.post('tags', { ...Tag, authorId: user.id, name: name })
 			.then(() => {
 				setName(''); onClose();
@@ -58,7 +56,6 @@ const TagAdd = ({ onClose }) => {
 }
 
 const TagsEditor = ({ tags, onClose }) => {
-
 	return (
 		<div style={{ marginTop: '20px', display: 'flex', gap: '20px', alignItems: 'center' }}>
 			<TagAdd onClose={onClose} />

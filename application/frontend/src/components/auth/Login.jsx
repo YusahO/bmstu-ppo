@@ -30,7 +30,6 @@ const Login = ({ onChange, onSuccess }) => {
 			password: credentials.password
 		})
 			.then(response => {
-
 				const token = response.data.token;
 				if (token) {
 					const tokenParsed = parseJwt(token);
@@ -40,7 +39,7 @@ const Login = ({ onChange, onSuccess }) => {
 				}
 				onSuccess();
 			})
-			.catch(error => addAlert(AlertTypes.info, 'Не удалось авторизоваться'))
+			.catch(() => addAlert(AlertTypes.info, 'Не удалось авторизоваться'))
 	};
 
 	return (
@@ -55,7 +54,7 @@ const Login = ({ onChange, onSuccess }) => {
 				required={true}
 			/>
 			<input
-				type="new-password"
+				type="password"
 				placeholder="Пароль"
 				name='password'
 				value={credentials.password}
@@ -66,7 +65,7 @@ const Login = ({ onChange, onSuccess }) => {
 			<div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
 				<label style={{ alignSelf: 'center' }}>или</label>
 				<label
-					style={{ textDecoration: 'underline', alignSelf: 'center' }}
+					style={{ textDecoration: 'underline', alignSelf: 'center', cursor: 'pointer' }}
 					onClick={onChange}
 				>
 					Зарегистрироваться

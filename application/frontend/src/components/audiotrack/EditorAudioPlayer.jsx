@@ -1,17 +1,24 @@
 import './AudioPlayer.css';
 import AudioPlaybackControls from './AudioPlaybackControls.jsx';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import DeletePrompt from '../common/DeletePrompt.jsx';
 import { api, apiAuth } from '../../api/mpFetch.js';
+import { AlertTypes, useAlertContext } from '../../context/AlertContext.js';
 
 const AudiotrackActions = ({ audiotrack, onEditClicked, needUpdate }) => {
 	const [showDeletePrompt, setShowDeletePrompt] = useState(false);
+	const { addAlert } = useAlertContext();
 
 	function handleAudiotrackDelete() {
 		apiAuth.delete(`audiotracks/${audiotrack.id}`)
-			.then(() => { setShowDeletePrompt(false); needUpdate(); })
-			.catch(error => console.error(error));
+			.then(() => {
+				addAlert(AlertTypes.info, 'Аудиотрек удален');
+				setShowDeletePrompt(false); needUpdate();
+			})
+			.catch(error => {
+				addAlert(AlertTypes.error, 'Ошибки при удалении аудиотрека');
+				console.error(error)
+			});
 	}
 
 	return (

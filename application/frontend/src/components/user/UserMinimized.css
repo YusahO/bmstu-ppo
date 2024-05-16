@@ -4,7 +4,7 @@
 	color: var(--accent-color1);
 } */
 .user-minimized {
-	width: 100px;
+	width: 9vw;
 }
 
 .user-minimized label {
@@ -14,5 +14,5 @@
 
 .user-minimized .user-options {
 	display: flex; 
-	justify-content: space-between;
+	justify-content: space-around;
 }
