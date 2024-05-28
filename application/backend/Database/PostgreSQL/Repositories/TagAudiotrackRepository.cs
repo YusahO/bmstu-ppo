@@ -1,16 +1,16 @@
 using MewingPad.Common.Entities;
 using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
-using MewingPad.Database.Context;
+using MewingPad.Database.PgSQL.Context;
 using MewingPad.Database.Models.Converters;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
-namespace MewingPad.Database.NpgsqlRepositories;
+namespace MewingPad.Database.PgSQL.Repositories;
 
-public class TagAudiotrackRepository(MewingPadDbContext context) : ITagAudiotrackRepository
+public class TagAudiotrackRepository(MewingPadPgSQLDbContext context) : ITagAudiotrackRepository
 {
-    private readonly MewingPadDbContext _context = context;
+    private readonly MewingPadPgSQLDbContext _context = context;
 
     private readonly ILogger _logger = Log.ForContext<TagAudiotrackRepository>();
 

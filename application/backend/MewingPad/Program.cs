@@ -1,6 +1,6 @@
 using MewingPad.Common.IRepositories;
-using MewingPad.Database.Context;
-using MewingPad.Database.NpgsqlRepositories;
+using MewingPad.Database.PgSQL.Context;
+using MewingPad.Database.PgSQL.Repositories;
 using MewingPad.Services.UserService;
 using Microsoft.EntityFrameworkCore;
 using MewingPad.Services.AudiotrackService;
@@ -17,8 +17,8 @@ using System.Text;
 using Serilog;
 using Microsoft.OpenApi.Models;
 using System.IdentityModel.Tokens.Jwt;
-using MewingPad.Utils.Token;
-using System.Security.Cryptography;
+using MongoDB.Driver;
+using MewingPad.Database.MongoDB.Context;
 
 internal class Program
 {
@@ -116,23 +116,45 @@ internal class Program
                 });
             builder.Services.AddAuthorization();
 
-            builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
-            builder.Services.AddDbContext<MewingPadDbContext>(opt =>
+            var db = configuration["ApiSettings:Database"]!;
+            if (db is "PostgreSQL")
             {
-                opt.UseNpgsql(configuration.GetConnectionString("default"));
-            });
+                builder.Services.AddDbContext<MewingPadPgSQLDbContext>(opt =>
+                {
+                    opt.UseNpgsql(configuration.GetSection("Postgresql").GetConnectionString("default"));
+                });
+
+                builder.Services.AddScoped<IPlaylistAudiotrackRepository, PlaylistAudiotrackRepository>();
+                builder.Services.AddScoped<ITagAudiotrackRepository, TagAudiotrackRepository>();
+
+                builder.Services.AddScoped<IUserRepository, MewingPad.Database.PgSQL.Repositories.UserRepository>();
+                builder.Services.AddScoped<IAudiotrackRepository, MewingPad.Database.PgSQL.Repositories.AudiotrackRepository>();
+                builder.Services.AddScoped<IPlaylistRepository, MewingPad.Database.PgSQL.Repositories.PlaylistRepository>();
+                builder.Services.AddScoped<ITagRepository, MewingPad.Database.PgSQL.Repositories.TagRepository>();
+                builder.Services.AddScoped<IScoreRepository, MewingPad.Database.PgSQL.Repositories.ScoreRepository>();
+                builder.Services.AddScoped<ICommentaryRepository, MewingPad.Database.PgSQL.Repositories.CommentaryRepository>();
+                builder.Services.AddScoped<IReportRepository, MewingPad.Database.PgSQL.Repositories.ReportRepository>();
+            }
+            else if (db is "MongoDB")
+            {
+                var client = new MongoClient(builder.Configuration.GetSection("MongoDB").GetConnectionString("default"));
+                builder.Services.AddDbContext<MewingPadMongoDbContext>(opt =>
+                {
+                    opt.UseMongoDB(client, "MewingPadDB");
+                });
+
+                // builder.Services.AddScoped<IUserRepository, MewingPad.Database.MongoDB.Repositories.UserRepository>();
+                // builder.Services.AddScoped<IAudiotrackRepository, MewingPad.Database.MongoDB.Repositories.AudiotrackRepository>();
+                // builder.Services.AddScoped<IPlaylistRepository, MewingPad.Database.MongoDB.Repositories.PlaylistRepository>();
+                // builder.Services.AddScoped<ITagRepository, MewingPad.Database.MongoDB.Repositories.TagRepository>();
+                // builder.Services.AddScoped<IScoreRepository, MewingPad.Database.MongoDB.Repositories.ScoreRepository>();
+                // builder.Services.AddScoped<ICommentaryRepository, MewingPad.Database.MongoDB.Repositories.CommentaryRepository>();
+                // builder.Services.AddScoped<IReportRepository, MewingPad.Database.MongoDB.Repositories.ReportRepository>();
+            }
+
+            builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
             builder.Services.AddSingleton<AudioManager>();
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IAudiotrackRepository, AudiotrackRepository>();
-            builder.Services.AddScoped<IPlaylistAudiotrackRepository, PlaylistAudiotrackRepository>();
-            builder.Services.AddScoped<ITagAudiotrackRepository, TagAudiotrackRepository>();
-            builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
-            builder.Services.AddScoped<ITagRepository, TagRepository>();
-            builder.Services.AddScoped<IScoreRepository, ScoreRepository>();
-            builder.Services.AddScoped<ICommentaryRepository, CommentaryRepository>();
-            builder.Services.AddScoped<IReportRepository, ReportRepository>();
-
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IOAuthService, OAuthService>();
             builder.Services.AddScoped<IAudiotrackService, AudiotrackService>();

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using MongoDB.Bson.Serialization.Attributes; 
 
 namespace MewingPad.Database.Models;
 
@@ -20,6 +21,8 @@ public class ScoreDbModel(Guid authorId,
     [Column("value", TypeName = "integer")]
     public int Value { get; set; } = value;
 
+[BsonIgnore]
     public UserDbModel? Author { get; set; }
+[BsonIgnore]
     public AudiotrackDbModel? Audiotrack { get; set; }
 }

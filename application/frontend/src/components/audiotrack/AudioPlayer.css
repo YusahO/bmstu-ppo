@@ -1,7 +1,7 @@
 .audio-player {
   flex-direction: column;
   position: relative;
-
+  min-height: 150px;
   padding: 10px;
   border-radius: 20px;
   background-color: var(--color-primary);

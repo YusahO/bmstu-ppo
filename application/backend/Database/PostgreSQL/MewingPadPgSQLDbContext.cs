@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MewingPad.Database.Models;
 
-namespace MewingPad.Database.Context;
+namespace MewingPad.Database.PgSQL.Context;
 
-public class MewingPadDbContext(DbContextOptions<MewingPadDbContext> options) : DbContext(options)
+public class MewingPadPgSQLDbContext(DbContextOptions<MewingPadPgSQLDbContext> options) : DbContext(options)
 {
     public DbSet<UserDbModel> Users { get; set; }
     public DbSet<PlaylistDbModel> Playlists { get; set; }
@@ -19,7 +19,6 @@ public class MewingPadDbContext(DbContextOptions<MewingPadDbContext> options) : 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ScoreDbModel>().HasKey(u => new { u.AuthorId, u.AudiotrackId });
-
         modelBuilder.Entity<AudiotrackDbModel>()
             .HasMany(e => e.Playlists)
             .WithMany(e => e.Audiotracks)

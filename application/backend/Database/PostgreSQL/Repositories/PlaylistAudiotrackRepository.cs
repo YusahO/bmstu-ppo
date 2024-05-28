@@ -7,7 +7,7 @@ using MewingPad.Database.Models.Converters;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
-namespace MewingPad.Database.NpgsqlRepositories;
+namespace MewingPad.Database.PgSQL.Repositories;
 
 public class PlaylistAudiotrackRepository(MewingPadDbContext context) : IPlaylistAudiotrackRepository
 {

@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using MongoDB.Bson.Serialization.Attributes;
+using MewingPad.Database.Models;
 
 namespace MewingPad.Database.Models;
 
@@ -9,6 +11,7 @@ public class TagAudiotrackDbModel(Guid tagId,
 {
     [ForeignKey("Tag")]
     [Column("tag_id")]
+    [BsonId]
     public Guid TagId { get; set; } = tagId;
 
     [ForeignKey("Audiotrack")]

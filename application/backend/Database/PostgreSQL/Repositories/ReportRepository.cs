@@ -1,16 +1,16 @@
 using MewingPad.Common.Entities;
 using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
-using MewingPad.Database.Context;
-using MewingPad.Database.Models.Converters;
+using MewingPad.Database.PgSQL.Context;
+using MewingPad.Database.PgSQL.Models.Converters;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
-namespace MewingPad.Database.NpgsqlRepositories;
+namespace MewingPad.Database.PgSQL.Repositories;
 
-public class ReportRepository(MewingPadDbContext context) : IReportRepository
+public class ReportRepository(MewingPadPgSQLDbContext context) : IReportRepository
 {
-    private readonly MewingPadDbContext _context = context;
+    private readonly MewingPadPgSQLDbContext _context = context;
 
     private readonly ILogger _logger = Log.ForContext<ReportRepository>();
 

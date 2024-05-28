@@ -17,6 +17,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.OpenApi" Version="1.6.14" />
+    <PackageReference Include="MongoDB.Driver" Version="2.25.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="serilog" Version="3.1.1" />
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
@@ -31,6 +32,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common\MewingPad.Common.IServices\MewingPad.Common.IServices.csproj" />
+    <ProjectReference Include="..\Common\MewingPad.Common.IRepositories\MewingPad.Common.IRepositories.csproj" />
+    <ProjectReference Include="..\Common\MewingPad.Common.Entities\MewingPad.Common.Entities.csproj" />
     <ProjectReference Include="..\Services\MewingPad.Services.UserService\MewingPad.Services.UserService.csproj" />
     <ProjectReference Include="..\Services\MewingPad.Services.AudiotrackService\MewingPad.Services.AudiotrackService.csproj" />
     <ProjectReference Include="..\Services\MewingPad.Services.PlaylistService\MewingPad.Services.PlaylistService.csproj" />
@@ -39,11 +42,9 @@
     <ProjectReference Include="..\Services\MewingPad.Services.ReportService\MewingPad.Services.ReportService.csproj" />
     <ProjectReference Include="..\Services\MewingPad.Services.TagService\MewingPad.Services.TagService.csproj" />
     <ProjectReference Include="..\Services\MewingPad.Services.OAuthService\MewingPad.Services.OAuthService.csproj" />
-    <ProjectReference Include="..\Common\MewingPad.Common.IRepositories\MewingPad.Common.IRepositories.csproj" />
-    <ProjectReference Include="..\Database\MewingPad.Database.Context\MewingPad.Database.Context.csproj" />
-    <ProjectReference Include="..\Database\MewingPad.Database.NpgsqlRepositories\MewingPad.Database.NpgsqlRepositories.csproj" />
-    <ProjectReference Include="..\Common\MewingPad.Common.Entities\MewingPad.Common.Entities.csproj" />
     <ProjectReference Include="..\Utils\MewingPad.Utils.Token\MewingPad.Utils.Token.csproj" />
+    <ProjectReference Include="..\Database\PostgreSQL\MewingPad.Database.PostgreSQL.csproj" />
+    <ProjectReference Include="..\Database\MongoDB\MewingPad.Database.MongoDB.csproj" />
   </ItemGroup>
 
 </Project>
