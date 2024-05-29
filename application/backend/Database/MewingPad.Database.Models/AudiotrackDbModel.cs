@@ -5,6 +5,7 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace MewingPad.Database.Models;
 
 [Table("Audiotracks")]
+[BsonIgnoreExtraElements]
 public class AudiotrackDbModel(Guid id,
                                string title,
                                float duration,
@@ -16,11 +17,11 @@ public class AudiotrackDbModel(Guid id,
     [BsonId]
     public Guid Id { get; set; } = id;
 
-    [Column("title", TypeName = "varchar(64)")]
+    [Column("title")]
     public string Title { get; set; } = title;
 
     [Required]
-    [Column("duration", TypeName = "real")]
+    [Column("duration")]
     public float Duration { get; set; } = duration;
 
     [ForeignKey("Author")]
@@ -28,13 +29,13 @@ public class AudiotrackDbModel(Guid id,
     public Guid AuthorId { get; set; } = authorId;
 
     [Required]
-    [Column("filepath", TypeName = "text")]
+    [Column("filepath")]
     public string Filepath { get; set; } = filepath;
 
     [BsonIgnore]
     public UserDbModel? Author { get; set; }
 
-    [BsonIgnore]
+    // [BsonIgnore]
     public List<PlaylistDbModel> Playlists { get; } = [];
     [BsonIgnore]
     public List<PlaylistAudiotrackDbModel> PlaylistsAudiotracks { get; set; } = [];

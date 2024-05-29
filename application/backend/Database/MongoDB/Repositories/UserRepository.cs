@@ -1,18 +1,17 @@
-﻿using MewingPad.Common.Entities;
+using MewingPad.Common.Entities;
 using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
-using MewingPad.Database.PgSQL.Context;
+using MewingPad.Database.MongoDB.Context;
 using MewingPad.Database.Models.Converters;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
-namespace MewingPad.Database.PgSQL.Repositories;
+namespace MewingPad.Database.MongoDB.Repositories;
 
-public class UserRepository(MewingPadPgSQLDbContext context) : IUserRepository
+public class UserRepository(MewingPadMongoDbContext context) : IUserRepository
 {
-    private readonly MewingPadPgSQLDbContext _context = context;
-
-    private readonly ILogger _logger = Log.ForContext<UserRepository>();
+	private readonly MewingPadMongoDbContext _context = context;
+	private readonly ILogger _logger = Log.ForContext<UserRepository>();
 
     public async Task AddUser(User user)
     {
@@ -74,7 +73,7 @@ public class UserRepository(MewingPadPgSQLDbContext context) : IUserRepository
 
     public async Task<User?> GetUserByEmail(string email)
     {
-        _logger.Verbose("Entering GetUserByEmail");
+        _logger.Verbose("Entering GetUserById");
 
         User? user;
         try
@@ -87,7 +86,7 @@ public class UserRepository(MewingPadPgSQLDbContext context) : IUserRepository
             throw new RepositoryException(ex.Message, ex.InnerException);
         }
 
-        _logger.Verbose("Exiting GetUserByEmail");
+        _logger.Verbose("Exiting GetUserById");
         return user;
     }
 

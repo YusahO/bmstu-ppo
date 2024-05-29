@@ -5,6 +5,7 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace MewingPad.Database.Models;
 
 [Table("Commentaries")]
+[BsonIgnoreExtraElements]
 public class CommentaryDbModel(Guid id,
                                Guid authorId,
                                Guid audiotrackId,
@@ -24,7 +25,7 @@ public class CommentaryDbModel(Guid id,
     public Guid AudiotrackId { get; set; } = audiotrackId;
 
     [Required]
-    [Column("text", TypeName = "text")]
+    [Column("text")]
     public string Text { get; set; } = text;
 
     [BsonIgnore]

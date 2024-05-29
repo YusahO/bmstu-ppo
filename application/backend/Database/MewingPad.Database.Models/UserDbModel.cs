@@ -24,19 +24,19 @@ public class UserDbModel(Guid id,
     public Guid FavouritesId { get; set; } = favouritesId;
 
     [Required]
-    [Column("username", TypeName = "varchar(64)")]
+    [Column("username")]
     public string Username { get; set; } = username;
 
     [Required]
-    [Column("password", TypeName = "varchar(128)")]
+    [Column("password")]
     public string PasswordHashed { get; set; } = passwordHashed;
 
     [Required]
-    [Column("email", TypeName = "varchar(320)")]
+    [Column("email")]
     public string Email { get; set; } = email;
 
     [Required]
-    [Column("is_admin", TypeName = "bool")]
+    [Column("is_admin")]
     public bool IsAdmin { get; set; } = isAdmin;
 
     [BsonIgnore]

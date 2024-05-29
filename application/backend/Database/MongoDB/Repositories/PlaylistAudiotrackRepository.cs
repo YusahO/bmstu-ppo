@@ -1,18 +1,17 @@
 using MewingPad.Common.Entities;
 using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
-using MewingPad.Database.PgSQL.Context;
+using MewingPad.Database.MongoDB.Context;
 using MewingPad.Database.Models.Converters;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
-namespace MewingPad.Database.PgSQL.Repositories;
+namespace MewingPad.Database.MongoDB.Repositories;
 
-public class PlaylistAudiotrackRepository(MewingPadPgSQLDbContext context) : IPlaylistAudiotrackRepository
+public class PlaylistAudiotrackRepository(MewingPadMongoDbContext context) : IPlaylistAudiotrackRepository
 {
-    private readonly MewingPadPgSQLDbContext _context = context;
-
-    private readonly ILogger _logger = Log.ForContext<PlaylistAudiotrackRepository>();
+    private readonly MewingPadMongoDbContext _context = context;
+    private readonly ILogger _logger = Log.ForContext<AudiotrackRepository>();
 
     public async Task DeleteByPlaylist(Guid playlistId)
     {
@@ -20,8 +19,10 @@ public class PlaylistAudiotrackRepository(MewingPadPgSQLDbContext context) : IPl
 
         try
         {
-            var pairs = await _context.PlaylistsAudiotracks
-                .Where(pa => pa.PlaylistId == playlistId)
+            var pairs = await _context.Playlists
+                .Where(p => p.Id == playlistId)
+                .Include(p => p.Audiotracks)
+                    .ThenInclude(pa => pa.Id)
                 .ToListAsync();
             if (pairs.Count == 0)
             {
@@ -44,8 +45,10 @@ public class PlaylistAudiotrackRepository(MewingPadPgSQLDbContext context) : IPl
 
         try
         {
-            var pairs = await _context.PlaylistsAudiotracks
-                .Where(pa => pa.AudiotrackId == audiotrackId)
+            var pairs = await _context.Audiotracks
+                .Where(a => a.Id == audiotrackId)
+                .Include(a => a.Playlists)
+                    .ThenInclude(pa => pa.Id)
                 .ToListAsync();
             if (pairs.Count == 0)
             {
@@ -68,8 +71,13 @@ public class PlaylistAudiotrackRepository(MewingPadPgSQLDbContext context) : IPl
 
         try
         {
-            await _context.PlaylistsAudiotracks
-                    .AddAsync(new(playlistId, audiotrackId));
+            var playlist = _context.Playlists
+                .Include(p => p.Audiotracks)
+                .Single(p => p.Id == playlistId);
+            var audiotrack = _context.Audiotracks
+                .Single(a => a.Id == audiotrackId);
+
+            playlist.Audiotracks.Add(audiotrack);
             await _context.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -87,11 +95,16 @@ public class PlaylistAudiotrackRepository(MewingPadPgSQLDbContext context) : IPl
         List<Audiotrack> audiotracks;
         try
         {
-            audiotracks = await _context.PlaylistsAudiotracks
-                    .Where(pa => pa.PlaylistId == playlistId)
-                    .Include(pa => pa.Audiotrack)
-                    .Select(pa => AudiotrackConverter.DbToCoreModel(pa.Audiotrack))
-                    .ToListAsync();
+            // audiotracks = await _context.PlaylistsAudiotracks
+            //     .Where(pa => pa.PlaylistId == playlistId)
+            //     .Include(pa => pa.Audiotrack)
+            //     .Select(pa => AudiotrackConverter.DbToCoreModel(pa.Audiotrack))
+            //     .ToListAsync();
+            audiotracks = await _context.Playlists
+                .Where(p => p.Id == playlistId)
+                .SelectMany(p => p.Audiotracks)
+                .Select(a => AudiotrackConverter.DbToCoreModel(a))
+                .ToListAsync();
         }
         catch (Exception ex)
         {
@@ -108,7 +121,13 @@ public class PlaylistAudiotrackRepository(MewingPadPgSQLDbContext context) : IPl
 
         try
         {
-            _context.PlaylistsAudiotracks.Remove(new(playlistId, audiotrackId));
+            var playlist = _context.Playlists
+                .Include(p => p.Audiotracks)
+                .Single(p => p.Id == playlistId);
+            var audiotrack = _context.Audiotracks
+                .Single(a => a.Id == audiotrackId);
+
+            playlist.Audiotracks.Remove(audiotrack);
             await _context.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -127,14 +146,21 @@ public class PlaylistAudiotrackRepository(MewingPadPgSQLDbContext context) : IPl
         {
             foreach (var aid in audiotrackIds)
             {
-                var paDbModel = await _context.PlaylistsAudiotracks
-                    .FirstOrDefaultAsync(pa => pa.PlaylistId == playlistId &&
-                                               pa.AudiotrackId == aid);
+                var playlist = _context.Playlists
+                    .Include(p => p.Audiotracks)
+                    .Single(p => p.Id == playlistId);
+                var audiotrack = _context.Audiotracks
+                    .Single(a => a.Id == aid);
+                
+                playlist.Audiotracks.Remove(audiotrack);
+                // var paDbModel = await _context.PlaylistsAudiotracks
+                //     .FirstOrDefaultAsync(pa => pa.PlaylistId == playlistId &&
+                //                                pa.AudiotrackId == aid);
 
-                if (paDbModel is not null)
-                {
-                    _context.PlaylistsAudiotracks.Remove(paDbModel);
-                }
+                // if (paDbModel is not null)
+                // {
+                //     _context.PlaylistsAudiotracks.Remove(paDbModel);
+                // }
             }
             await _context.SaveChangesAsync();
         }
@@ -153,9 +179,12 @@ public class PlaylistAudiotrackRepository(MewingPadPgSQLDbContext context) : IPl
         bool inPlaylist;
         try
         {
-             inPlaylist = await _context.PlaylistsAudiotracks
-                    .AnyAsync(pa => pa.AudiotrackId == audiotrackId &&
-                                    pa.PlaylistId == playlistId);
+            inPlaylist = await _context.Playlists
+                .AnyAsync(p => p.Id == playlistId 
+                               && p.Audiotracks.Any(pa => pa.Id == audiotrackId));
+            // inPlaylist = await _context.PlaylistsAudiotracks
+            //        .AnyAsync(pa => pa.AudiotrackId == audiotrackId &&
+            //                        pa.PlaylistId == playlistId);
         }
         catch (Exception ex)
         {

@@ -18,7 +18,7 @@ public class TagDbModel(Guid id,
     public Guid AuthorId { get; set; } = authorId;
 
     [Required]
-    [Column("name", TypeName = "varchar(64)")]
+    [Column("name")]
     public string Name { get; set; } = name;
 
     [BsonIgnore]

@@ -1,18 +1,17 @@
 using MewingPad.Common.Entities;
 using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
-using MewingPad.Database.PgSQL.Context;
+using MewingPad.Database.MongoDB.Context;
 using MewingPad.Database.Models.Converters;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
-namespace MewingPad.Database.PgSQL.Repositories;
+namespace MewingPad.Database.MongoDB.Repositories;
 
-public class ScoreRepository(MewingPadPgSQLDbContext context) : IScoreRepository
+public class ScoreRepository(MewingPadMongoDbContext context) : IScoreRepository
 {
-    private readonly MewingPadPgSQLDbContext _context = context;
-
-    private readonly ILogger _logger = Log.ForContext<ScoreRepository>();
+	private readonly MewingPadMongoDbContext _context = context;
+	private readonly ILogger _logger = Log.ForContext<AudiotrackRepository>();
 
     public async Task AddScore(Score score)
     {

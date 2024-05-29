@@ -21,6 +21,8 @@ public class MewingPadMongoDbContext(DbContextOptions<MewingPadMongoDbContext> o
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<ScoreDbModel>().HasKey(u => new { u.AuthorId, u.AudiotrackId });
+
         modelBuilder.Entity<UserDbModel>().ToCollection("Users");
         modelBuilder.Entity<PlaylistDbModel>().ToCollection("Playlists");
         modelBuilder.Entity<AudiotrackDbModel>().ToCollection("Audiotracks");

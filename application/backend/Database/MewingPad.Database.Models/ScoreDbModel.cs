@@ -18,7 +18,7 @@ public class ScoreDbModel(Guid authorId,
     public Guid AudiotrackId { get; set; } = audiotrackId;
 
     [Required]
-    [Column("value", TypeName = "integer")]
+    [Column("value")]
     public int Value { get; set; } = value;
 
 [BsonIgnore]

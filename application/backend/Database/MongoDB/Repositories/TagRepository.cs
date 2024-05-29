@@ -1,17 +1,16 @@
 using MewingPad.Common.Entities;
 using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
-using MewingPad.Database.PgSQL.Context;
+using MewingPad.Database.MongoDB.Context;
 using MewingPad.Database.Models.Converters;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
-namespace MewingPad.Database.PgSQL.Repositories;
+namespace MewingPad.Database.MongoDB.Repositories;
 
-public class TagRepository(MewingPadPgSQLDbContext context) : ITagRepository
+public class TagRepository(MewingPadMongoDbContext context) : ITagRepository
 {
-    private readonly MewingPadPgSQLDbContext _context = context;
-
+    private readonly MewingPadMongoDbContext _context = context;
     private readonly ILogger _logger = Log.ForContext<TagRepository>();
 
     public async Task AddTag(Tag tag)
@@ -56,9 +55,10 @@ public class TagRepository(MewingPadPgSQLDbContext context) : ITagRepository
         List<Tag> tags;
         try
         {
-            tags = await _context.Tags
-                    .Select(t => TagConverter.DbToCoreModel(t))
-                    .ToListAsync();
+            var found = await _context.Tags
+                .Where(_ => true)
+                .ToListAsync();
+            tags = found.Select(t => TagConverter.DbToCoreModel(t)).ToList();
         }
         catch (Exception ex)
         {

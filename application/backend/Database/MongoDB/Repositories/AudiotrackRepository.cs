@@ -1,27 +1,28 @@
 using MewingPad.Common.Entities;
 using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
-using MewingPad.Database.PgSQL.Context;
+using MewingPad.Database.MongoDB.Context;
 using MewingPad.Database.Models.Converters;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using MongoDB.Driver;
 
-namespace MewingPad.Database.PgSQL.Repositories;
+namespace MewingPad.Database.MongoDB.Repositories;
 
-public class AudiotrackRepository(MewingPadPgSQLDbContext context) : IAudiotrackRepository
+public class AudiotrackRepository(MewingPadMongoDbContext context) : IAudiotrackRepository
 {
-    private readonly MewingPadPgSQLDbContext _context = context;
+	private readonly MewingPadMongoDbContext _context = context;
+	private readonly ILogger _logger = Log.ForContext<AudiotrackRepository>();
 
-    private readonly ILogger _logger = Log.ForContext<AudiotrackRepository>();
-
-    public async Task AddAudiotrack(Audiotrack audiotrack)
+	public async Task AddAudiotrack(Audiotrack audiotrack)
     {
         _logger.Verbose("Entering AddAudiotrack");
 
         try
         {
-            await _context.Audiotracks.AddAsync(AudiotrackConverter.CoreToDbModel(audiotrack));
-            await _context.SaveChangesAsync();
+            var audio = AudiotrackConverter.CoreToDbModel(audiotrack);
+			await _context.AddAsync(audio);
+			await _context.SaveChangesAsync();
         }
         catch (Exception ex)
         {
@@ -37,10 +38,9 @@ public class AudiotrackRepository(MewingPadPgSQLDbContext context) : IAudiotrack
 
         try
         {
-            await _context.Audiotracks.Where(a => a.Id == audiotrackId).ExecuteDeleteAsync();
-            // await _context.PlaylistsAudiotracks.Where(pa => pa.AudiotrackId == audiotrackId).ExecuteDeleteAsync();
-            // await _context.TagsAudiotracks.Where(ta => ta.AudiotrackId == audiotrackId).ExecuteDeleteAsync();
-            await _context.SaveChangesAsync();
+			var toDelete = await _context.Audiotracks.FirstOrDefaultAsync(a => a.Id == audiotrackId);
+			_context.Remove(toDelete!);
+			await _context.SaveChangesAsync();
         }
         catch (Exception ex)
         {
@@ -57,9 +57,10 @@ public class AudiotrackRepository(MewingPadPgSQLDbContext context) : IAudiotrack
         List<Audiotrack> audios;
         try
         {
-            audios = await _context.Audiotracks
-                    .Select(a => AudiotrackConverter.DbToCoreModel(a))
-                    .ToListAsync();
+            var found = await _context.Audiotracks
+                .Where(_ => true)
+                .ToListAsync();
+            audios = found.Select(a => AudiotrackConverter.DbToCoreModel(a)).ToList();
         }
         catch (Exception ex)
         {
@@ -96,10 +97,10 @@ public class AudiotrackRepository(MewingPadPgSQLDbContext context) : IAudiotrack
         List<Audiotrack> audiotracks;
         try
         {
-            audiotracks = await _context.Audiotracks
+            var found = await _context.Audiotracks
                     .Where(a => a.Title.Contains(title))
-                    .Select(a => AudiotrackConverter.DbToCoreModel(a))
                     .ToListAsync();
+            audiotracks = found.Select(a => AudiotrackConverter.DbToCoreModel(a)).ToList();
         }
         catch (Exception ex)
         {

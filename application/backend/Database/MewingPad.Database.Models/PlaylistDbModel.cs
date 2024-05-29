@@ -16,7 +16,7 @@ public class PlaylistDbModel(Guid id,
     [BsonId]
     public Guid Id { get; set; } = id;
 
-    [Column("title", TypeName = "varchar(64)")]
+    [Column("title")]
     public string Title { get; set; } = title;
 
     [ForeignKey(nameof(User))]
@@ -26,7 +26,7 @@ public class PlaylistDbModel(Guid id,
     [BsonIgnore]
     public UserDbModel? User { get; set; }
 
-    [BsonIgnore]
+    // [BsonIgnore]
     public List<AudiotrackDbModel> Audiotracks { get; } = [];
     [BsonIgnore]
     public List<PlaylistAudiotrackDbModel> PlaylistsAudiotracks { get; } = [];

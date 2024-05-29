@@ -26,11 +26,11 @@ public class ReportDbModel(Guid id,
     public Guid AudiotrackId { get; set; } = audiotrackId;
 
     [Required]
-    [Column("text", TypeName = "text")]
+    [Column("text")]
     public string Text { get; set; } = text;
 
     [Required]
-    [Column("status", TypeName = "varchar(50)")]
+    [Column("status")]
     public ReportStatus Status { get; set; } = status;
 
     [BsonIgnore]

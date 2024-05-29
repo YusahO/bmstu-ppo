@@ -18,6 +18,22 @@ public class MewingPadPgSQLDbContext(DbContextOptions<MewingPadPgSQLDbContext> o
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<AudiotrackDbModel>(
+            eb => eb.Property(b => b.Title).HasColumnType("varchar(64)"));
+        modelBuilder.Entity<PlaylistDbModel>(
+            eb => eb.Property(b => b.Title).HasColumnType("varchar(64)"));
+        modelBuilder.Entity<ReportDbModel>(
+            eb => eb.Property(b => b.Status).HasColumnType("varchar(50)"));
+        modelBuilder.Entity<TagDbModel>(
+            eb => eb.Property(b => b.Name).HasColumnType("varchar(64)"));
+        modelBuilder.Entity<UserDbModel>(
+            eb =>
+            {
+                eb.Property(b => b.Username).HasColumnType("varchar(64)");
+                eb.Property(b => b.PasswordHashed).HasColumnType("varchar(128)");
+                eb.Property(b => b.Email).HasColumnType("varchar(320)");
+            });
+
         modelBuilder.Entity<ScoreDbModel>().HasKey(u => new { u.AuthorId, u.AudiotrackId });
         modelBuilder.Entity<AudiotrackDbModel>()
             .HasMany(e => e.Playlists)

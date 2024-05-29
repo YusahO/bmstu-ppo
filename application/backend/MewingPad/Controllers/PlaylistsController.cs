@@ -85,7 +85,6 @@ public class PlaylistsController(IPlaylistService playlistService) : ControllerB
                 _logger.Warning("Access to playlist {@PlaylistId} denied to user {@UserId}", playlistId, userId);
                 return StatusCode(StatusCodes.Status403Forbidden, "");
             }
-
             var audiotracks = from a in await _playlistService.GetAllAudiotracksFromPlaylist(playlistId)
                               select AudiotrackConverter.CoreModelToDto(a);
             return Ok(audiotracks);
