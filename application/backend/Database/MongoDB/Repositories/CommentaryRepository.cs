@@ -2,7 +2,7 @@ using MewingPad.Common.Entities;
 using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.MongoDB.Context;
-using MewingPad.Database.Models.Converters;
+using MewingPad.Database.MongoDB.Models.Converters;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -55,10 +55,10 @@ public class CommentaryRepository(MewingPadMongoDbContext context) : ICommentary
         List<Commentary> commentaries;
         try
         {
-            commentaries = await _context.Commentaries
+            var found = await _context.Commentaries
                     .Where(c => c.AudiotrackId == audiotrackId)
-                    .Select(c => CommentaryConverter.DbToCoreModel(c))
                     .ToListAsync();
+            commentaries = found.Select(c => CommentaryConverter.DbToCoreModel(c)).ToList();
         }
         catch (Exception ex)
         {

@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using MewingPad.Common.Entities;
 
-namespace MewingPad.Database.Models.Converters;
+namespace MewingPad.Database.MongoDB.Models.Converters;
 
 public static class AudiotrackConverter
 {

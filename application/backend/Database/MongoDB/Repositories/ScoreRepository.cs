@@ -2,7 +2,7 @@ using MewingPad.Common.Entities;
 using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.MongoDB.Context;
-using MewingPad.Database.Models.Converters;
+using MewingPad.Database.MongoDB.Models.Converters;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -55,9 +55,8 @@ public class ScoreRepository(MewingPadMongoDbContext context) : IScoreRepository
         List<Score> scores;
         try
         {
-            scores = await _context.Scores
-                    .Select(s => ScoreConverter.DbToCoreModel(s))
-                    .ToListAsync();
+            var found = await _context.Scores.ToListAsync();
+            scores = found.Select(s => ScoreConverter.DbToCoreModel(s)).ToList();
         }
         catch (Exception ex)
         {
@@ -75,10 +74,10 @@ public class ScoreRepository(MewingPadMongoDbContext context) : IScoreRepository
         List<Score> scores;
         try
         {
-            scores = await _context.Scores
+            var found = await _context.Scores
                     .Where(s => s.AudiotrackId == audiotrackId)
-                    .Select(s => ScoreConverter.DbToCoreModel(s))
                     .ToListAsync();
+            scores = found.Select(s => ScoreConverter.DbToCoreModel(s)).ToList();
         }
         catch (Exception ex)
         {

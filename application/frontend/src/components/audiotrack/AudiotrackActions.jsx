@@ -4,7 +4,7 @@ import DeletePrompt from '../common/DeletePrompt.jsx';
 import { apiAuth } from '../../api/mpFetch.js';
 import { AlertTypes, useAlertContext } from '../../context/AlertContext.js';
 
-const AudiotrackActions = ({ audiotrack, onInfoClicked, onEditClicked, needUpdate, showAdminActions }) => {
+const AudiotrackActions = ({ audiotrack, onInfoClicked = null, onEditClicked, needUpdate, showAdminActions }) => {
   const [showDeletePrompt, setShowDeletePrompt] = useState(false);
   const { addAlert } = useAlertContext();
 
@@ -22,12 +22,14 @@ const AudiotrackActions = ({ audiotrack, onInfoClicked, onEditClicked, needUpdat
 
   return (
     <div className='audio-actions'>
-      <button
-        className='audio-actions-button'
-        onClick={onInfoClicked}
-      >
-        i
-      </button>
+      {onInfoClicked !== null &&
+        <button
+          className='audio-actions-button'
+          onClick={onInfoClicked}
+        >
+          i
+        </button>
+      }
       {showAdminActions &&
         <div style={{ display: 'flex', gap: '5px', flexDirection: 'row-reverse' }}>
           <button className='audio-actions-button' onClick={onEditClicked}>

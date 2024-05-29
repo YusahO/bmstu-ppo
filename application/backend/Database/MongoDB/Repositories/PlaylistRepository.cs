@@ -2,7 +2,7 @@ using MewingPad.Common.Entities;
 using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.MongoDB.Context;
-using MewingPad.Database.Models.Converters;
+using MewingPad.Database.MongoDB.Models.Converters;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -55,9 +55,8 @@ public class PlaylistRepository(MewingPadMongoDbContext context) : IPlaylistRepo
         List<Playlist> playlists;
         try
         {
-            playlists = await _context.Playlists
-                    .Select(p => PlaylistConverter.DbToCoreModel(p)!)
-                    .ToListAsync();
+            var found = await _context.Playlists.ToListAsync();
+            playlists = found.Select(p => PlaylistConverter.DbToCoreModel(p)).ToList();
         }
         catch (Exception ex)
         {
@@ -95,10 +94,10 @@ public class PlaylistRepository(MewingPadMongoDbContext context) : IPlaylistRepo
 
         try
         {
-            playlists = await _context.Playlists
-                   .Where(p => p.UserId == userId)
-                   .Select(p => PlaylistConverter.DbToCoreModel(p))
-                   .ToListAsync();
+            var found = await _context.Playlists
+                .Where(p => p.UserId == userId)
+                .ToListAsync();
+            playlists = found.Select(p => PlaylistConverter.DbToCoreModel(p)).ToList();
         }
         catch (Exception ex)
         {

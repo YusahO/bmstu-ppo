@@ -2,7 +2,7 @@ using MewingPad.Common.Entities;
 using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.MongoDB.Context;
-using MewingPad.Database.Models.Converters;
+using MewingPad.Database.MongoDB.Models.Converters;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -37,9 +37,8 @@ public class ReportRepository(MewingPadMongoDbContext context) : IReportReposito
         List<Report> reports;
         try
         {
-            reports = await _context.Reports
-                    .Select(r => ReportConverter.DbToCoreModel(r))
-                    .ToListAsync();
+            var found = await _context.Reports.ToListAsync();
+            reports = found.Select(r => ReportConverter.DbToCoreModel(r)).ToList();
         }
         catch (Exception ex)
         {
@@ -55,7 +54,6 @@ public class ReportRepository(MewingPadMongoDbContext context) : IReportReposito
         _logger.Verbose("Entering GetReportById");
 
         Report? report;
-
         try
         {
             var reportDbModel = await _context.Reports.FindAsync(reportId);

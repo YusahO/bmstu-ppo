@@ -2,7 +2,7 @@ using MewingPad.Common.Entities;
 using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.MongoDB.Context;
-using MewingPad.Database.Models.Converters;
+using MewingPad.Database.MongoDB.Models.Converters;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -37,10 +37,10 @@ public class UserRepository(MewingPadMongoDbContext context) : IUserRepository
         List<User> admins;
         try
         {
-            admins = await _context.Users
-                    .Where(u => u.IsAdmin == true)
-                    .Select(u => UserConverter.DbToCoreModel(u))
-                    .ToListAsync();
+            var found = await _context.Users
+                .Where(u => u.IsAdmin == true)
+                .ToListAsync();
+            admins = found.Select(u => UserConverter.DbToCoreModel(u)).ToList();
         }
         catch (Exception ex)
         {
@@ -58,9 +58,8 @@ public class UserRepository(MewingPadMongoDbContext context) : IUserRepository
         List<User> users;
         try
         {
-            users = await _context.Users
-                    .Select(u => UserConverter.DbToCoreModel(u))
-                    .ToListAsync();
+            var found = await _context.Users.ToListAsync();
+            users = found.Select(u => UserConverter.DbToCoreModel(u)).ToList();
         }
         catch (Exception ex)
         {

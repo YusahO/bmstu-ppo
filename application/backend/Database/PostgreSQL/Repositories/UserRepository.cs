@@ -2,7 +2,7 @@
 using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.PgSQL.Context;
-using MewingPad.Database.Models.Converters;
+using MewingPad.Database.PgSQL.Models.Converters;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 

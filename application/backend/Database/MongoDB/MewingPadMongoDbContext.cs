@@ -1,9 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using MongoDB.Bson;
-using MongoDB.Driver;
-using Microsoft.Extensions.Configuration;
 using MongoDB.EntityFrameworkCore.Extensions;
-using MewingPad.Database.Models;
+using MewingPad.Database.MongoDB.Models;
 
 namespace MewingPad.Database.MongoDB.Context;
 

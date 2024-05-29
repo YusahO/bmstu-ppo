@@ -1,27 +1,27 @@
 using System.Diagnostics.CodeAnalysis;
 using MewingPad.Common.Entities;
 
-namespace MewingPad.Database.Models.Converters;
+namespace MewingPad.Database.PgSQL.Models.Converters;
 
-public static class TagConverter
+public static class ScoreConverter
 {
     [return: NotNullIfNotNull(nameof(model))]
-    public static Tag? DbToCoreModel(TagDbModel? model)
+    public static Score? DbToCoreModel(ScoreDbModel? model)
     {
         return model is not null
-               ? new(id: model.Id,
+               ? new(audiotrackId: model.AudiotrackId,
                      authorId: model.AuthorId,
-                     name: model.Name)
+                     value: model.Value)
                : default;
     }
 
     [return: NotNullIfNotNull(nameof(model))]
-    public static TagDbModel? CoreToDbModel(Tag? model)
+    public static ScoreDbModel? CoreToDbModel(Score? model)
     {
         return model is not null
-               ? new(id: model.Id,
+               ? new(audiotrackId: model.AudiotrackId,
                      authorId: model.AuthorId,
-                     name: model.Name)
+                     value: model.Value)
                : default;
     }
 }

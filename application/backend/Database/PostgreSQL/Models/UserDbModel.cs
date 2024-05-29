@@ -1,9 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using MongoDB.Bson.Serialization.Attributes;
 
-namespace MewingPad.Database.Models;
+namespace MewingPad.Database.PgSQL.Models;
 
 [Index(nameof(FavouritesId), IsUnique = true)]
 [Table("Users")]
@@ -16,7 +15,6 @@ public class UserDbModel(Guid id,
 {
     [Key]
     [Column("id")]
-    [BsonId]
     public Guid Id { get; set; } = id;
 
     [ForeignKey("FavouritesId")]
@@ -39,10 +37,7 @@ public class UserDbModel(Guid id,
     [Column("is_admin")]
     public bool IsAdmin { get; set; } = isAdmin;
 
-    [BsonIgnore]
     public ICollection<PlaylistDbModel> Playlists { get; set; } = [];
-    [BsonIgnore]
     public ICollection<ScoreDbModel> Scores { get; set; } = [];
-    [BsonIgnore]
     public PlaylistDbModel? FavouritesPlaylist { get; set; }
 }

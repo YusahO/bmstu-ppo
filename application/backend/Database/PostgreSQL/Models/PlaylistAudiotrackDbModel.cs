@@ -1,10 +1,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using MongoDB.Bson.Serialization.Attributes;
 
-namespace MewingPad.Database.Models;
+namespace MewingPad.Database.PgSQL.Models;
 
 [Table("PlaylistsAudiotracks")]
-[BsonIgnoreExtraElements]
 public class PlaylistAudiotrackDbModel(Guid playlistId,
                                        Guid audiotrackId)
 {
@@ -16,8 +14,6 @@ public class PlaylistAudiotrackDbModel(Guid playlistId,
     [Column("audiotrack_id")]
     public Guid AudiotrackId { get; set; } = audiotrackId;
 
-    [BsonIgnore]
     public PlaylistDbModel? Playlist { get; set; }
-    [BsonIgnore]
     public AudiotrackDbModel? Audiotrack { get; set; }
 }

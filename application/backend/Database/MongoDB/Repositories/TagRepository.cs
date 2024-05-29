@@ -2,7 +2,7 @@ using MewingPad.Common.Entities;
 using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.MongoDB.Context;
-using MewingPad.Database.Models.Converters;
+using MewingPad.Database.MongoDB.Models.Converters;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -55,9 +55,7 @@ public class TagRepository(MewingPadMongoDbContext context) : ITagRepository
         List<Tag> tags;
         try
         {
-            var found = await _context.Tags
-                .Where(_ => true)
-                .ToListAsync();
+            var found = await _context.Tags.ToListAsync();
             tags = found.Select(t => TagConverter.DbToCoreModel(t)).ToList();
         }
         catch (Exception ex)

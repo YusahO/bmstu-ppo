@@ -2,7 +2,7 @@ using MewingPad.Common.Entities;
 using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.MongoDB.Context;
-using MewingPad.Database.Models.Converters;
+using MewingPad.Database.MongoDB.Models.Converters;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -10,8 +10,8 @@ namespace MewingPad.Database.MongoDB.Repositories;
 
 public class TagAudiotrackRepository(MewingPadMongoDbContext context) : ITagAudiotrackRepository
 {
-	private readonly MewingPadMongoDbContext _context = context;
-	private readonly ILogger _logger = Log.ForContext<AudiotrackRepository>();
+    private readonly MewingPadMongoDbContext _context = context;
+    private readonly ILogger _logger = Log.ForContext<AudiotrackRepository>();
 
     public async Task DeleteByTag(Guid tagId)
     {
@@ -19,16 +19,13 @@ public class TagAudiotrackRepository(MewingPadMongoDbContext context) : ITagAudi
 
         try
         {
-            var pairs = await _context.Tags
-                .Where(t => t.Id == tagId)
-                .Include(t => t.Audiotracks)
-                    .ThenInclude(ta => ta.Id)
+            var audios = await _context.Audiotracks
+                .Where(a => a.TagIds.Contains(tagId))
                 .ToListAsync();
-            if (pairs.Count == 0)
+            for (int i = 0; i < audios.Count; ++i)
             {
-                return;
+                audios[i].TagIds.Remove(tagId);
             }
-            _context.RemoveRange(pairs);
             await _context.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -39,30 +36,14 @@ public class TagAudiotrackRepository(MewingPadMongoDbContext context) : ITagAudi
         _logger.Verbose("Exiting DeleteByTag");
     }
 
-    public async Task DeleteByAudiotrack(Guid audiotrackId)
+    public Task DeleteByAudiotrack(Guid audiotrackId)
     {
         _logger.Verbose("Entering DeleteByTag");
-
-        try
-        {
-            var pairs = await _context.Audiotracks
-                .Where(a => a.Id == audiotrackId)
-                .Include(a => a.Tags)
-                    .ThenInclude(ta => ta.Id)
-                .ToListAsync();
-            if (pairs.Count == 0)
-            {
-                return;
-            }
-            _context.RemoveRange(pairs);
-            await _context.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            throw new RepositoryException(ex.Message, ex.InnerException);
-        }
+        
+        _logger.Information("Nothing to do in MongoDB");
 
         _logger.Verbose("Exiting DeleteByTag");
+        return Task.CompletedTask;
     }
 
     public async Task AssignTagToAudiotrack(Guid audiotrackId, Guid tagId)
@@ -71,14 +52,10 @@ public class TagAudiotrackRepository(MewingPadMongoDbContext context) : ITagAudi
 
         try
         {
-            // await _context.TagsAudiotracks.AddAsync(new(tagId, audiotrackId));
-            var tag = _context.Tags
-                .Include(t => t.Audiotracks)
-                .Single(t => t.Id == tagId);
-            var audiotrack = _context.Audiotracks
-                .Single(a => a.Id == audiotrackId);
+            var foundAudio = await _context.Audiotracks
+                .SingleAsync(a => a.Id == audiotrackId);
+            foundAudio.TagIds.Add(tagId);
 
-            tag.Audiotracks.Add(audiotrack);
             await _context.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -93,23 +70,22 @@ public class TagAudiotrackRepository(MewingPadMongoDbContext context) : ITagAudi
     {
         _logger.Verbose("Entering GetAudiotracksWithTags({Ids})", tagIds);
 
-        List<Audiotrack?> audiotracks = [];
-        // try
-        // {
-        //     audiotracks = await _context.TagsAudiotracks
-        //         .Where(ta => tagIds.Contains(ta.TagId))
-        //         .Include(ta => ta.Audiotrack)
-        //         .Select(ta => AudiotrackConverter.DbToCoreModel(ta.Audiotrack))
-        //         .Distinct()
-        //         .ToListAsync();
-        // }
-        // catch (Exception ex)
-        // {
-        //     throw new RepositoryException(ex.Message, ex.InnerException);
-        // }
+        List<Audiotrack> audiotracks;
+        try
+        {
+            var found = await _context.Audiotracks
+                .Where(a => a.TagIds.Any(atid => tagIds.Any(tid => atid == tid)))
+                .Distinct()
+                .ToListAsync();
+            audiotracks = found.Select(a => AudiotrackConverter.DbToCoreModel(a)).ToList();
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
+        }
 
         _logger.Verbose("Exiting GetAudiotracksWithTags");
-        return audiotracks!;
+        return audiotracks;
     }
 
     public async Task<List<Tag>> GetAudiotrackTags(Guid audiotrackId)
@@ -117,18 +93,23 @@ public class TagAudiotrackRepository(MewingPadMongoDbContext context) : ITagAudi
         _logger.Verbose($"Entering GetAudiotrackTags({audiotrackId})");
 
         List<Tag?> tags = [];
-        // try
-        // {
-        //     tags = await _context.TagsAudiotracks
-        //             .Where(ta => ta.AudiotrackId == audiotrackId)
-        //             .Include(ta => ta.Tag)
-        //             .Select(ta => TagConverter.DbToCoreModel(ta.Tag))
-        //             .ToListAsync();
-        // }
-        // catch (Exception ex)
-        // {
-        //     throw new RepositoryException(ex.Message, ex.InnerException);
-        // }
+        try
+        {
+            var foundIds = await _context.Audiotracks
+                .Where(a => a.Id == audiotrackId)
+                .Select(a => a.TagIds)
+                .FirstAsync();
+            
+            foreach (var tid in foundIds)
+            {
+                var tag = _context.Tags.Single(t => t.Id == tid);
+                tags.Add(TagConverter.DbToCoreModel(tag));
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
+        }
 
         _logger.Verbose("Exiting GetAudiotrackTags");
         return tags!;
@@ -138,17 +119,18 @@ public class TagAudiotrackRepository(MewingPadMongoDbContext context) : ITagAudi
     {
         _logger.Verbose($"Entering RemoveTagFromAudiotrack({audiotrackId}, {tagId})");
 
-        // try
-        // {
-        //     _context.TagsAudiotracks.Remove(new(tagId, audiotrackId));
-        //     await _context.SaveChangesAsync();
-        // }
-        // catch (Exception ex)
-        // {
-        //     throw new RepositoryException(ex.Message, ex.InnerException);
-        // }
+        try
+        {
+            var audio = await _context.Audiotracks
+                .SingleAsync(a => a.Id == audiotrackId);
+            audio.TagIds.Remove(tagId);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new RepositoryException(ex.Message, ex.InnerException);
+        }
 
         _logger.Verbose("Exiting RemoveTagFromAudiotrack");
-
     }
 }

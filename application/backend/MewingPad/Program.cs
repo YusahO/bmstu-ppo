@@ -1,6 +1,5 @@
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.PgSQL.Context;
-using MewingPad.Database.PgSQL.Repositories;
 using MewingPad.Services.UserService;
 using Microsoft.EntityFrameworkCore;
 using MewingPad.Services.AudiotrackService;
@@ -140,7 +139,7 @@ internal class Program
                 var client = new MongoClient(builder.Configuration.GetSection("MongoDB").GetConnectionString("default"));
                 builder.Services.AddDbContext<MewingPadMongoDbContext>(opt =>
                 {
-                    opt.UseMongoDB(client, "MewingPadDB");
+                    opt.UseMongoDB(client, builder.Configuration["MongoDB:DatabaseName"]!);
                 });
 
                 builder.Services.AddScoped<IPlaylistAudiotrackRepository, MewingPad.Database.MongoDB.Repositories.PlaylistAudiotrackRepository>();

@@ -2,7 +2,7 @@ using MewingPad.Common.Entities;
 using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.MongoDB.Context;
-using MewingPad.Database.Models.Converters;
+using MewingPad.Database.MongoDB.Models.Converters;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -19,16 +19,13 @@ public class PlaylistAudiotrackRepository(MewingPadMongoDbContext context) : IPl
 
         try
         {
-            var pairs = await _context.Playlists
-                .Where(p => p.Id == playlistId)
-                .Include(p => p.Audiotracks)
-                    .ThenInclude(pa => pa.Id)
+            var audios = await _context.Audiotracks
+                .Where(a => a.PlaylistIds.Contains(playlistId))
                 .ToListAsync();
-            if (pairs.Count == 0)
+            for (int i = 0; i < audios.Count; ++i)
             {
-                return;
+                audios[i].PlaylistIds.Remove(playlistId);
             }
-            _context.RemoveRange(pairs);
             await _context.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -39,30 +36,14 @@ public class PlaylistAudiotrackRepository(MewingPadMongoDbContext context) : IPl
         _logger.Verbose("Exiting DeleteByPlaylist");
     }
 
-    public async Task DeleteByAudiotrack(Guid audiotrackId)
+    public Task DeleteByAudiotrack(Guid audiotrackId)
     {
         _logger.Verbose("Entering DeleteByAudiotrack");
 
-        try
-        {
-            var pairs = await _context.Audiotracks
-                .Where(a => a.Id == audiotrackId)
-                .Include(a => a.Playlists)
-                    .ThenInclude(pa => pa.Id)
-                .ToListAsync();
-            if (pairs.Count == 0)
-            {
-                return;
-            }
-            _context.RemoveRange(pairs);
-            await _context.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            throw new RepositoryException(ex.Message, ex.InnerException);
-        }
+        _logger.Information("Nothing to do in MongoDB");
 
         _logger.Verbose("Exiting DeleteByAudiotrack");
+        return Task.CompletedTask;
     }
 
     public async Task AddAudiotrackToPlaylist(Guid playlistId, Guid audiotrackId)
@@ -71,13 +52,9 @@ public class PlaylistAudiotrackRepository(MewingPadMongoDbContext context) : IPl
 
         try
         {
-            var playlist = _context.Playlists
-                .Include(p => p.Audiotracks)
-                .Single(p => p.Id == playlistId);
-            var audiotrack = _context.Audiotracks
-                .Single(a => a.Id == audiotrackId);
-
-            playlist.Audiotracks.Add(audiotrack);
+            var audio = await _context.Audiotracks
+                .SingleAsync(a => a.Id == audiotrackId);
+            audio.PlaylistIds.Add(playlistId);
             await _context.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -95,16 +72,10 @@ public class PlaylistAudiotrackRepository(MewingPadMongoDbContext context) : IPl
         List<Audiotrack> audiotracks;
         try
         {
-            // audiotracks = await _context.PlaylistsAudiotracks
-            //     .Where(pa => pa.PlaylistId == playlistId)
-            //     .Include(pa => pa.Audiotrack)
-            //     .Select(pa => AudiotrackConverter.DbToCoreModel(pa.Audiotrack))
-            //     .ToListAsync();
-            audiotracks = await _context.Playlists
-                .Where(p => p.Id == playlistId)
-                .SelectMany(p => p.Audiotracks)
-                .Select(a => AudiotrackConverter.DbToCoreModel(a))
+            var audios = await _context.Audiotracks
+                .Where(a => a.PlaylistIds.Contains(playlistId))
                 .ToListAsync();
+            audiotracks = audios.Select(a => AudiotrackConverter.DbToCoreModel(a)).ToList();
         }
         catch (Exception ex)
         {
@@ -121,13 +92,9 @@ public class PlaylistAudiotrackRepository(MewingPadMongoDbContext context) : IPl
 
         try
         {
-            var playlist = _context.Playlists
-                .Include(p => p.Audiotracks)
-                .Single(p => p.Id == playlistId);
-            var audiotrack = _context.Audiotracks
-                .Single(a => a.Id == audiotrackId);
-
-            playlist.Audiotracks.Remove(audiotrack);
+            var audio = await _context.Audiotracks
+                .SingleAsync(a => a.Id == audiotrackId);
+            audio.PlaylistIds.Remove(playlistId);
             await _context.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -146,21 +113,9 @@ public class PlaylistAudiotrackRepository(MewingPadMongoDbContext context) : IPl
         {
             foreach (var aid in audiotrackIds)
             {
-                var playlist = _context.Playlists
-                    .Include(p => p.Audiotracks)
-                    .Single(p => p.Id == playlistId);
-                var audiotrack = _context.Audiotracks
-                    .Single(a => a.Id == aid);
-                
-                playlist.Audiotracks.Remove(audiotrack);
-                // var paDbModel = await _context.PlaylistsAudiotracks
-                //     .FirstOrDefaultAsync(pa => pa.PlaylistId == playlistId &&
-                //                                pa.AudiotrackId == aid);
-
-                // if (paDbModel is not null)
-                // {
-                //     _context.PlaylistsAudiotracks.Remove(paDbModel);
-                // }
+                var audio = await _context.Audiotracks
+                    .SingleAsync(a => a.Id == aid);
+                audio.PlaylistIds.Remove(playlistId);
             }
             await _context.SaveChangesAsync();
         }
@@ -179,12 +134,8 @@ public class PlaylistAudiotrackRepository(MewingPadMongoDbContext context) : IPl
         bool inPlaylist;
         try
         {
-            inPlaylist = await _context.Playlists
-                .AnyAsync(p => p.Id == playlistId 
-                               && p.Audiotracks.Any(pa => pa.Id == audiotrackId));
-            // inPlaylist = await _context.PlaylistsAudiotracks
-            //        .AnyAsync(pa => pa.AudiotrackId == audiotrackId &&
-            //                        pa.PlaylistId == playlistId);
+            inPlaylist = await _context.Audiotracks
+                .AnyAsync(a => a.Id == audiotrackId && a.PlaylistIds.Contains(playlistId));
         }
         catch (Exception ex)
         {

@@ -1,9 +1,8 @@
 using MewingPad.Common.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using MongoDB.Bson.Serialization.Attributes;
 
-namespace MewingPad.Database.Models;
+namespace MewingPad.Database.PgSQL.Models;
 
 [Table("Reports")]
 public class ReportDbModel(Guid id,
@@ -14,7 +13,6 @@ public class ReportDbModel(Guid id,
 {
     [Key]
     [Column("id")]
-    [BsonId]
     public Guid Id { get; set; } = id;
 
     [ForeignKey("Author")]
@@ -33,8 +31,6 @@ public class ReportDbModel(Guid id,
     [Column("status")]
     public ReportStatus Status { get; set; } = status;
 
-    [BsonIgnore]
     public UserDbModel? Author { get; set; }
-    [BsonIgnore]
     public AudiotrackDbModel? Audiotrack { get; set; }
 }

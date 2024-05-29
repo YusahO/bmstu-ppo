@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MewingPad.Database.Models;
+using MewingPad.Database.PgSQL.Models;
 
 namespace MewingPad.Database.PgSQL.Context;
 

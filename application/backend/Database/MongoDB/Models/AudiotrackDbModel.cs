@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace MewingPad.Database.Models;
+namespace MewingPad.Database.MongoDB.Models;
 
 [Table("Audiotracks")]
 [BsonIgnoreExtraElements]
@@ -24,7 +24,6 @@ public class AudiotrackDbModel(Guid id,
     [Column("duration")]
     public float Duration { get; set; } = duration;
 
-    [ForeignKey("Author")]
     [Column("author_id")]
     public Guid AuthorId { get; set; } = authorId;
 
@@ -32,16 +31,9 @@ public class AudiotrackDbModel(Guid id,
     [Column("filepath")]
     public string Filepath { get; set; } = filepath;
 
-    [BsonIgnore]
-    public UserDbModel? Author { get; set; }
+    [BsonElement("tag_ids")]
+    public List<Guid> TagIds { get; set; } = [];
 
-    // [BsonIgnore]
-    public List<PlaylistDbModel> Playlists { get; } = [];
-    [BsonIgnore]
-    public List<PlaylistAudiotrackDbModel> PlaylistsAudiotracks { get; set; } = [];
-
-    [BsonIgnore]
-    public List<TagDbModel> Tags { get; } = [];
-    [BsonIgnore]
-    public List<TagAudiotrackDbModel> TagsAudiotracks { get; set; } = [];
+    [BsonElement("playlist_ids")]
+    public List<Guid> PlaylistIds { get; set; } = [];
 }

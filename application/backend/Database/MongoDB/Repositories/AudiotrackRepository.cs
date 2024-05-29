@@ -2,7 +2,7 @@ using MewingPad.Common.Entities;
 using MewingPad.Common.Exceptions;
 using MewingPad.Common.IRepositories;
 using MewingPad.Database.MongoDB.Context;
-using MewingPad.Database.Models.Converters;
+using MewingPad.Database.MongoDB.Models.Converters;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using MongoDB.Driver;
@@ -38,8 +38,8 @@ public class AudiotrackRepository(MewingPadMongoDbContext context) : IAudiotrack
 
         try
         {
-			var toDelete = await _context.Audiotracks.FirstOrDefaultAsync(a => a.Id == audiotrackId);
-			_context.Remove(toDelete!);
+			var toDelete = await _context.Audiotracks.SingleAsync(a => a.Id == audiotrackId);
+			_context.Remove(toDelete);
 			await _context.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -57,9 +57,7 @@ public class AudiotrackRepository(MewingPadMongoDbContext context) : IAudiotrack
         List<Audiotrack> audios;
         try
         {
-            var found = await _context.Audiotracks
-                .Where(_ => true)
-                .ToListAsync();
+            var found = await _context.Audiotracks.ToListAsync();
             audios = found.Select(a => AudiotrackConverter.DbToCoreModel(a)).ToList();
         }
         catch (Exception ex)

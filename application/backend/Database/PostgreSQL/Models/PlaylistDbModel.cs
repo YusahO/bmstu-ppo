@@ -1,9 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using MongoDB.Bson.Serialization.Attributes;
 
-namespace MewingPad.Database.Models;
+namespace MewingPad.Database.PgSQL.Models;
 
 [Table("Playlists")]
 [Index(nameof(UserId), IsUnique = false)]
@@ -13,7 +12,6 @@ public class PlaylistDbModel(Guid id,
 {
     [Key]
     [Column("id")]
-    [BsonId]
     public Guid Id { get; set; } = id;
 
     [Column("title")]
@@ -23,11 +21,8 @@ public class PlaylistDbModel(Guid id,
     [Column("user_id")]
     public Guid UserId { get; set; } = userId;
 
-    [BsonIgnore]
     public UserDbModel? User { get; set; }
 
-    // [BsonIgnore]
     public List<AudiotrackDbModel> Audiotracks { get; } = [];
-    [BsonIgnore]
     public List<PlaylistAudiotrackDbModel> PlaylistsAudiotracks { get; } = [];
 }
